@@ -1,0 +1,38 @@
+# Gradle
+.gradle/
+build/
+out/
+classes/
+
+# Fabric and local server runs
+run/
+logs/
+crash-reports/
+eula.txt
+server.properties
+world/
+worlds/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.code-workspace
+
+# Eclipse
+.settings/
+.classpath
+.project
+bin/
+
+# Java diagnostics
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
+
+# Operating system files
+.DS_Store
+Thumbs.db
