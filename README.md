@@ -22,6 +22,8 @@ java -Xms2G -Xmx6G -jar meldrite-1.20.1.jar nogui
 
 控制台支持 `--nojline`（普通输入）和 `--noconsole`（关闭命令输入）。权限管理使用权限 Mod 的原有命令，例如 `lp user 玩家名 permission set 插件权限节点 true`。
 
+初始化时显示 Meldrite ASCII 图案、当前版本、JDK 版本及作者。标签随 JVM 的显示 Locale 切换：中文使用中文标签，其他语言使用英文；可通过 `-Duser.language=zh -Duser.country=CN` 或 `-Duser.language=en -Duser.country=US` 指定语言。
+
 项目仍在开发中，部分 Bukkit/Paper 接口尚未完整实现；部署前请在独立测试服验证所需 Mod 和插件功能。
 
 ## 源码

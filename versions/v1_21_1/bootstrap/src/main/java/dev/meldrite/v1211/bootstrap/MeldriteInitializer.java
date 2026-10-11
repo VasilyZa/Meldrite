@@ -7,10 +7,13 @@ import net.minecraft.server.MinecraftServer;
 
 /** Fabric entrypoint for the 1.21.1 composition root. */
 public final class MeldriteInitializer implements ModInitializer {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("Meldrite");
     private volatile boolean started;
 
     @Override
     public void onInitialize() {
+        dev.meldrite.bootstrap.StartupBanner.print(net.fabricmc.loader.api.FabricLoader.getInstance()
+                .getModContainer("meldrite").orElseThrow().getMetadata().getVersion().getFriendlyString(), LOGGER::info);
         ServerLifecycleEvents.SERVER_STARTED.register(this::started);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::stopping);
     }

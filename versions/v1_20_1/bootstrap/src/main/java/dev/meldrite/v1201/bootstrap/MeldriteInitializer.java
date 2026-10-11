@@ -13,6 +13,8 @@ public final class MeldriteInitializer implements ModInitializer {
     @Override
     public void onInitialize() {
         dev.meldrite.v1201.console.ConsoleLogging.install();
+        dev.meldrite.bootstrap.StartupBanner.print(net.fabricmc.loader.api.FabricLoader.getInstance()
+                .getModContainer("meldrite").orElseThrow().getMetadata().getVersion().getFriendlyString(), LOGGER::info);
         dev.meldrite.v1201.compat.FabricPermissionBridge.install();
         ServerLifecycleEvents.SERVER_STARTING.register(this::starting);
         ServerLifecycleEvents.SERVER_STARTED.register(this::started);
