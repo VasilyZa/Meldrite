@@ -23,6 +23,14 @@ public final class NativePlayerChat {
     private static final String DEFAULT_LEGACY_FORMAT = "<%1$s> %2$s";
     private NativePlayerChat() {}
 
+    /** Input and result omit the slash; null means plugins cancelled execution. */
+    public static String preprocessCommand(Player player, String command) {
+        var server = player.getServer();
+        var event = new PlayerCommandPreprocessEvent(player, "/" + command, new LinkedHashSet<>(server.getOnlinePlayers()));
+        server.getPluginManager().callEvent(event);
+        return event.isCancelled() ? null : event.getMessage().substring(1);
+    }
+
     public static void command(Player player, String message) {
         var server = player.getServer();
         var event = new PlayerCommandPreprocessEvent(player, message, new LinkedHashSet<>(server.getOnlinePlayers()));
