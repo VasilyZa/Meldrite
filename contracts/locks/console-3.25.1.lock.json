@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "group": "org.jline",
+  "version": "3.25.1",
+  "artifacts": [
+    {"module": "jline-reader", "sha256": "26333a275de502adf1dd9e6ea50aa0b4021412c71490df9ed5e88a648886ee89"},
+    {"module": "jline-terminal", "sha256": "c0f5d70901255da66a94e59778b265d19f9308342578e34c88fc92d1b0c65fef"},
+    {"module": "jline-terminal-jna", "sha256": "58ca9d719c373206af15775ee3cd5f268136ea0d0c4e009c3e96a6d4612d5c66"},
+    {"module": "jline-native", "sha256": "42d5bbe1f546dea248b8c901da7deb9943f76290379552923c9763495bb9f172"}
+  ]
+}

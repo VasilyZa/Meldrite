@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "minecraft": ["1.20.1", "1.21.1"],
+  "profiles": ["paper-1.20.1", "paper-1.21.1"],
+  "eulaPolicy": "preserve-existing-eula"
+}

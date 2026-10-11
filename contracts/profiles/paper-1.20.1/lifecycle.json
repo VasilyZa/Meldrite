@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "profile": "paper-1.20.1",
+  "baselineStatus": "PENDING_EXACT_PAPER_TRACE",
+  "reason": "The API artifact is locked. API presence does not establish server lifecycle ordering; R1/R3 and Q1 must obtain independent baseline traces.",
+  "stages": [
+    "PRELAUNCH",
+    "NATIVE_BOUND",
+    "SERVICES_BOUND",
+    "PLUGIN_DISCOVERY",
+    "DEPENDENCIES_PLANNED",
+    "PLUGINS_LOADED",
+    "STARTUP_ENABLED",
+    "WORLDS_READY",
+    "POSTWORLD_ENABLED",
+    "READY",
+    "STOPPING",
+    "STOPPED"
+  ],
+  "constraints": [
+    [
+      "SERVICES_BOUND",
+      "PLUGIN_DISCOVERY"
+    ],
+    [
+      "DEPENDENCIES_PLANNED",
+      "PLUGINS_LOADED"
+    ],
+    [
+      "PLUGINS_LOADED",
+      "STARTUP_ENABLED"
+    ],
+    [
+      "WORLDS_READY",
+      "POSTWORLD_ENABLED"
+    ],
+    [
+      "POSTWORLD_ENABLED",
+      "READY"
+    ],
+    [
+      "STOPPING",
+      "STOPPED"
+    ]
+  ],
+  "failurePolicy": "Constructor/load/enable failure prevents required dependents from becoming enabled; all owned resources close during disable/stop.",
+  "descriptorRules": {
+    "status": "SOURCE_RULES_VERIFIED_SERVER_TRACE_PENDING",
+    "ownerTask": "R1",
+    "sourceCommit": "773dd724469bae89d0c2075edc3d1ddc8d5b0b18",
+    "sources": [
+      "https://github.com/PaperMC/Paper-archive/blob/773dd724469bae89d0c2075edc3d1ddc8d5b0b18/patches/server/0013-Paper-Plugins.patch",
+      "https://github.com/PaperMC/Paper-archive/blob/773dd724469bae89d0c2075edc3d1ddc8d5b0b18/patches/api/0008-Paper-Plugins.patch"
+    ],
+    "bothDescriptors": "Paper provider precedes legacy provider",
+    "paperDefaults": {
+      "required": true,
+      "joinClasspath": true,
+      "load": "OMIT"
+    },
+    "historicFlatDependencies": "Preserve load-before/load-after/bootstrap flags; only dependency entries grant classpath access; required defaults false",
+    "optionalCycles": "Report complete path and remove closing ordering edge; retain required dependency and visibility graphs",
+    "bootstrap": "Only bootstrapper providers participate; bootstrap/server availability and visibility are separate",
+    "legacy": "Locked PluginDescriptionFile parses metadata; profile preserves reciprocal and loadbefore ordering rules",
+    "validation": [
+      "ordering does not imply visibility",
+      "missing required target includes phase/path",
+      "optional absent/version mismatch",
+      "complete cycle path",
+      "duplicate provider identity/alias rejection",
+      "discovery does not initialize main class",
+      "dual mod/plugin JAR rejected",
+      "duplicate YAML key includes source/line",
+      "recursive YAML data rejected"
+    ],
+    "baselineLimit": "Source-reference rules and compiled descriptor fixtures only. Exact server differential traces remain required in R4/V2/Q1. Duplicate providers are rejected explicitly; no full Paper server compatibility claim."
+  },
+  "futureExtension": "A new profile supplies independent lifecycle policy and traces; shared runtime executes the policy without a version conditional.",
+  "providerRules": {
+    "ownerTask": "R4",
+    "status": "COMPILED_FIXTURE_VERIFIED",
+    "rulesFile": "plugin-lifecycle.json",
+    "serverDifferentialTrace": "PENDING_V2_Q1"
+  }
+}

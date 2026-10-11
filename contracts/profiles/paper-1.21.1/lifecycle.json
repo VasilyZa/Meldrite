@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "baselineStatus": "PARTIAL",
+  "stages": ["bootstrap", "load", "enable", "postworld", "disable"],
+  "constraints": [["bootstrap", "load"], ["load", "enable"], ["enable", "postworld"], ["postworld", "disable"]]
+}

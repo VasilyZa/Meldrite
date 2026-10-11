@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "repositories": [
+    "https://repo.maven.apache.org/maven2/",
+    "https://maven.fabricmc.net/",
+    "https://repo.papermc.io/repository/maven-public/"
+  ],
+  "output": "contracts/locks/tools.lock.json",
+  "cache": ".gradle/meldrite/artifacts",
+  "roots": [
+    {
+      "coordinate": "org.junit.jupiter:junit-jupiter:5.11.4"
+    },
+    {
+      "coordinate": "com.fasterxml.jackson.core:jackson-databind:2.18.2"
+    },
+    {
+      "coordinate": "org.ow2.asm:asm:9.7.1"
+    },
+    {
+      "coordinate": "net.fabricmc:mapping-io:0.6.1"
+    },
+    {
+      "coordinate": "com.github.siom79.japicmp:japicmp:0.23.1"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+alias-conflict	net/minecraft/class_9.fF	retained=Target[owner=net/minecraft/class_9, name=field_34, access=1]	rejected=Target[owner=net/minecraft/class_9, name=field_47, access=1]
+alias-conflict	net/minecraft/class_9.fF	retained=Target[owner=net/minecraft/class_9, name=field_34, access=1]	rejected=Target[owner=net/minecraft/class_9, name=field_47, access=1]
+alias-conflict	net/minecraft/class_9.gF	retained=Target[owner=net/minecraft/class_9, name=field_47, access=1]	rejected=Target[owner=net/minecraft/class_9, name=field_36, access=1]
+alias-conflict	net/minecraft/class_9.gF	retained=Target[owner=net/minecraft/class_9, name=field_47, access=1]	rejected=Target[owner=net/minecraft/class_9, name=field_36, access=1]
+class-alias-conflict	net/minecraft/core/Position	retained=net/minecraft/class_2376	rejected=net/minecraft/class_2374
+class-alias-conflict	net/minecraft/core/Registry	retained=net/minecraft/class_2359	rejected=net/minecraft/class_2378
+class-alias-conflict	net/minecraft/core/particles/ParticleType	retained=net/minecraft/class_2400	rejected=net/minecraft/class_2396
+class-alias-conflict	net/minecraft/server/level/ChunkMap	retained=net/minecraft/class_3196	rejected=net/minecraft/class_3898
+class-alias-conflict	net/minecraft/server/network/TextFilter	retained=net/minecraft/class_5514	rejected=net/minecraft/class_5513
+class-alias-conflict	net/minecraft/server/packs/resources/ResourceManager	retained=net/minecraft/class_6861	rejected=net/minecraft/class_3300
+class-alias-conflict	net/minecraft/world/effect/MobEffect	retained=net/minecraft/class_1293	rejected=net/minecraft/class_1291
+class-alias-conflict	net/minecraft/world/level/material/Fluid	retained=net/minecraft/class_3610	rejected=net/minecraft/class_3611
+class-alias-conflict	net/minecraft/world/level/pathfinder/Path	retained=net/minecraft/class_5	rejected=net/minecraft/class_11
+class-alias-conflict	net/minecraft/world/level/storage/WorldData	retained=net/minecraft/class_5217	rejected=net/minecraft/class_5219

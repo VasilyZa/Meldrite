@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["id", "minecraft", "profile", "entrypoint"],
+  "properties": {
+    "id": {"type":"string", "pattern":"^[a-z0-9._-]+$"},
+    "minecraft": {"type":"string"},
+    "profile": {"type":"string"},
+    "entrypoint": {"type":"string"},
+    "enabledByDefault": {"type":"boolean"}
+  },
+  "additionalProperties": false
+}

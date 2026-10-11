@@ -1,0 +1,39 @@
+package dev.meldrite.paper.generated.org.bukkit.inventory;
+public final class InventoryAdapter implements org.bukkit.inventory.Inventory {
+private final dev.meldrite.paper.inventory.CraftPreviewView view;public InventoryAdapter(dev.meldrite.paper.inventory.CraftPreviewView view){this.view=java.util.Objects.requireNonNull(view);}
+  @Override public java.util.HashMap<java.lang.Integer, org.bukkit.inventory.ItemStack> addItem(org.bukkit.inventory.ItemStack... p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#addItem([Lorg/bukkit/inventory/ItemStack;)Ljava/util/HashMap;#METHOD"); }
+  @Override public java.util.HashMap<java.lang.Integer, ? extends org.bukkit.inventory.ItemStack> all(org.bukkit.Material p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#all(Lorg/bukkit/Material;)Ljava/util/HashMap;#METHOD"); }
+  @Override public java.util.HashMap<java.lang.Integer, ? extends org.bukkit.inventory.ItemStack> all(org.bukkit.inventory.ItemStack p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#all(Lorg/bukkit/inventory/ItemStack;)Ljava/util/HashMap;#METHOD"); }
+  @Override public void clear() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#clear()V#METHOD"); }
+  @Override public void clear(int p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#clear(I)V#METHOD"); }
+  @Override public int close() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#close()I#METHOD"); }
+  @Override public boolean contains(org.bukkit.Material p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#contains(Lorg/bukkit/Material;)Z#METHOD"); }
+  @Override public boolean contains(org.bukkit.Material p0, int p1) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#contains(Lorg/bukkit/Material;I)Z#METHOD"); }
+  @Override public boolean contains(org.bukkit.inventory.ItemStack p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#contains(Lorg/bukkit/inventory/ItemStack;)Z#METHOD"); }
+  @Override public boolean contains(org.bukkit.inventory.ItemStack p0, int p1) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#contains(Lorg/bukkit/inventory/ItemStack;I)Z#METHOD"); }
+  @Override public boolean containsAtLeast(org.bukkit.inventory.ItemStack p0, int p1) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#containsAtLeast(Lorg/bukkit/inventory/ItemStack;I)Z#METHOD"); }
+  @Override public int first(org.bukkit.Material p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#first(Lorg/bukkit/Material;)I#METHOD"); }
+  @Override public int first(org.bukkit.inventory.ItemStack p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#first(Lorg/bukkit/inventory/ItemStack;)I#METHOD"); }
+  @Override public int firstEmpty() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#firstEmpty()I#METHOD"); }
+  @Override public org.bukkit.inventory.ItemStack[] getContents() { return view.contents(); }
+  @Override public org.bukkit.inventory.InventoryHolder getHolder() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getHolder()Lorg/bukkit/inventory/InventoryHolder;#METHOD"); }
+  @Override public org.bukkit.inventory.InventoryHolder getHolder(boolean p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getHolder(Z)Lorg/bukkit/inventory/InventoryHolder;#METHOD"); }
+  @Override public org.bukkit.inventory.ItemStack getItem(int p0) { return view.item(p0); }
+  @Override public org.bukkit.Location getLocation() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getLocation()Lorg/bukkit/Location;#METHOD"); }
+  @Override public int getMaxStackSize() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getMaxStackSize()I#METHOD"); }
+  @Override public int getSize() { return view.size(); }
+  @Override public org.bukkit.inventory.ItemStack[] getStorageContents() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getStorageContents()[Lorg/bukkit/inventory/ItemStack;#METHOD"); }
+  @Override public org.bukkit.event.inventory.InventoryType getType() { return view.type(); }
+  @Override public java.util.List<org.bukkit.entity.HumanEntity> getViewers() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#getViewers()Ljava/util/List;#METHOD"); }
+  @Override public boolean isEmpty() { return view.isEmpty(); }
+  @Override public java.util.ListIterator<org.bukkit.inventory.ItemStack> iterator() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#iterator()Ljava/util/ListIterator;#METHOD"); }
+  @Override public java.util.ListIterator<org.bukkit.inventory.ItemStack> iterator(int p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#iterator(I)Ljava/util/ListIterator;#METHOD"); }
+  @Override public void remove(org.bukkit.Material p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#remove(Lorg/bukkit/Material;)V#METHOD"); }
+  @Override public void remove(org.bukkit.inventory.ItemStack p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#remove(Lorg/bukkit/inventory/ItemStack;)V#METHOD"); }
+  @Override public java.util.HashMap<java.lang.Integer, org.bukkit.inventory.ItemStack> removeItem(org.bukkit.inventory.ItemStack... p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#removeItem([Lorg/bukkit/inventory/ItemStack;)Ljava/util/HashMap;#METHOD"); }
+  @Override public java.util.HashMap<java.lang.Integer, org.bukkit.inventory.ItemStack> removeItemAnySlot(org.bukkit.inventory.ItemStack... p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#removeItemAnySlot([Lorg/bukkit/inventory/ItemStack;)Ljava/util/HashMap;#METHOD"); }
+  @Override public void setContents(org.bukkit.inventory.ItemStack[] p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#setContents([Lorg/bukkit/inventory/ItemStack;)V#METHOD"); }
+  @Override public void setItem(int p0, org.bukkit.inventory.ItemStack p1) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#setItem(ILorg/bukkit/inventory/ItemStack;)V#METHOD"); }
+  @Override public void setMaxStackSize(int p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#setMaxStackSize(I)V#METHOD"); }
+  @Override public void setStorageContents(org.bukkit.inventory.ItemStack[] p0) throws java.lang.IllegalArgumentException { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/inventory/Inventory#setStorageContents([Lorg/bukkit/inventory/ItemStack;)V#METHOD"); }
+}

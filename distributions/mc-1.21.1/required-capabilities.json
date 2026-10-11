@@ -1,0 +1,5 @@
+{
+  "minecraft": "1.21.1",
+  "profile": "paper-1.21.1",
+  "capabilities": ["bootstrap.lifecycle", "events.block-break", "registry.snapshot", "item.nbt-opaque", "extension.services", "craft.abi"]
+}

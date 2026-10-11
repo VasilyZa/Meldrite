@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "mc-1.20.1",
+  "minecraftVersion": "1.20.1",
+  "profile": "paper-1.20.1",
+  "javaFeature": 17,
+  "mappingNamespace": "intermediary",
+  "eulaPath": "eula.txt",
+  "artifact": {
+    "path": "versions/v1_20_1/bootstrap/build/libs/v1201-bootstrap.jar",
+    "sha256": ""
+  },
+  "runtime": {
+    "fabricLoaderJar": {"path": "", "sha256": ""},
+    "minecraftServerJar": {"path": "", "sha256": ""},
+    "modJars": []
+  },
+  "toolchain": {
+    "loom": "1.17.21",
+    "loader": "0.19.5",
+    "fabricApi": "0.92.12+1.20.1",
+    "yarn": "1.20.1+build.10:v2"
+  },
+  "launch": {
+    "named": [
+      "{root}/gradlew", "--no-daemon", "--offline", "-p", "{root}",
+      "-Pmeldrite.serverDir={serverDir}", ":v1201-bootstrap:runServer",
+      "--args=--nogui --port {port}"
+    ],
+    "intermediary": [
+      "{java17}", "-Xmx4G", "-Xms1G", "-Dfabric.gameJarPath={minecraftServerJar}", "-cp", "{fabricLoaderJar}",
+      "net.fabricmc.loader.impl.launch.server.FabricServerLauncher", "--nogui", "--port", "{port}"
+    ]
+  }
+}

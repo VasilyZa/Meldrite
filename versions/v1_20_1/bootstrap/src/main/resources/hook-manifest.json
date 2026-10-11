@@ -1,0 +1,13 @@
+{
+  "version": "1.20.1",
+  "required": [
+    {
+      "id": "block-break.pre-commit",
+      "owner": "net.minecraft.server.network.ServerPlayerInteractionManager",
+      "method": "tryBreakBlock",
+      "descriptor": "(Lnet/minecraft/util/math/BlockPos;)Z",
+      "phase": "HEAD",
+      "effect": "cancel-and-client-resync"
+    }
+  ]
+}

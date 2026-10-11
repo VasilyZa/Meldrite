@@ -1,0 +1,12 @@
+{
+  "coordinate": "io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT",
+  "repositories": [
+    "https://repo.maven.apache.org/maven2/",
+    "https://maven.fabricmc.net/",
+    "https://repo.papermc.io/repository/maven-public/"
+  ],
+  "output": "contracts/locks/paper-1.21.1.lock.json",
+  "cache": ".gradle/meldrite/artifacts",
+  "snapshotPolicy": "unique-unclassified",
+  "upstreamSourceCommit": "REFERENCE_ONLY"
+}

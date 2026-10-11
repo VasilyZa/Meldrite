@@ -1,0 +1,6 @@
+{
+  "profile": "paper-1.20.1",
+  "reflection": "constant-owner-and-member-only",
+  "missingTargetMember": "MISSING_TARGET_MEMBER",
+  "signedTransform": "SIGNED_ARTIFACT_TRANSFORM_REJECTED"
+}

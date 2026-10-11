@@ -1,0 +1,44 @@
+package dev.meldrite.paper.generated.org.bukkit;
+public final class OfflinePlayerAdapter implements org.bukkit.OfflinePlayer {
+private final dev.meldrite.service.StatisticsService service;private final java.util.UUID account;public OfflinePlayerAdapter(dev.meldrite.service.StatisticsService service,java.util.UUID account){this.service=java.util.Objects.requireNonNull(service);this.account=java.util.Objects.requireNonNull(account);}
+  @Override public <E extends org.bukkit.BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(java.lang.String p0, java.time.Duration p1, java.lang.String p2) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#ban(Ljava/lang/String;Ljava/time/Duration;Ljava/lang/String;)Lorg/bukkit/BanEntry;#METHOD"); }
+  @Override public <E extends org.bukkit.BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(java.lang.String p0, java.time.Instant p1, java.lang.String p2) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#ban(Ljava/lang/String;Ljava/time/Instant;Ljava/lang/String;)Lorg/bukkit/BanEntry;#METHOD"); }
+  @Override public <E extends org.bukkit.BanEntry<? super com.destroystokyo.paper.profile.PlayerProfile>> E ban(java.lang.String p0, java.util.Date p1, java.lang.String p2) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#ban(Ljava/lang/String;Ljava/util/Date;Ljava/lang/String;)Lorg/bukkit/BanEntry;#METHOD"); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0),1,false); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0, int p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0),p1,false); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),1,false); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1, int p2) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2,false); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),1,false); }
+  @Override public void decrementStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1, int p2) { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2,false); }
+  @Override public org.bukkit.Location getBedSpawnLocation() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getBedSpawnLocation()Lorg/bukkit/Location;#METHOD"); }
+  @Override public long getFirstPlayed() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getFirstPlayed()J#METHOD"); }
+  @Override public org.bukkit.Location getLastDeathLocation() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getLastDeathLocation()Lorg/bukkit/Location;#METHOD"); }
+  @Override public long getLastLogin() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getLastLogin()J#METHOD"); }
+  @Override public long getLastPlayed() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getLastPlayed()J#METHOD"); }
+  @Override public long getLastSeen() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getLastSeen()J#METHOD"); }
+  @Override public java.lang.String getName() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getName()Ljava/lang/String;#METHOD"); }
+  @Override public org.bukkit.entity.Player getPlayer() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getPlayer()Lorg/bukkit/entity/Player;#METHOD"); }
+  @Override public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#getPlayerProfile()Lcom/destroystokyo/paper/profile/PlayerProfile;#METHOD"); }
+  @Override public int getStatistic(org.bukkit.Statistic p0) throws java.lang.IllegalArgumentException { return service.get(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0)); }
+  @Override public int getStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1) throws java.lang.IllegalArgumentException { return service.get(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1)); }
+  @Override public int getStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1) throws java.lang.IllegalArgumentException { return service.get(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1)); }
+  @Override public java.util.UUID getUniqueId() { return account; }
+  @Override public boolean hasPlayedBefore() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#hasPlayedBefore()Z#METHOD"); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0),1,true); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0, int p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0),p1,true); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),1,true); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1, int p2) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2,true); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),1,true); }
+  @Override public void incrementStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1, int p2) throws java.lang.IllegalArgumentException { service.adjust(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2,true); }
+  @Override public boolean isBanned() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#isBanned()Z#METHOD"); }
+  @Override public boolean isConnected() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#isConnected()Z#METHOD"); }
+  @Override public boolean isOnline() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#isOnline()Z#METHOD"); }
+  @Override public boolean isOp() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#isOp()Z#INHERITED_METHOD"); }
+  @Override public boolean isWhitelisted() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#isWhitelisted()Z#METHOD"); }
+  @Override public java.util.Map<java.lang.String, java.lang.Object> serialize() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#serialize()Ljava/util/Map;#INHERITED_METHOD"); }
+  @Override public void setOp(boolean p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#setOp(Z)V#INHERITED_METHOD"); }
+  @Override public void setStatistic(org.bukkit.Statistic p0, int p1) throws java.lang.IllegalArgumentException { service.set(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0),p1); }
+  @Override public void setStatistic(org.bukkit.Statistic p0, org.bukkit.Material p1, int p2) throws java.lang.IllegalArgumentException { service.set(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2); }
+  @Override public void setStatistic(org.bukkit.Statistic p0, org.bukkit.entity.EntityType p1, int p2) { service.set(account,dev.meldrite.paper.statistics.StatisticProjection.request(p0,p1),p2); }
+  @Override public void setWhitelisted(boolean p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/OfflinePlayer#setWhitelisted(Z)V#METHOD"); }
+}

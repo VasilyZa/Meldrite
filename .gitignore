@@ -36,3 +36,47 @@ replay_*.log
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Meldrite execution records
+.superpowers/
+docs/superpowers/
+**/*handoff*/
+**/*handoff*.md
+**/*agent*.md
+**/AGENTS.md
+
+# Local test suites, fixtures and probe inputs
+**/src/test/
+**/src/fabricParity/
+testkit/integration/src/
+testkit/runtime/src/
+testkit/contract/
+testkit/fixtures/**/src/
+compat-packs/fixture-*/
+tools/*Probe.java
+tools/*Test.java
+**/*Test.java
+**/*Probe.java
+tools/test-*.py
+tools/probe-*.py
+tools/run-*-probe.mjs
+tools/fabric-baseline.mjs
+tools/fabric-mod-parity.py
+
+# Generated API audit data and compiler output
+contracts/profiles/**/inventory/
+contracts/profiles/**/vendor-bindings/
+contracts/profiles/**/evidence-reports/
+contracts/profiles/**/bindings.json
+contracts/profiles/**/capabilities.json
+contracts/profiles/**/domain-batches.json
+contracts/profiles/**/evidence.json
+javac.*.args
+__pycache__/
+*.py[cod]
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+*.zip
+*.tar
+*.tar.gz

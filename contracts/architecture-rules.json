@@ -1,0 +1,853 @@
+{
+  "modules": {
+    "foundation": {
+      "path": "modules/foundation",
+      "gradlePath": ":foundation",
+      "allowedProjectDependencies": [],
+      "allowedExternalCompileDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "allowedExternalRuntimeDependencies": []
+    },
+    "bridge-spi": {
+      "path": "modules/bridge-spi",
+      "gradlePath": ":bridge-spi",
+      "allowedProjectDependencies": [
+        ":foundation"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "allowedExternalRuntimeDependencies": []
+    },
+    "plugin-spi": {
+      "path": "modules/plugin-spi",
+      "gradlePath": ":plugin-spi",
+      "allowedProjectDependencies": [
+        ":foundation"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "allowedExternalRuntimeDependencies": []
+    },
+    "testkit-runtime": {
+      "path": "testkit/runtime",
+      "gradlePath": ":testkit-runtime",
+      "allowedProjectDependencies": [],
+      "allowedExternalCompileDependencies": [
+        "com.fasterxml.jackson.core:jackson-databind"
+      ],
+      "dependencyPurposes": {
+        "com.fasterxml.jackson.core:jackson-databind": "Parse fixture input and compare actual scenario observations."
+      },
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "allowedExternalRuntimeDependencies": [
+        "com.fasterxml.jackson.core:jackson-databind"
+      ]
+    },
+    "testkit-contract": {
+      "path": "build-tools/contracts",
+      "gradlePath": ":testkit-contract",
+      "allowedProjectDependencies": [],
+      "allowedExternalCompileDependencies": [
+        "com.fasterxml.jackson.core:jackson-databind",
+        "org.ow2.asm:asm",
+        "net.fabricmc:mapping-io",
+        "com.github.siom79.japicmp:japicmp"
+      ],
+      "dependencyPurposes": {
+        "com.fasterxml.jackson.core:jackson-databind": "Read lock and architecture rule documents.",
+        "org.ow2.asm:asm": "Inspect compiled classfile references for architecture boundaries.",
+        "net.fabricmc:mapping-io": "Read mappings in the existing contract tooling.",
+        "com.github.siom79.japicmp:japicmp": "Compare locked API contracts in the existing contract tooling."
+      },
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "allowedExternalRuntimeDependencies": [
+        "com.fasterxml.jackson.core:jackson-databind",
+        "org.ow2.asm:asm",
+        "net.fabricmc:mapping-io",
+        "com.github.siom79.japicmp:japicmp"
+      ]
+    },
+    "plugin-runtime": {
+      "path": "modules/plugin-runtime",
+      "gradlePath": ":plugin-runtime",
+      "allowedProjectDependencies": [
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "paper-1201": {
+      "path": "adapters/paper-1.20.1",
+      "gradlePath": ":paper-1201",
+      "allowedProjectDependencies": [
+        ":plugin-spi",
+        ":plugin-runtime",
+        ":plugin-classloading",
+        ":api-services",
+        ":craft-common",
+        ":registry",
+        ":adventure",
+        ":events",
+        ":scheduler",
+        ":commands"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.craftbukkit.",
+        "org/bukkit/craftbukkit/"
+      ],
+      "fileDependencyContract": "contracts/profiles/paper-1.20.1/api-index.json",
+      "fileDependencyPurpose": "Compile/link the exact locked API and authoritative public dependency providers; neutral runtime has no file-JAR exemption."
+    },
+    "paper-1211": {
+      "path": "adapters/paper-1.21.1",
+      "gradlePath": ":paper-1211",
+      "maxJavaMajor": 65,
+      "allowedProjectDependencies": [
+        ":plugin-spi",
+        ":plugin-runtime",
+        ":plugin-classloading",
+        ":api-services",
+        ":craft-common",
+        ":registry",
+        ":adventure",
+        ":events",
+        ":scheduler",
+        ":commands"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.craftbukkit.",
+        "org/bukkit/craftbukkit/"
+      ],
+      "fileDependencyContract": "contracts/profiles/paper-1.21.1/api-index.json",
+      "additionalFileDependencyContracts": ["contracts/profiles/paper-1.20.1/adventure-providers.json"],
+      "fileDependencyPurpose": "Compile/link the exact locked 1.21.1 API and authoritative public dependency providers; neutral runtime has no file-JAR exemption."
+    },
+    "plugin-classloading": {
+      "path": "modules/plugin-classloading",
+      "gradlePath": ":plugin-classloading",
+      "allowedProjectDependencies": [
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "api-services": {
+      "path": "modules/api-services",
+      "gradlePath": ":api-services",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":registry",
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "craft-common": {
+      "path": "modules/craft-common",
+      "gradlePath": ":craft-common",
+      "allowedProjectDependencies": [
+        ":api-services"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "registry": {
+      "path": "modules/registry",
+      "gradlePath": ":registry",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":registry"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "adventure": {
+      "path": "modules/adventure",
+      "gradlePath": ":adventure",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":registry"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "fileDependencyContract": "contracts/profiles/paper-1.20.1/adventure-providers.json",
+      "fileDependencyPurpose": "Exact public Adventure/serializer ABI providers, shared with the authoritative API provider; subset excludes Bukkit, Minecraft, loaders and logging integrations."
+    },
+    "events": {
+      "path": "modules/events",
+      "gradlePath": ":events",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "scheduler": {
+      "path": "modules/scheduler",
+      "gradlePath": ":scheduler",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "commands": {
+      "path": "modules/commands",
+      "gradlePath": ":commands",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":plugin-spi",
+        ":adventure"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ],
+      "fileDependencyContract": "contracts/profiles/paper-1.20.1/adventure-providers.json",
+      "fileDependencyPurpose": "Use the exact shared Adventure component ABI for command feedback; no Paper or game providers enter the neutral command module."
+    },
+    "bootstrap-common": {
+      "path": "modules/bootstrap-common",
+      "gradlePath": ":bootstrap-common",
+      "allowedProjectDependencies": [
+        ":bridge-spi",
+        ":foundation",
+        ":plugin-runtime",
+        ":plugin-spi"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "testkit-integration": {
+      "path": "testkit/integration",
+      "gradlePath": ":testkit-integration",
+      "allowedProjectDependencies": [
+        ":bootstrap-common",
+        ":bridge-spi",
+        ":foundation",
+        ":plugin-runtime",
+        ":plugin-spi",
+        ":testkit-runtime"
+      ],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [
+        "com.fasterxml.jackson.core:jackson-databind"
+      ],
+      "dependencyPurposes": {
+        "com.fasterxml.jackson.core:jackson-databind": "Read/write external process fixture/result protocol through testkit-runtime; no game types are loaded in the runner."
+      },
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "v1201-bridge": {
+      "path": "versions/v1_20_1/bridge",
+      "gradlePath": ":v1201-bridge",
+      "allowedProjectDependencies": [":bridge-spi", ":extension-api"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "allowedExternalCompilePrefixes": [
+        "com.github.oshi:", "com.google.code.gson:", "com.google.guava:", "com.ibm.icu:",
+        "com.mojang:", "commons-codec:", "commons-io:", "commons-logging:",
+        "io.github.llamalad7:", "io.netty:", "it.unimi.dsi:", "net.fabricmc:",
+        "net.java.dev.jna:", "net.minecraft:", "net.sf.jopt-simple:", "org.apache.commons:",
+        "org.apache.httpcomponents:", "org.apache.logging.log4j:", "org.jetbrains:", "org.joml:",
+        "org.lwjgl:", "org.ow2.asm:", "org.slf4j:", "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedExternalRuntimePrefixes": [
+        "com.github.oshi:", "com.google.code.gson:", "com.google.guava:", "com.ibm.icu:",
+        "com.mojang:", "commons-codec:", "commons-io:", "commons-logging:",
+        "io.github.llamalad7:", "io.netty:", "it.unimi.dsi:", "net.fabricmc:",
+        "net.java.dev.jna:", "net.minecraft:", "net.sf.jopt-simple:", "org.apache.commons:",
+        "org.apache.httpcomponents:", "org.apache.logging.log4j:", "org.joml:", "org.lwjgl:",
+        "org.ow2.asm:", "org.slf4j:", "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedForbiddenExternalGroups": ["net.fabricmc", "net.minecraft"],
+      "dependencyPurposes": {
+        "com.github.oshi:": "Fabric server runtime support.", "com.google.code.gson:": "Fabric server runtime support.",
+        "com.google.guava:": "Fabric server runtime support.", "com.ibm.icu:": "Fabric server runtime support.",
+        "com.mojang:": "Minecraft 1.20.1 server runtime.", "commons-codec:": "Minecraft 1.20.1 server runtime.",
+        "commons-io:": "Minecraft 1.20.1 server runtime.", "commons-logging:": "Minecraft 1.20.1 server runtime.",
+        "io.github.llamalad7:": "Fabric loader runtime support.", "io.netty:": "Minecraft 1.20.1 networking runtime.",
+        "it.unimi.dsi:": "Minecraft 1.20.1 server runtime.", "net.fabricmc:": "Locked Fabric loader and mappings.",
+        "net.java.dev.jna:": "Minecraft 1.20.1 server runtime.", "net.minecraft:": "Locked Minecraft 1.20.1 runtime.",
+        "net.sf.jopt-simple:": "Minecraft 1.20.1 server runtime.", "org.apache.commons:": "Minecraft 1.20.1 server runtime.",
+        "org.apache.httpcomponents:": "Minecraft 1.20.1 server runtime.", "org.apache.logging.log4j:": "Minecraft 1.20.1 logging runtime.",
+        "org.jetbrains:": "Locked Fabric/Minecraft annotations.", "org.joml:": "Minecraft 1.20.1 math runtime.",
+        "org.lwjgl:": "Minecraft 1.20.1 native runtime.", "org.ow2.asm:": "Fabric loader bytecode runtime.",
+        "org.slf4j:": "Fabric/Minecraft logging runtime.", "remapped.net.fabricmc.fabric-api:": "Locked Fabric API 0.92.12 runtime."
+      },
+      "allowedFileDependencyHashes": {
+        ".gradle/caches/fabric-loom/1.20.1/net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2/mappings.jar": "cba44a40bb16403e0eebe63757f8ad7f0e37c547c5946c7c7c11572f8e568341"
+      },
+      "forbiddenPrefixes": [
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ],
+      "allowedReferencePrefixes": {
+        "dev/meldrite/v1201/craft/": ["org.bukkit.", "org/bukkit/"],
+        "org/bukkit/craftbukkit/v1_20_R1/": ["org.bukkit.", "org/bukkit/"]
+      }
+    },
+    "v1211-bridge": {
+      "path": "versions/v1_21_1/bridge",
+      "gradlePath": ":v1211-bridge",
+      "maxJavaMajor": 65,
+      "allowedProjectDependencies": [":bridge-spi", ":extension-api"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "v1211-bootstrap": {
+      "path": "versions/v1_21_1/bootstrap",
+      "gradlePath": ":v1211-bootstrap",
+      "maxJavaMajor": 65,
+      "allowedProjectDependencies": [":adventure", ":bootstrap-common", ":bridge-spi", ":paper-1211", ":plugin-classloading", ":v1211-bridge"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "allowedExternalCompilePrefixes": [
+        "com.github.oshi:",
+        "com.google.code.gson:",
+        "com.google.guava:",
+        "com.mojang:",
+        "commons-io:",
+        "io.github.llamalad7:",
+        "io.netty:",
+        "it.unimi.dsi:",
+        "net.fabricmc:",
+        "net.java.dev.jna:",
+        "net.minecraft:",
+        "net.sf.jopt-simple:",
+        "org.apache.commons:",
+        "org.apache.logging.log4j:",
+        "org.jetbrains:",
+        "org.joml:",
+        "org.lz4:",
+        "org.ow2.asm:",
+        "org.slf4j:",
+        "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedExternalRuntimePrefixes": [
+        "com.github.oshi:",
+        "com.google.code.gson:",
+        "com.google.guava:",
+        "com.mojang:",
+        "commons-io:",
+        "io.github.llamalad7:",
+        "io.netty:",
+        "it.unimi.dsi:",
+        "net.fabricmc:",
+        "net.java.dev.jna:",
+        "net.minecraft:",
+        "net.sf.jopt-simple:",
+        "org.apache.commons:",
+        "org.apache.logging.log4j:",
+        "org.joml:",
+        "org.lz4:",
+        "org.ow2.asm:",
+        "org.slf4j:",
+        "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedForbiddenExternalGroups": ["net.fabricmc", "net.minecraft"],
+      "dependencyPurposes": {
+        "com.github.oshi:": "Fabric server runtime support.",
+        "com.google.code.gson:": "Fabric server runtime support.",
+        "com.google.guava:": "Fabric server runtime support.",
+        "com.mojang:": "Minecraft 1.21.1 server runtime.",
+        "commons-io:": "Minecraft 1.21.1 server runtime.",
+        "io.github.llamalad7:": "Fabric loader runtime support.",
+        "io.netty:": "Minecraft 1.21.1 networking runtime.",
+        "it.unimi.dsi:": "Minecraft 1.21.1 server runtime.",
+        "net.fabricmc:": "Locked Fabric loader and mappings.",
+        "net.java.dev.jna:": "Minecraft 1.21.1 server runtime.",
+        "net.minecraft:": "Locked Minecraft 1.21.1 runtime.",
+        "net.sf.jopt-simple:": "Minecraft 1.21.1 server runtime.",
+        "org.apache.commons:": "Minecraft 1.21.1 server runtime.",
+        "org.apache.logging.log4j:": "Minecraft 1.21.1 logging runtime.",
+        "org.joml:": "Minecraft 1.21.1 math runtime.",
+        "org.lz4:": "Minecraft 1.21.1 compression runtime.",
+        "org.ow2.asm:": "Fabric loader bytecode runtime.",
+        "org.jetbrains:": "Locked Fabric/Minecraft annotations.",
+        "org.slf4j:": "Fabric/Minecraft logging runtime.",
+        "remapped.net.fabricmc.fabric-api:": "Locked Fabric API lifecycle runtime."
+      },
+      "allowedFileDependencyHashes": {
+        ".gradle/caches/fabric-loom/1.21.1/net.fabricmc.yarn.1_21_1.1.21.1+build.3-v2/mappings.jar": "5f84694a54f431788ee98c216f071e1de621e439a869ffaa61d8a64a8b87aad7"
+      },
+      "fileDependencyContract": "contracts/profiles/paper-1.21.1/api-index.json",
+      "additionalFileDependencyContracts": ["contracts/profiles/paper-1.20.1/adventure-providers.json"],
+      "fileDependencyPurpose": "Use the exact locked 1.21.1 Paper API and public Adventure providers; no mutable file dependency is accepted.",
+      "allowedResourcePaths": ["meldrite/api-providers.properties", "craft-abi.json"],
+      "forbiddenPrefixes": [
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    },
+    "v1201-bootstrap": {
+      "path": "versions/v1_20_1/bootstrap",
+      "gradlePath": ":v1201-bootstrap",
+      "allowedProjectDependencies": [":adventure", ":bootstrap-common", ":bridge-spi", ":paper-1201", ":plugin-classloading", ":v1201-bridge"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "allowedExternalCompilePrefixes": [
+        "com.github.oshi:", "com.google.code.gson:", "com.google.guava:", "com.ibm.icu:",
+        "com.mojang:", "commons-codec:", "commons-io:", "commons-logging:",
+        "io.github.llamalad7:", "io.netty:", "it.unimi.dsi:", "net.fabricmc:",
+        "net.java.dev.jna:", "net.minecraft:", "net.sf.jopt-simple:", "org.apache.commons:",
+        "org.apache.httpcomponents:", "org.apache.logging.log4j:", "org.jetbrains:", "org.joml:",
+        "org.lwjgl:", "org.ow2.asm:", "org.slf4j:", "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedExternalRuntimePrefixes": [
+        "com.github.oshi:", "com.google.code.gson:", "com.google.guava:", "com.ibm.icu:",
+        "com.mojang:", "commons-codec:", "commons-io:", "commons-logging:",
+        "io.github.llamalad7:", "io.netty:", "it.unimi.dsi:", "net.fabricmc:",
+        "net.java.dev.jna:", "net.minecraft:", "net.sf.jopt-simple:", "org.apache.commons:",
+        "org.apache.httpcomponents:", "org.apache.logging.log4j:", "org.joml:", "org.lwjgl:",
+        "org.ow2.asm:", "org.slf4j:", "remapped.net.fabricmc.fabric-api:"
+      ],
+      "allowedForbiddenExternalGroups": ["net.fabricmc", "net.minecraft"],
+      "dependencyPurposes": {
+        "com.github.oshi:": "Fabric server runtime support.", "com.google.code.gson:": "Fabric server runtime support.",
+        "com.google.guava:": "Fabric server runtime support.", "com.ibm.icu:": "Fabric server runtime support.",
+        "com.mojang:": "Minecraft 1.20.1 server runtime.", "commons-codec:": "Minecraft 1.20.1 server runtime.",
+        "commons-io:": "Minecraft 1.20.1 server runtime.", "commons-logging:": "Minecraft 1.20.1 server runtime.",
+        "io.github.llamalad7:": "Fabric loader runtime support.", "io.netty:": "Minecraft 1.20.1 networking runtime.",
+        "it.unimi.dsi:": "Minecraft 1.20.1 server runtime.", "net.fabricmc:": "Locked Fabric loader and Fabric API.",
+        "net.java.dev.jna:": "Minecraft 1.20.1 server runtime.", "net.minecraft:": "Locked Minecraft 1.20.1 runtime.",
+        "net.sf.jopt-simple:": "Minecraft 1.20.1 server runtime.", "org.apache.commons:": "Minecraft 1.20.1 server runtime.",
+        "org.apache.httpcomponents:": "Minecraft 1.20.1 server runtime.", "org.apache.logging.log4j:": "Minecraft 1.20.1 logging runtime.",
+        "org.jetbrains:": "Locked Fabric/Minecraft annotations.", "org.joml:": "Minecraft 1.20.1 math runtime.",
+        "org.lwjgl:": "Minecraft 1.20.1 native runtime.", "org.ow2.asm:": "Fabric loader bytecode runtime.",
+        "org.slf4j:": "Fabric/Minecraft logging runtime.", "remapped.net.fabricmc.fabric-api:": "Locked Fabric API 0.92.12 runtime."
+      },
+      "allowedFileDependencyHashes": {
+        "jline-reader-3.25.1.jar": "26333a275de502adf1dd9e6ea50aa0b4021412c71490df9ed5e88a648886ee89",
+        "jline-terminal-3.25.1.jar": "c0f5d70901255da66a94e59778b265d19f9308342578e34c88fc92d1b0c65fef",
+        "jline-terminal-jna-3.25.1.jar": "58ca9d719c373206af15775ee3cd5f268136ea0d0c4e009c3e96a6d4612d5c66",
+        "jline-native-3.25.1.jar": "42d5bbe1f546dea248b8c901da7deb9943f76290379552923c9763495bb9f172",
+        ".gradle/caches/fabric-loom/1.20.1/net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2/mappings.jar": "cba44a40bb16403e0eebe63757f8ad7f0e37c547c5946c7c7c11572f8e568341"
+      },
+      "fileDependencyContract": "contracts/profiles/paper-1.20.1/api-index.json",
+      "fileDependencyPurpose": "Use the exact locked Paper API and public provider artifacts to build the shared API authority; no mutable file dependency is accepted.",
+      "allowedResourcePaths": ["meldrite/api-providers.properties"],
+      "forbiddenPrefixes": [
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ],
+      "allowedReferencePrefixes": {
+        "dev/meldrite/v1201/hook/": ["org.spongepowered.", "org/spongepowered/"]
+      }
+    },
+    "extension-api": {
+      "path": "modules/extension-api",
+      "gradlePath": ":extension-api",
+      "allowedProjectDependencies": [":foundation"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.", "net/minecraft/", "net.fabricmc.", "net/fabricmc/",
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ]
+    },
+    "remap-engine": {
+      "path": "modules/remap-engine",
+      "gradlePath": ":remap-engine",
+      "allowedProjectDependencies": [":foundation"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.", "net/minecraft/", "net.fabricmc.", "net/fabricmc/",
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ]
+    },
+    "compatibility-spi": {
+      "path": "modules/compatibility-spi",
+      "gradlePath": ":compatibility-spi",
+      "allowedProjectDependencies": [":foundation"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.", "net/minecraft/", "net.fabricmc.", "net/fabricmc/",
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ]
+    },
+    "compatibility-engine": {
+      "path": "modules/compatibility-engine",
+      "gradlePath": ":compatibility-engine",
+      "allowedProjectDependencies": [":compatibility-spi"],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.", "net/minecraft/", "net.fabricmc.", "net/fabricmc/",
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ]
+    },
+    "mc1201": {
+      "path": "distributions/mc-1.20.1",
+      "gradlePath": ":mc1201",
+      "allowedProjectDependencies": [],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.", "net/minecraft/", "net.fabricmc.", "net/fabricmc/",
+        "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
+        "com.destroystokyo.paper.", "com/destroystokyo/paper/", "io.papermc.paper.",
+        "io/papermc/paper/", "org.spigotmc.", "org/spigotmc/"
+      ]
+    },
+    "mc1211": {
+      "path": "distributions/mc-1.21.1",
+      "gradlePath": ":mc1211",
+      "allowedProjectDependencies": [],
+      "allowedExternalCompileDependencies": [],
+      "allowedExternalRuntimeDependencies": [],
+      "dependencyPurposes": {},
+      "forbiddenPrefixes": [
+        "net.minecraft.",
+        "net/minecraft/",
+        "net.fabricmc.",
+        "net/fabricmc/",
+        "org.spongepowered.",
+        "org/spongepowered/",
+        "org.bukkit.",
+        "org/bukkit/",
+        "com.destroystokyo.paper.",
+        "com/destroystokyo/paper/",
+        "io.papermc.paper.",
+        "io/papermc/paper/",
+        "org.spigotmc.",
+        "org/spigotmc/"
+      ]
+    }
+  },
+  "forbiddenExternalGroups": [
+    "net.minecraft",
+    "net.fabricmc",
+    "org.spongepowered",
+    "org.bukkit",
+    "com.destroystokyo.paper",
+    "io.papermc.paper",
+    "org.spigotmc"
+  ],
+  "exceptions": [
+    {
+      "module": "testkit-contract",
+      "dependency": "net.fabricmc:mapping-io",
+      "purpose": "Read mapping files in the existing contract tooling; no game or loader implementation classes are used."
+    }
+  ]
+}

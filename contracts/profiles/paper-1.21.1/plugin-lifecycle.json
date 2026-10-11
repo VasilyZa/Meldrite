@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "profile": "paper-1.21.1",
+  "stages": ["load", "enable", "disable"],
+  "constraints": [["load", "enable"], ["enable", "disable"]]
+}

@@ -1,0 +1,1197 @@
+{
+  "schemaVersion" : 1,
+  "provenance" : {
+    "resolvedAt" : "2026-10-05T21:08:56.458827010Z"
+  },
+  "roots" : [ {
+    "coordinate" : "org.junit.jupiter:junit-jupiter:5.11.4",
+    "resolvedVersion" : "5.11.4",
+    "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar",
+    "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.pom",
+    "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.jar",
+    "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter/5.11.4/junit-jupiter-5.11.4.pom",
+    "sha256" : "aa880e4afba87d447357e4c1fc098c5cb1d200cb9403496c00d3b35a5bd0e8db",
+    "pomHash" : "a862df11ee539982efcb141d9c0ade7037bba0265d0b589d5fb84db0d212f1d9",
+    "dependencies" : [ {
+      "coordinate" : "org.junit:junit-bom:5.11.4",
+      "resolvedVersion" : "5.11.4",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+      "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+      "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+      "dependencies" : [ ]
+    }, {
+      "coordinate" : "org.junit.jupiter:junit-jupiter-api:5.11.4",
+      "resolvedVersion" : "5.11.4",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+      "sha256" : "ab83ef9e51ac4597d59d26b4b58812129550e2f579a404c8af7d09f5ce5b4293",
+      "pomHash" : "512d23ff39c76665a1a3645526230bcf889bd49884304f7febe047b018eeb339",
+      "dependencies" : [ {
+        "coordinate" : "org.junit:junit-bom:5.11.4",
+        "resolvedVersion" : "5.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "org.opentest4j:opentest4j:1.3.0",
+        "resolvedVersion" : "1.3.0",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+        "sha256" : "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
+        "pomHash" : "9bf7cffc410f3e8372c2522578df9ca56d9d43bd937e30948706c232a943b355",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "org.junit.platform:junit-platform-commons:1.11.4",
+        "resolvedVersion" : "1.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+        "sha256" : "9edd969b0d0670c54105bc91ae79bd1c6f503e12115faba82073b84c86bbc334",
+        "pomHash" : "cd12d2b7c242f165548ed9c9406160dcedb6080925b47cf731e0fdae5fb4bce2",
+        "dependencies" : [ {
+          "coordinate" : "org.junit:junit-bom:5.11.4",
+          "resolvedVersion" : "5.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+          "resolvedVersion" : "1.1.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+        "resolvedVersion" : "1.1.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+        "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+        "dependencies" : [ ]
+      } ]
+    }, {
+      "coordinate" : "org.junit.jupiter:junit-jupiter-params:5.11.4",
+      "resolvedVersion" : "5.11.4",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-params/5.11.4/junit-jupiter-params-5.11.4.pom",
+      "sha256" : "02a6e015de7ce94ac7f256e7fa05b8091dea861fe79a555a7993313d0f6c7d96",
+      "pomHash" : "8c359bbea07c64a6acdd8c1e13b4f77058b2432b35e86e9a95ddc63249a0ad54",
+      "dependencies" : [ {
+        "coordinate" : "org.junit:junit-bom:5.11.4",
+        "resolvedVersion" : "5.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "org.junit.jupiter:junit-jupiter-api:5.11.4",
+        "resolvedVersion" : "5.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+        "sha256" : "ab83ef9e51ac4597d59d26b4b58812129550e2f579a404c8af7d09f5ce5b4293",
+        "pomHash" : "512d23ff39c76665a1a3645526230bcf889bd49884304f7febe047b018eeb339",
+        "dependencies" : [ {
+          "coordinate" : "org.junit:junit-bom:5.11.4",
+          "resolvedVersion" : "5.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.opentest4j:opentest4j:1.3.0",
+          "resolvedVersion" : "1.3.0",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "sha256" : "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
+          "pomHash" : "9bf7cffc410f3e8372c2522578df9ca56d9d43bd937e30948706c232a943b355",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.junit.platform:junit-platform-commons:1.11.4",
+          "resolvedVersion" : "1.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "sha256" : "9edd969b0d0670c54105bc91ae79bd1c6f503e12115faba82073b84c86bbc334",
+          "pomHash" : "cd12d2b7c242f165548ed9c9406160dcedb6080925b47cf731e0fdae5fb4bce2",
+          "dependencies" : [ {
+            "coordinate" : "org.junit:junit-bom:5.11.4",
+            "resolvedVersion" : "5.11.4",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "dependencies" : [ ]
+          }, {
+            "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+            "resolvedVersion" : "1.1.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+            "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+            "dependencies" : [ ]
+          } ]
+        }, {
+          "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+          "resolvedVersion" : "1.1.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+        "resolvedVersion" : "1.1.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+        "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+        "dependencies" : [ ]
+      } ]
+    }, {
+      "coordinate" : "org.junit.jupiter:junit-jupiter-engine:5.11.4",
+      "resolvedVersion" : "5.11.4",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-engine/5.11.4/junit-jupiter-engine-5.11.4.pom",
+      "sha256" : "cdf8ac59f3fad774ca738ad03890950eeb91833ef0e8908753177edd26f1581c",
+      "pomHash" : "b0a323b0d03444441d13d4630b40db5ef84160d2c2f585d4d646dc3882f99207",
+      "dependencies" : [ {
+        "coordinate" : "org.junit:junit-bom:5.11.4",
+        "resolvedVersion" : "5.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+        "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "org.junit.platform:junit-platform-engine:1.11.4",
+        "resolvedVersion" : "1.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-engine/1.11.4/junit-platform-engine-1.11.4.pom",
+        "sha256" : "b1dd998f64f9acadc15966d9cd3d08074662677b3e390f0a38fcbf0bb4c72330",
+        "pomHash" : "943471579984212fbe69d03edec7c2ff4fbab1888be0b80c265ea70869fd8abd",
+        "dependencies" : [ {
+          "coordinate" : "org.junit:junit-bom:5.11.4",
+          "resolvedVersion" : "5.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.opentest4j:opentest4j:1.3.0",
+          "resolvedVersion" : "1.3.0",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "sha256" : "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
+          "pomHash" : "9bf7cffc410f3e8372c2522578df9ca56d9d43bd937e30948706c232a943b355",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.junit.platform:junit-platform-commons:1.11.4",
+          "resolvedVersion" : "1.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "sha256" : "9edd969b0d0670c54105bc91ae79bd1c6f503e12115faba82073b84c86bbc334",
+          "pomHash" : "cd12d2b7c242f165548ed9c9406160dcedb6080925b47cf731e0fdae5fb4bce2",
+          "dependencies" : [ {
+            "coordinate" : "org.junit:junit-bom:5.11.4",
+            "resolvedVersion" : "5.11.4",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "dependencies" : [ ]
+          }, {
+            "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+            "resolvedVersion" : "1.1.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+            "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+            "dependencies" : [ ]
+          } ]
+        }, {
+          "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+          "resolvedVersion" : "1.1.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "org.junit.jupiter:junit-jupiter-api:5.11.4",
+        "resolvedVersion" : "5.11.4",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.jupiter/junit-jupiter-api/5.11.4/junit-jupiter-api-5.11.4.pom",
+        "sha256" : "ab83ef9e51ac4597d59d26b4b58812129550e2f579a404c8af7d09f5ce5b4293",
+        "pomHash" : "512d23ff39c76665a1a3645526230bcf889bd49884304f7febe047b018eeb339",
+        "dependencies" : [ {
+          "coordinate" : "org.junit:junit-bom:5.11.4",
+          "resolvedVersion" : "5.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+          "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.opentest4j:opentest4j:1.3.0",
+          "resolvedVersion" : "1.3.0",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom",
+          "sha256" : "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
+          "pomHash" : "9bf7cffc410f3e8372c2522578df9ca56d9d43bd937e30948706c232a943b355",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "org.junit.platform:junit-platform-commons:1.11.4",
+          "resolvedVersion" : "1.11.4",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit.platform/junit-platform-commons/1.11.4/junit-platform-commons-1.11.4.pom",
+          "sha256" : "9edd969b0d0670c54105bc91ae79bd1c6f503e12115faba82073b84c86bbc334",
+          "pomHash" : "cd12d2b7c242f165548ed9c9406160dcedb6080925b47cf731e0fdae5fb4bce2",
+          "dependencies" : [ {
+            "coordinate" : "org.junit:junit-bom:5.11.4",
+            "resolvedVersion" : "5.11.4",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.11.4/junit-bom-5.11.4.pom",
+            "sha256" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "pomHash" : "19d4b747b204805325b6334553296f986562277a4ac1cb5e593a5e4c4f5e4115",
+            "dependencies" : [ ]
+          }, {
+            "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+            "resolvedVersion" : "1.1.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+            "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+            "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+            "dependencies" : [ ]
+          } ]
+        }, {
+          "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+          "resolvedVersion" : "1.1.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+          "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+          "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "org.apiguardian:apiguardian-api:1.1.2",
+        "resolvedVersion" : "1.1.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom",
+        "sha256" : "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
+        "pomHash" : "32355081d109095c3d5d374d5a43b4f4c1b75d549e983ef50723e2772e5302a0",
+        "dependencies" : [ ]
+      } ]
+    } ]
+  }, {
+    "coordinate" : "com.fasterxml.jackson.core:jackson-databind:2.18.2",
+    "resolvedVersion" : "2.18.2",
+    "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar",
+    "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.pom",
+    "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar",
+    "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-databind/2.18.2/jackson-databind-2.18.2.pom",
+    "sha256" : "4b364e6850dc89172fcf1d4dd26b8ff5488eda44ff4657e22dd265203dd5ab3c",
+    "pomHash" : "493a3db6447b7a8ecbb3724234c6ce677d72db4b04f6ba008f0ebeaea7be5a9d",
+    "dependencies" : [ {
+      "coordinate" : "com.fasterxml.jackson:jackson-base:2.18.2",
+      "resolvedVersion" : "2.18.2",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+      "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+      "sha256" : "ef574b72f5b48948044f68376b874c88ae09a029dc8e05f64a1c30bdfb6de14a",
+      "pomHash" : "ef574b72f5b48948044f68376b874c88ae09a029dc8e05f64a1c30bdfb6de14a",
+      "dependencies" : [ {
+        "coordinate" : "com.fasterxml.jackson:jackson-bom:2.18.2",
+        "resolvedVersion" : "2.18.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+        "sha256" : "5247cdc301725d3f67f7ef049037289d5af709d6972bcf4b17096e4548d2956b",
+        "pomHash" : "5247cdc301725d3f67f7ef049037289d5af709d6972bcf4b17096e4548d2956b",
+        "dependencies" : [ {
+          "coordinate" : "com.fasterxml.jackson:jackson-parent:2.18.1",
+          "resolvedVersion" : "2.18.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+          "sha256" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+          "pomHash" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+          "dependencies" : [ {
+            "coordinate" : "com.fasterxml:oss-parent:61",
+            "resolvedVersion" : "61",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+            "sha256" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+            "pomHash" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "org.junit:junit-bom:5.10.2",
+        "resolvedVersion" : "5.10.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+        "sha256" : "169dd904a4b0f6520cffe658cc62292bfe9f3c14a989fa92120724cde43a9968",
+        "pomHash" : "169dd904a4b0f6520cffe658cc62292bfe9f3c14a989fa92120724cde43a9968",
+        "dependencies" : [ ]
+      } ]
+    }, {
+      "coordinate" : "com.fasterxml.jackson.core:jackson-annotations:2.18.2",
+      "resolvedVersion" : "2.18.2",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.pom",
+      "sha256" : "581bd61000ef7648943f781ca05689e56d03f6052748365a8e2b3a9b5d3fa32f",
+      "pomHash" : "0b2bd694ea89267eea48126a8a5b24a65234c643387542d24469d195bfba1cf8",
+      "dependencies" : [ {
+        "coordinate" : "com.fasterxml.jackson:jackson-parent:2.18.1",
+        "resolvedVersion" : "2.18.1",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+        "sha256" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+        "pomHash" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+        "dependencies" : [ {
+          "coordinate" : "com.fasterxml:oss-parent:61",
+          "resolvedVersion" : "61",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+          "sha256" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+          "pomHash" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+          "dependencies" : [ ]
+        } ]
+      } ]
+    }, {
+      "coordinate" : "com.fasterxml.jackson.core:jackson-core:2.18.2",
+      "resolvedVersion" : "2.18.2",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-core/2.18.2/jackson-core-2.18.2.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson.core/jackson-core/2.18.2/jackson-core-2.18.2.pom",
+      "sha256" : "d8054ae7c0d1c2d2f55d28e46026ebe5892881f3fab5f439233184381c3b4a1f",
+      "pomHash" : "e065b0039d21f4dfce46bd43104c7d76d5856bd732e2aa860cc5a4a270ed72de",
+      "dependencies" : [ {
+        "coordinate" : "com.fasterxml.jackson:jackson-base:2.18.2",
+        "resolvedVersion" : "2.18.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-base/2.18.2/jackson-base-2.18.2.pom",
+        "sha256" : "ef574b72f5b48948044f68376b874c88ae09a029dc8e05f64a1c30bdfb6de14a",
+        "pomHash" : "ef574b72f5b48948044f68376b874c88ae09a029dc8e05f64a1c30bdfb6de14a",
+        "dependencies" : [ {
+          "coordinate" : "com.fasterxml.jackson:jackson-bom:2.18.2",
+          "resolvedVersion" : "2.18.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-bom/2.18.2/jackson-bom-2.18.2.pom",
+          "sha256" : "5247cdc301725d3f67f7ef049037289d5af709d6972bcf4b17096e4548d2956b",
+          "pomHash" : "5247cdc301725d3f67f7ef049037289d5af709d6972bcf4b17096e4548d2956b",
+          "dependencies" : [ {
+            "coordinate" : "com.fasterxml.jackson:jackson-parent:2.18.1",
+            "resolvedVersion" : "2.18.1",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml.jackson/jackson-parent/2.18.1/jackson-parent-2.18.1.pom",
+            "sha256" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+            "pomHash" : "d0822fac1a0226844b8ad445c920c49a4f619169d09b1010a7dfeed19910998c",
+            "dependencies" : [ {
+              "coordinate" : "com.fasterxml:oss-parent:61",
+              "resolvedVersion" : "61",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/com/fasterxml/oss-parent/61/oss-parent-61.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/com.fasterxml/oss-parent/61/oss-parent-61.pom",
+              "sha256" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+              "pomHash" : "3649513cf597e9186da0855986a8c543e12bdbd805edeef9c124db56dd036544",
+              "dependencies" : [ ]
+            } ]
+          } ]
+        }, {
+          "coordinate" : "org.junit:junit-bom:5.10.2",
+          "resolvedVersion" : "5.10.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.junit/junit-bom/5.10.2/junit-bom-5.10.2.pom",
+          "sha256" : "169dd904a4b0f6520cffe658cc62292bfe9f3c14a989fa92120724cde43a9968",
+          "pomHash" : "169dd904a4b0f6520cffe658cc62292bfe9f3c14a989fa92120724cde43a9968",
+          "dependencies" : [ ]
+        } ]
+      } ]
+    } ]
+  }, {
+    "coordinate" : "org.ow2.asm:asm:9.7.1",
+    "resolvedVersion" : "9.7.1",
+    "sourceUrl" : "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1.jar",
+    "pomUrl" : "https://repo.maven.apache.org/maven2/org/ow2/asm/asm/9.7.1/asm-9.7.1.pom",
+    "cachePath" : ".gradle/meldrite/artifacts/org.ow2.asm/asm/9.7.1/asm-9.7.1.jar",
+    "pomCachePath" : ".gradle/meldrite/artifacts/org.ow2.asm/asm/9.7.1/asm-9.7.1.pom",
+    "sha256" : "8cadd43ac5eb6d09de05faecca38b917a040bb9139c7edeb4cc81c740b713281",
+    "pomHash" : "7229b03b30a73ee91008072d9e4569a51d8547fae8c50f527841aef4c1b0baa8",
+    "dependencies" : [ {
+      "coordinate" : "org.ow2:ow2:1.5.1",
+      "resolvedVersion" : "1.5.1",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/ow2/ow2/1.5.1/ow2-1.5.1.pom",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/ow2/ow2/1.5.1/ow2-1.5.1.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.ow2/ow2/1.5.1/ow2-1.5.1.pom",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.ow2/ow2/1.5.1/ow2-1.5.1.pom",
+      "sha256" : "321ddbb7ee6fe4f53dea6b4cd6db74154d6bfa42391c1f763b361b9f485acf05",
+      "pomHash" : "321ddbb7ee6fe4f53dea6b4cd6db74154d6bfa42391c1f763b361b9f485acf05",
+      "dependencies" : [ ]
+    } ]
+  }, {
+    "coordinate" : "net.fabricmc:mapping-io:0.6.1",
+    "resolvedVersion" : "0.6.1",
+    "sourceUrl" : "https://repo.maven.apache.org/maven2/net/fabricmc/mapping-io/0.6.1/mapping-io-0.6.1.jar",
+    "pomUrl" : "https://repo.maven.apache.org/maven2/net/fabricmc/mapping-io/0.6.1/mapping-io-0.6.1.pom",
+    "cachePath" : ".gradle/meldrite/artifacts/net.fabricmc/mapping-io/0.6.1/mapping-io-0.6.1.jar",
+    "pomCachePath" : ".gradle/meldrite/artifacts/net.fabricmc/mapping-io/0.6.1/mapping-io-0.6.1.pom",
+    "sha256" : "34dd7ea27487ef35d70003509c1b4887ff5f8bff720a3439812ae1be7525e53b",
+    "pomHash" : "7bb8c20d6a9c947f06717cca56399d1da7adb726fd8cf3af27b895567724adab",
+    "dependencies" : [ ]
+  }, {
+    "coordinate" : "com.github.siom79.japicmp:japicmp:0.23.1",
+    "resolvedVersion" : "0.23.1",
+    "sourceUrl" : "https://repo.maven.apache.org/maven2/com/github/siom79/japicmp/japicmp/0.23.1/japicmp-0.23.1.jar",
+    "pomUrl" : "https://repo.maven.apache.org/maven2/com/github/siom79/japicmp/japicmp/0.23.1/japicmp-0.23.1.pom",
+    "cachePath" : ".gradle/meldrite/artifacts/com.github.siom79.japicmp/japicmp/0.23.1/japicmp-0.23.1.jar",
+    "pomCachePath" : ".gradle/meldrite/artifacts/com.github.siom79.japicmp/japicmp/0.23.1/japicmp-0.23.1.pom",
+    "sha256" : "b10a17dc1301666afdaba474211eef6a5aac9de064b3d1b88420ba3ac2beca79",
+    "pomHash" : "1a24e82e3f59ebce2a738cb9b0b6eddb978957831e753ebac9d7c182c0b92554",
+    "dependencies" : [ {
+      "coordinate" : "com.github.siom79.japicmp:japicmp-base:0.23.1",
+      "resolvedVersion" : "0.23.1",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/com/github/siom79/japicmp/japicmp-base/0.23.1/japicmp-base-0.23.1.pom",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/com/github/siom79/japicmp/japicmp-base/0.23.1/japicmp-base-0.23.1.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/com.github.siom79.japicmp/japicmp-base/0.23.1/japicmp-base-0.23.1.pom",
+      "pomCachePath" : ".gradle/meldrite/artifacts/com.github.siom79.japicmp/japicmp-base/0.23.1/japicmp-base-0.23.1.pom",
+      "sha256" : "bb262ce2d94ecd71637060c30d452c2e7760d2a04fcafe6a8c46442a2056d117",
+      "pomHash" : "bb262ce2d94ecd71637060c30d452c2e7760d2a04fcafe6a8c46442a2056d117",
+      "dependencies" : [ ]
+    }, {
+      "coordinate" : "org.javassist:javassist:3.30.2-GA",
+      "resolvedVersion" : "3.30.2-GA",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/javassist/javassist/3.30.2-GA/javassist-3.30.2-GA.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/javassist/javassist/3.30.2-GA/javassist-3.30.2-GA.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.javassist/javassist/3.30.2-GA/javassist-3.30.2-GA.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.javassist/javassist/3.30.2-GA/javassist-3.30.2-GA.pom",
+      "sha256" : "eba37290994b5e4868f3af98ff113f6244a6b099385d9ad46881307d3cb01aaf",
+      "pomHash" : "4227851cb70e43f73aced8bffe692de3ae4412c4a62dcdff055e513ee3d801a3",
+      "dependencies" : [ ]
+    }, {
+      "coordinate" : "com.google.guava:guava:33.0.0-jre",
+      "resolvedVersion" : "33.0.0-jre",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.0.0-jre/guava-33.0.0-jre.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.0.0-jre/guava-33.0.0-jre.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava/33.0.0-jre/guava-33.0.0-jre.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava/33.0.0-jre/guava-33.0.0-jre.pom",
+      "sha256" : "f4d85c3e4d411694337cb873abea09b242b664bb013320be6105327c45991537",
+      "pomHash" : "fd70b14c441986c22e6d22ced2576787756be4918b145a8abd223e3a80b6e32d",
+      "dependencies" : [ {
+        "coordinate" : "com.google.guava:guava-parent:33.0.0-jre",
+        "resolvedVersion" : "33.0.0-jre",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.0.0-jre/guava-parent-33.0.0-jre.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.0.0-jre/guava-parent-33.0.0-jre.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/33.0.0-jre/guava-parent-33.0.0-jre.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/33.0.0-jre/guava-parent-33.0.0-jre.pom",
+        "sha256" : "040cc88c680b413d70ba9fc8371b36093021b10996aa3598621de767d418229a",
+        "pomHash" : "040cc88c680b413d70ba9fc8371b36093021b10996aa3598621de767d418229a",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "com.google.guava:failureaccess:1.0.2",
+        "resolvedVersion" : "1.0.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/failureaccess/1.0.2/failureaccess-1.0.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/failureaccess/1.0.2/failureaccess-1.0.2.pom",
+        "sha256" : "8a8f81cf9b359e3f6dfa691a1e776985c061ef2f223c9b2c80753e1b458e8064",
+        "pomHash" : "19ebc6f4bdb4edbb3d07b6ee994f846b54ef295582a9b5634719ffa9f31d03b2",
+        "dependencies" : [ {
+          "coordinate" : "com.google.guava:guava-parent:26.0-android",
+          "resolvedVersion" : "26.0-android",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "sha256" : "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04",
+          "pomHash" : "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04",
+          "dependencies" : [ {
+            "coordinate" : "org.sonatype.oss:oss-parent:9",
+            "resolvedVersion" : "9",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+            "sha256" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+            "pomHash" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
+        "resolvedVersion" : "9999.0-empty-to-avoid-conflict-with-guava",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom",
+        "sha256" : "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "pomHash" : "18d4b1db26153d4e55079ce1f76bb1fe05cdb862ef9954a88cbcc4ff38b8679b",
+        "dependencies" : [ {
+          "coordinate" : "com.google.guava:guava-parent:26.0-android",
+          "resolvedVersion" : "26.0-android",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.google.guava/guava-parent/26.0-android/guava-parent-26.0-android.pom",
+          "sha256" : "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04",
+          "pomHash" : "f8698ab46ca996ce889c1afc8ca4f25eb8ac6b034dc898d4583742360016cc04",
+          "dependencies" : [ {
+            "coordinate" : "org.sonatype.oss:oss-parent:9",
+            "resolvedVersion" : "9",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+            "sha256" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+            "pomHash" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "com.google.code.findbugs:jsr305:3.0.2",
+        "resolvedVersion" : "3.0.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.code.findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.code.findbugs/jsr305/3.0.2/jsr305-3.0.2.pom",
+        "sha256" : "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "pomHash" : "19889dbdf1b254b2601a5ee645b8147a974644882297684c798afe5d63d78dfe",
+        "dependencies" : [ {
+          "coordinate" : "org.sonatype.oss:oss-parent:7",
+          "resolvedVersion" : "7",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/7/oss-parent-7.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/7/oss-parent-7.pom",
+          "sha256" : "b51f8867c92b6a722499557fc3a1fdea77bdf9ef574722fe90ce436a29559454",
+          "pomHash" : "b51f8867c92b6a722499557fc3a1fdea77bdf9ef574722fe90ce436a29559454",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "org.checkerframework:checker-qual:3.41.0",
+        "resolvedVersion" : "3.41.0",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.41.0/checker-qual-3.41.0.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/3.41.0/checker-qual-3.41.0.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.checkerframework/checker-qual/3.41.0/checker-qual-3.41.0.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.checkerframework/checker-qual/3.41.0/checker-qual-3.41.0.pom",
+        "sha256" : "2f9f245bf68e4259d610894f2406dc1f6363dc639302bd566e8272e4f4541172",
+        "pomHash" : "5c73b0770540842cf06a01d264bbb89ae5e248669dc9da80e861e8233dd4675b",
+        "dependencies" : [ ]
+      }, {
+        "coordinate" : "com.google.errorprone:error_prone_annotations:2.23.0",
+        "resolvedVersion" : "2.23.0",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.23.0/error_prone_annotations-2.23.0.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.23.0/error_prone_annotations-2.23.0.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.errorprone/error_prone_annotations/2.23.0/error_prone_annotations-2.23.0.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.errorprone/error_prone_annotations/2.23.0/error_prone_annotations-2.23.0.pom",
+        "sha256" : "ec6f39f068b6ff9ac323c68e28b9299f8c0a80ca512dccb1d4a70f40ac3ec054",
+        "pomHash" : "d5abb17f231b63bf009358fa640281b744810cb9587e5994977834959c07dbd8",
+        "dependencies" : [ {
+          "coordinate" : "com.google.errorprone:error_prone_parent:2.23.0",
+          "resolvedVersion" : "2.23.0",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.23.0/error_prone_parent-2.23.0.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.23.0/error_prone_parent-2.23.0.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.google.errorprone/error_prone_parent/2.23.0/error_prone_parent-2.23.0.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.google.errorprone/error_prone_parent/2.23.0/error_prone_parent-2.23.0.pom",
+          "sha256" : "f5470a4b3104fe309fbe94a80d16c3c54d20f748f4c5de4f68a428688f30cbd4",
+          "pomHash" : "f5470a4b3104fe309fbe94a80d16c3c54d20f748f4c5de4f68a428688f30cbd4",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "com.google.j2objc:j2objc-annotations:2.8",
+        "resolvedVersion" : "2.8",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.google.j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.google.j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.pom",
+        "sha256" : "f02a95fa1a5e95edb3ed859fd0fb7df709d121a35290eff8b74dce2ab7f4d6ed",
+        "pomHash" : "37f87798b18385113c918bfa9e1276fe50735ef8fa849b5800c519d54dbf11f8",
+        "dependencies" : [ {
+          "coordinate" : "org.sonatype.oss:oss-parent:9",
+          "resolvedVersion" : "9",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.sonatype.oss/oss-parent/9/oss-parent-9.pom",
+          "sha256" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+          "pomHash" : "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+          "dependencies" : [ ]
+        } ]
+      } ]
+    }, {
+      "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2",
+      "resolvedVersion" : "2.3.2",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+      "sha256" : "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea",
+      "pomHash" : "b537b388dbab4cc0690b9d2fb0c74124d672531734567acf6e53130eab131ad6",
+      "dependencies" : [ {
+        "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api-parent:2.3.2",
+        "resolvedVersion" : "2.3.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+        "sha256" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+        "pomHash" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+        "dependencies" : [ {
+          "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+          "resolvedVersion" : "1.0.5",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+          "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+          "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+          "dependencies" : [ ]
+        } ]
+      }, {
+        "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+        "resolvedVersion" : "1.2.1",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+        "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+        "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.activation:all:1.2.1",
+          "resolvedVersion" : "1.2.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+          "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+          "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+          "dependencies" : [ {
+            "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+            "resolvedVersion" : "1.0.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+            "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+            "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      } ]
+    }, {
+      "coordinate" : "org.glassfish.jaxb:jaxb-runtime:2.3.2",
+      "resolvedVersion" : "2.3.2",
+      "sourceUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.jar",
+      "pomUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom",
+      "cachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.jar",
+      "pomCachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-runtime/2.3.2/jaxb-runtime-2.3.2.pom",
+      "sha256" : "e6e0a1e89fb6ff786279e6a0082d5cef52dc2ebe67053d041800737652b4fd1b",
+      "pomHash" : "9448a5ad7fa68a6083dfbe4f42c8c83e082b9202a105401fc68e944c26548b34",
+      "dependencies" : [ {
+        "coordinate" : "com.sun.xml.bind.mvn:jaxb-runtime-parent:2.3.2",
+        "resolvedVersion" : "2.3.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-runtime-parent/2.3.2/jaxb-runtime-parent-2.3.2.pom",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-runtime-parent/2.3.2/jaxb-runtime-parent-2.3.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-runtime-parent/2.3.2/jaxb-runtime-parent-2.3.2.pom",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-runtime-parent/2.3.2/jaxb-runtime-parent-2.3.2.pom",
+        "sha256" : "b24f8d51f184a68bc1b86d48c0e3cfefeb21a44ede1c5f7303c58ae0488533ec",
+        "pomHash" : "b24f8d51f184a68bc1b86d48c0e3cfefeb21a44ede1c5f7303c58ae0488533ec",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.xml.bind.mvn:jaxb-parent:2.3.2",
+          "resolvedVersion" : "2.3.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+          "sha256" : "20dd6dc34ab7549ac40da1d82e92222ec4347ad0ec0cb118ef6c5703bed53a18",
+          "pomHash" : "20dd6dc34ab7549ac40da1d82e92222ec4347ad0ec0cb118ef6c5703bed53a18",
+          "dependencies" : [ {
+            "coordinate" : "com.sun.xml.bind:jaxb-bom-ext:2.3.2",
+            "resolvedVersion" : "2.3.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+            "sha256" : "1a7dec2b27e7e055744cdb8cf1b90def4fd473acd1b804eff098139358959bd7",
+            "pomHash" : "1a7dec2b27e7e055744cdb8cf1b90def4fd473acd1b804eff098139358959bd7",
+            "dependencies" : [ {
+              "coordinate" : "org.glassfish.jaxb:jaxb-bom:2.3.2",
+              "resolvedVersion" : "2.3.2",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+              "sha256" : "a1018bb54678ed9f5acb2f7a4084e385ff510201f4e9dbf5f75dc6a675f66be7",
+              "pomHash" : "a1018bb54678ed9f5acb2f7a4084e385ff510201f4e9dbf5f75dc6a675f66be7",
+              "dependencies" : [ {
+                "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+                "resolvedVersion" : "1.0.5",
+                "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+                "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+                "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+                "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+                "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+                "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+                "dependencies" : [ ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2",
+        "resolvedVersion" : "2.3.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+        "sha256" : "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea",
+        "pomHash" : "b537b388dbab4cc0690b9d2fb0c74124d672531734567acf6e53130eab131ad6",
+        "dependencies" : [ {
+          "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api-parent:2.3.2",
+          "resolvedVersion" : "2.3.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+          "sha256" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+          "pomHash" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+          "dependencies" : [ {
+            "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+            "resolvedVersion" : "1.0.5",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "dependencies" : [ ]
+          } ]
+        }, {
+          "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+          "resolvedVersion" : "1.2.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+          "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+          "dependencies" : [ {
+            "coordinate" : "com.sun.activation:all:1.2.1",
+            "resolvedVersion" : "1.2.1",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "dependencies" : [ {
+              "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+              "resolvedVersion" : "1.0.2",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "dependencies" : [ ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "org.glassfish.jaxb:txw2:2.3.2",
+        "resolvedVersion" : "2.3.2",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/2.3.2/txw2-2.3.2.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/txw2/2.3.2/txw2-2.3.2.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/txw2/2.3.2/txw2-2.3.2.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/txw2/2.3.2/txw2-2.3.2.pom",
+        "sha256" : "4a6a9f483388d461b81aa9a28c685b8b74c0597993bf1884b04eddbca95f48fe",
+        "pomHash" : "a79dd002fb038183ff286a2635be2e68c103b87e0e64717d8d44bfd017fd33ea",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.xml.bind.mvn:jaxb-txw-parent:2.3.2",
+          "resolvedVersion" : "2.3.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-txw-parent/2.3.2/jaxb-txw-parent-2.3.2.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-txw-parent/2.3.2/jaxb-txw-parent-2.3.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-txw-parent/2.3.2/jaxb-txw-parent-2.3.2.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-txw-parent/2.3.2/jaxb-txw-parent-2.3.2.pom",
+          "sha256" : "b55d3efa9b158f483a30e92c78ccb600f93314733d089eba9b74436f01b314a4",
+          "pomHash" : "b55d3efa9b158f483a30e92c78ccb600f93314733d089eba9b74436f01b314a4",
+          "dependencies" : [ {
+            "coordinate" : "com.sun.xml.bind.mvn:jaxb-parent:2.3.2",
+            "resolvedVersion" : "2.3.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind.mvn/jaxb-parent/2.3.2/jaxb-parent-2.3.2.pom",
+            "sha256" : "20dd6dc34ab7549ac40da1d82e92222ec4347ad0ec0cb118ef6c5703bed53a18",
+            "pomHash" : "20dd6dc34ab7549ac40da1d82e92222ec4347ad0ec0cb118ef6c5703bed53a18",
+            "dependencies" : [ {
+              "coordinate" : "com.sun.xml.bind:jaxb-bom-ext:2.3.2",
+              "resolvedVersion" : "2.3.2",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.bind/jaxb-bom-ext/2.3.2/jaxb-bom-ext-2.3.2.pom",
+              "sha256" : "1a7dec2b27e7e055744cdb8cf1b90def4fd473acd1b804eff098139358959bd7",
+              "pomHash" : "1a7dec2b27e7e055744cdb8cf1b90def4fd473acd1b804eff098139358959bd7",
+              "dependencies" : [ {
+                "coordinate" : "org.glassfish.jaxb:jaxb-bom:2.3.2",
+                "resolvedVersion" : "2.3.2",
+                "sourceUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+                "pomUrl" : "https://repo.maven.apache.org/maven2/org/glassfish/jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+                "cachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+                "pomCachePath" : ".gradle/meldrite/artifacts/org.glassfish.jaxb/jaxb-bom/2.3.2/jaxb-bom-2.3.2.pom",
+                "sha256" : "a1018bb54678ed9f5acb2f7a4084e385ff510201f4e9dbf5f75dc6a675f66be7",
+                "pomHash" : "a1018bb54678ed9f5acb2f7a4084e385ff510201f4e9dbf5f75dc6a675f66be7",
+                "dependencies" : [ {
+                  "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+                  "resolvedVersion" : "1.0.5",
+                  "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+                  "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+                  "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+                  "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+                  "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+                  "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+                  "dependencies" : [ ]
+                } ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "com.sun.istack:istack-commons-runtime:3.0.8",
+        "resolvedVersion" : "3.0.8",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/istack/istack-commons-runtime/3.0.8/istack-commons-runtime-3.0.8.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/istack/istack-commons-runtime/3.0.8/istack-commons-runtime-3.0.8.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.sun.istack/istack-commons-runtime/3.0.8/istack-commons-runtime-3.0.8.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.istack/istack-commons-runtime/3.0.8/istack-commons-runtime-3.0.8.pom",
+        "sha256" : "4ffabb06be454a05e4398e20c77fa2b6308d4b88dfbef7ca30a76b5b7d5505ef",
+        "pomHash" : "c2e014d34cb84ed287d064986c45c305a4124228a7337eccf6c421d14d708f1c",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.istack:istack-commons:3.0.8",
+          "resolvedVersion" : "3.0.8",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/istack/istack-commons/3.0.8/istack-commons-3.0.8.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/istack/istack-commons/3.0.8/istack-commons-3.0.8.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.istack/istack-commons/3.0.8/istack-commons-3.0.8.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.istack/istack-commons/3.0.8/istack-commons-3.0.8.pom",
+          "sha256" : "a0f0517e8512f0fbcc7b8295c12f6566a3d0c2d86d655639dc662ef8c0c7ebe5",
+          "pomHash" : "a0f0517e8512f0fbcc7b8295c12f6566a3d0c2d86d655639dc662ef8c0c7ebe5",
+          "dependencies" : [ {
+            "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+            "resolvedVersion" : "1.0.5",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "dependencies" : [ ]
+          } ]
+        }, {
+          "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+          "resolvedVersion" : "1.2.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+          "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+          "dependencies" : [ {
+            "coordinate" : "com.sun.activation:all:1.2.1",
+            "resolvedVersion" : "1.2.1",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "dependencies" : [ {
+              "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+              "resolvedVersion" : "1.0.2",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "dependencies" : [ ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "org.jvnet.staxex:stax-ex:1.8.1",
+        "resolvedVersion" : "1.8.1",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8.1/stax-ex-1.8.1.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/org/jvnet/staxex/stax-ex/1.8.1/stax-ex-1.8.1.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/org.jvnet.staxex/stax-ex/1.8.1/stax-ex-1.8.1.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/org.jvnet.staxex/stax-ex/1.8.1/stax-ex-1.8.1.pom",
+        "sha256" : "20522549056e9e50aa35ef0b445a2e47a53d06be0b0a9467d704e2483ffb049a",
+        "pomHash" : "8fc84f36ce6da6ce8c893b6538199a7f69a69a0706d9b17a3ee6a3a09452eed6",
+        "dependencies" : [ {
+          "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+          "resolvedVersion" : "1.0.5",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+          "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+          "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+          "dependencies" : [ ]
+        }, {
+          "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+          "resolvedVersion" : "1.2.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+          "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+          "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+          "dependencies" : [ {
+            "coordinate" : "com.sun.activation:all:1.2.1",
+            "resolvedVersion" : "1.2.1",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+            "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+            "dependencies" : [ {
+              "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+              "resolvedVersion" : "1.0.2",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+              "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+              "dependencies" : [ ]
+            } ]
+          } ]
+        }, {
+          "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2",
+          "resolvedVersion" : "2.3.2",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+          "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.pom",
+          "sha256" : "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea",
+          "pomHash" : "b537b388dbab4cc0690b9d2fb0c74124d672531734567acf6e53130eab131ad6",
+          "dependencies" : [ {
+            "coordinate" : "jakarta.xml.bind:jakarta.xml.bind-api-parent:2.3.2",
+            "resolvedVersion" : "2.3.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.xml.bind/jakarta.xml.bind-api-parent/2.3.2/jakarta.xml.bind-api-parent-2.3.2.pom",
+            "sha256" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+            "pomHash" : "15a55b7d537c9f9970aead28d2af97c059f65ff6102f76bbd29f1247dd8a6dfb",
+            "dependencies" : [ {
+              "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+              "resolvedVersion" : "1.0.5",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+              "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+              "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+              "dependencies" : [ ]
+            } ]
+          }, {
+            "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+            "resolvedVersion" : "1.2.1",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+            "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+            "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+            "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+            "dependencies" : [ {
+              "coordinate" : "com.sun.activation:all:1.2.1",
+              "resolvedVersion" : "1.2.1",
+              "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+              "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+              "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+              "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+              "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+              "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+              "dependencies" : [ {
+                "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+                "resolvedVersion" : "1.0.2",
+                "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+                "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+                "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+                "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+                "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+                "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+                "dependencies" : [ ]
+              } ]
+            } ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "com.sun.xml.fastinfoset:FastInfoset:1.2.16",
+        "resolvedVersion" : "1.2.16",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/fastinfoset/FastInfoset/1.2.16/FastInfoset-1.2.16.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/fastinfoset/FastInfoset/1.2.16/FastInfoset-1.2.16.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.fastinfoset/FastInfoset/1.2.16/FastInfoset-1.2.16.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.fastinfoset/FastInfoset/1.2.16/FastInfoset-1.2.16.pom",
+        "sha256" : "056f3a1e144409f21ed16afc26805f58e9a21f3fce1543c42d400719d250c511",
+        "pomHash" : "e147d258ab6e6691f70599a952400e6e6c7558f8c9c028dbe1be23178308e830",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.xml.fastinfoset:fastinfoset-project:1.2.16",
+          "resolvedVersion" : "1.2.16",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/fastinfoset/fastinfoset-project/1.2.16/fastinfoset-project-1.2.16.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/xml/fastinfoset/fastinfoset-project/1.2.16/fastinfoset-project-1.2.16.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.xml.fastinfoset/fastinfoset-project/1.2.16/fastinfoset-project-1.2.16.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.xml.fastinfoset/fastinfoset-project/1.2.16/fastinfoset-project-1.2.16.pom",
+          "sha256" : "90582425adc1f40b41362dafb95173931225acaa5e79620d5e6bd52f646292ba",
+          "pomHash" : "90582425adc1f40b41362dafb95173931225acaa5e79620d5e6bd52f646292ba",
+          "dependencies" : [ {
+            "coordinate" : "org.eclipse.ee4j:project:1.0.5",
+            "resolvedVersion" : "1.0.5",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.5/project-1.0.5.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.5/project-1.0.5.pom",
+            "sha256" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "pomHash" : "916b4794d8d8220a59a3fdf6a64dbe794aeb23395e888b81ae36a9b5a2c591a6",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      }, {
+        "coordinate" : "jakarta.activation:jakarta.activation-api:1.2.1",
+        "resolvedVersion" : "1.2.1",
+        "sourceUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "pomUrl" : "https://repo.maven.apache.org/maven2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+        "cachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "pomCachePath" : ".gradle/meldrite/artifacts/jakarta.activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.pom",
+        "sha256" : "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b",
+        "pomHash" : "42585cb07dda7f23aa04eb5e0940061944a246a67ad3d16942fbe569ff03cd31",
+        "dependencies" : [ {
+          "coordinate" : "com.sun.activation:all:1.2.1",
+          "resolvedVersion" : "1.2.1",
+          "sourceUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+          "pomUrl" : "https://repo.maven.apache.org/maven2/com/sun/activation/all/1.2.1/all-1.2.1.pom",
+          "cachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+          "pomCachePath" : ".gradle/meldrite/artifacts/com.sun.activation/all/1.2.1/all-1.2.1.pom",
+          "sha256" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+          "pomHash" : "360883bf64486ecef161b8f282f6503536dd1a670d53a0a871c8fb20170e6795",
+          "dependencies" : [ {
+            "coordinate" : "org.eclipse.ee4j:project:1.0.2",
+            "resolvedVersion" : "1.0.2",
+            "sourceUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+            "pomUrl" : "https://repo.maven.apache.org/maven2/org/eclipse/ee4j/project/1.0.2/project-1.0.2.pom",
+            "cachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+            "pomCachePath" : ".gradle/meldrite/artifacts/org.eclipse.ee4j/project/1.0.2/project-1.0.2.pom",
+            "sha256" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+            "pomHash" : "7495a07a797e88e43c3bc1a87421bd8b1fc55e32291fa18e4e32d8031ddc873f",
+            "dependencies" : [ ]
+          } ]
+        } ]
+      } ]
+    } ]
+  } ]
+}

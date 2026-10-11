@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "profile": "paper-1.20.1",
+  "actions": ["mod-register-service", "plugin-query-content", "plugin-load-private-mod-class", "dual-descriptor-jar", "protected-break-unrepresentable-item"],
+  "boundaries": {
+    "privateModClass": "DENIED",
+    "dualDescriptorJar": "REJECTED",
+    "protectedAction": "ABORTED_WITH_DATA_INTACT"
+  }
+}

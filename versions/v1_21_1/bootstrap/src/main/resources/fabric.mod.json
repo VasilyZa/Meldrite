@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "meldrite",
+  "version": "${version}",
+  "name": "Meldrite",
+  "description": "Meldrite Fabric 1.21.1 bootstrap",
+  "environment": "server",
+  "entrypoints": {"main": ["dev.meldrite.v1211.bootstrap.MeldriteInitializer"]},
+  "mixins": ["meldrite.mixins.json"],
+  "accessWidener": "meldrite.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "1.21.1",
+    "java": ">=21",
+    "fabric-api-base": "*"
+  }
+}

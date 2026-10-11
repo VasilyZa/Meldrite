@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "mc-1.21.1",
+  "minecraftVersion": "1.21.1",
+  "profile": "paper-1.21.1",
+  "javaFeature": 21,
+  "mappingNamespace": "intermediary",
+  "eulaPath": "eula.txt",
+  "artifact": {"path": "distributions/mc-1.21.1/build/mods/meldrite.jar", "sha256": ""},
+  "runtime": {"modJars": [], "classpath": []},
+  "toolchain": {
+    "loom": "1.17.21",
+    "loader": "0.19.5",
+    "fabricApi": "fabric-lifecycle-events-v1:2.3.12+6c1df3606a",
+    "yarn": "1.21.1+build.3:v2"
+  },
+  "launch": {
+    "named": ["{root}/gradlew", "--no-daemon", "-p", "{root}", "-Pmeldrite.serverDir={serverDir}", "-Pmeldrite.gameJavaHome={gameJavaHome}", ":v1211-bootstrap:runServer", "--args=--nogui --port {port}"],
+    "intermediary": ["{java}", "-Xmx1G", "-XX:ActiveProcessorCount=4", "-cp", "{runtimeClasspath}", "net.fabricmc.loader.impl.launch.server.FabricServerLauncher", "--nogui", "--port {port}"]
+  }
+}

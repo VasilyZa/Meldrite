@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "profile": "paper-1.20.1",
+  "status": "IMPLEMENTED_WITH_COMPILED_PLUGIN_FIXTURES",
+  "sourceReferenceCommit": "773dd724469bae89d0c2075edc3d1ddc8d5b0b18",
+  "binarySourceCorrespondence": "REFERENCE_ONLY",
+  "officialServerTrace": "PENDING_V2_Q1",
+  "definitionAuthority": "Exact locked API/public dependency providers; plugin private definitions cannot replace them",
+  "phases": [
+    "loader",
+    "bootstrap",
+    "construct",
+    "load",
+    "enable",
+    "disable"
+  ],
+  "loader": "Separate temporary realm; declarations are verified against a complete pinned coordinate/SHA dependency graph before entering the private library realm",
+  "bootstrapAndPlugin": "Reuse one ConfiguredPluginClassLoader and one private library realm; refresh phase visibility without copying shared runtime algorithms",
+  "initialization": "JavaPlugin constructor calls ConfiguredPluginClassLoader.init once; the pinned API also requires the PluginLoader service provider",
+  "groupProtocol": "Explicit owned classloaders, phase-dependent access, query flags, add/remove filtering, nullable absent-class result according to pinned ABI",
+  "cleanup": "Provider preparation failure closes prior realms; failed bootstrap blocks required dependents before construction; scopes own final realms",
+  "knownDifferences": [
+    "Human-required architecture fails onLoad and blocks required dependents; the reference Paper source catches onLoad errors and continues enabling. Do not claim complete baseline lifecycle equivalence."
+  ],
+  "currentLimits": [
+    "World denial is verified against the typed test host; native lifecycle/world availability remains S1/V1/V2/Q1 work.",
+    "Runtime library resolver executes prelocked dependency graphs and explicit repositories. It does not infer mutable versions, trust unknown hashes or claim unrestricted MavenLibraryResolver compatibility.",
+    "Deprecated PluginLoader listener construction is explicitly unavailable until S4; plugin-management delegates require S7e services.",
+    "Exact official Paper/Meldrite server traces, native effects and API supported-symbol evidence remain pending."
+  ],
+  "futureExtension": "A separate profile may supply new provider and handshake adapters. Shared classloading/runtime/lifecycle algorithms remain singular."
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "minecraft": {
+    "version": "1.20.1",
+    "serverJarSha256": "3af73a9dc5a102e38147946360dd27d4d70bae7055bf91cf2151cd5d121b79e0"
+  },
+  "java": {
+    "feature": 17
+  },
+  "artifacts": [
+    {
+      "coordinate": "net.fabricmc:fabric-loom:1.17.21",
+      "sha256": "89c08938d865621172e3fb31036081399b2731a4971f599b42724b2509ff5b64",
+      "source": "https://maven.fabricmc.net/net/fabricmc/fabric-loom/1.17.21/fabric-loom-1.17.21.jar"
+    },
+    {
+      "coordinate": "net.fabricmc:yarn:1.20.1+build.10:v2",
+      "sha256": "5444b470f35b892862908bb27314c0b5b325369fd60896d8d809e635d5371bea",
+      "source": "https://maven.fabricmc.net/net/fabricmc/yarn/1.20.1+build.10/yarn-1.20.1+build.10-v2.jar"
+    },
+    {
+      "coordinate": "net.fabricmc:intermediary:1.20.1:v2",
+      "sha256": "26b60a7dac40e19609cdf095f7124a79ea426d8a84344bc8883c7210f0294799",
+      "source": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1-v2.jar"
+    },
+    {
+      "coordinate": "net.fabricmc:fabric-loader:0.19.5",
+      "sha256": "93044e4dd46de5d8136701292f05e868da096d2c9fddb4793e4fdbcc63efc695",
+      "source": "https://maven.fabricmc.net/net/fabricmc/fabric-loader/0.19.5/fabric-loader-0.19.5.jar"
+    },
+    {
+      "coordinate": "net.fabricmc.fabric-api:fabric-api:0.92.12+1.20.1",
+      "sha256": "4197ff4fbdac13cffccd267c1bc59e9fbabb2b5683a9d5f8023f4b5ea16a1c1e",
+      "source": "https://maven.fabricmc.net/net/fabricmc/fabric-api/0.92.12+1.20.1/fabric-api-0.92.12+1.20.1.jar"
+    }
+  ]
+}

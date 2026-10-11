@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "profile": "paper-1.20.1",
+  "craftPackage": "org.bukkit.craftbukkit.v1_20_R1",
+  "classes": {
+    "CraftServer": {"super":"java.lang.Object","handle":"net.minecraft.server.MinecraftServer"},
+    "CraftWorld": {"super":"java.lang.Object","handle":"net.minecraft.server.world.ServerWorld"},
+    "CraftEntity": {"super":"java.lang.Object","handle":"net.minecraft.entity.Entity"},
+    "CraftLivingEntity": {"super":"CraftEntity","handle":"net.minecraft.entity.LivingEntity"},
+    "CraftHumanEntity": {"super":"CraftLivingEntity","handle":"net.minecraft.entity.player.PlayerEntity"},
+    "CraftPlayer": {"super":"CraftHumanEntity","handle":"net.minecraft.server.network.ServerPlayerEntity"}
+  },
+  "unlistedMemberPolicy": "UNSUPPORTED_INTERNAL_SYMBOL"
+}

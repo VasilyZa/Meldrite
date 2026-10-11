@@ -1,0 +1,38 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+# To regenerate this file, run: ./gradlew :v1211-bootstrap:dependencies --write-locks
+com.github.oshi:oshi-core:6.4.10=minecraftLibraries
+com.google.code.gson:gson:2.10.1=minecraftLibraries
+com.google.guava:failureaccess:1.0.1=minecraftLibraries
+com.google.guava:guava:32.1.2-jre=minecraftLibraries
+com.mojang:authlib:6.0.54=minecraftLibraries
+com.mojang:brigadier:1.3.10=minecraftLibraries
+com.mojang:datafixerupper:8.0.16=minecraftLibraries
+com.mojang:logging:1.2.7=minecraftLibraries
+commons-io:commons-io:2.15.1=minecraftLibraries
+io.netty:netty-buffer:4.1.97.Final=minecraftLibraries
+io.netty:netty-codec:4.1.97.Final=minecraftLibraries
+io.netty:netty-common:4.1.97.Final=minecraftLibraries
+io.netty:netty-handler:4.1.97.Final=minecraftLibraries
+io.netty:netty-resolver:4.1.97.Final=minecraftLibraries
+io.netty:netty-transport-classes-epoll:4.1.97.Final=minecraftLibraries
+io.netty:netty-transport-native-epoll:4.1.97.Final=minecraftLibraries
+io.netty:netty-transport-native-unix-common:4.1.97.Final=minecraftLibraries
+io.netty:netty-transport:4.1.97.Final=minecraftLibraries
+it.unimi.dsi:fastutil:8.5.12=minecraftLibraries
+net.fabricmc.fabric-api:fabric-api-base:0.4.42+6573ed8c6a=modImplementation,modImplementationCopy,modImplementationCopy2,modImplementationCopy3,modImplementationCopy5
+net.fabricmc.fabric-api:fabric-lifecycle-events-v1:2.3.12+6c1df3606a=modImplementation,modImplementationCopy,modImplementationCopy2,modImplementationCopy3,modImplementationCopy5
+net.fabricmc:fabric-loader:0.19.5=modImplementation,modImplementationCopy,modImplementationCopy2,modImplementationCopy3,modImplementationCopy5
+net.fabricmc:yarn:1.21.1+build.3=mappings
+net.java.dev.jna:jna-platform:5.14.0=minecraftLibraries
+net.java.dev.jna:jna:5.14.0=minecraftLibraries
+net.sf.jopt-simple:jopt-simple:5.0.4=minecraftLibraries
+org.apache.commons:commons-lang3:3.14.0=minecraftLibraries
+org.apache.logging.log4j:log4j-api:2.22.1=minecraftLibraries
+org.apache.logging.log4j:log4j-core:2.22.1=minecraftLibraries
+org.apache.logging.log4j:log4j-slf4j2-impl:2.22.1=minecraftLibraries
+org.joml:joml:1.10.5=minecraftLibraries
+org.lz4:lz4-java:1.8.0=minecraftLibraries
+org.slf4j:slf4j-api:2.0.9=minecraftLibraries
+empty=modApi,modApiCopy,modApiCopy2,modApiCopy3,modApiCopy5,modCompileOnly,modCompileOnlyApi,modCompileOnlyApiCopy,modCompileOnlyApiCopy2,modCompileOnlyCopy,modCompileOnlyCopy2,modLocalRuntime,modLocalRuntimeCopy,modLocalRuntimeCopy2,modRuntimeOnly,modRuntimeOnlyCopy,modRuntimeOnlyCopy2
