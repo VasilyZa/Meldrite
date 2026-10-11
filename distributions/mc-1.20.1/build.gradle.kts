@@ -13,6 +13,7 @@ val sqliteJdbc = fileTree("${System.getProperty("user.home")}/.gradle/caches/mod
 val commonsLang = fileTree("${System.getProperty("user.home")}/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.6-mohist")
     .matching { include("**/commons-lang-2.6-mohist.jar") }
     .singleFile
+val minecraftMetadata = file("${System.getProperty("user.home")}/.gradle/caches/fabric-loom/1.20.1/mojang_minecraft_info.json")
 
 val bootstrap = project(":v1201-bootstrap")
 evaluationDependsOn(bootstrap.path)
@@ -37,6 +38,7 @@ val distributionManifest by tasks.registering {
         productionMappings,
         sqliteJdbc,
         commonsLang,
+        minecraftMetadata,
         bootstrap.configurations.getByName("consoleRuntime").resolve(),
         bootstrap.configurations.getByName("resolverRuntime").resolve()
     )
@@ -99,6 +101,51 @@ val distributionManifest by tasks.registering {
                 + bootstrap.configurations.getByName("resolverRuntime").resolve()
                 + bootstrap.configurations.getByName("loaderLibraries").resolve()
                 + bootstrap.configurations.getByName("minecraftServerRuntimeLibraries").resolve()).distinct()
+        val minecraftInfo = JsonSlurper().parse(minecraftMetadata) as Map<*, *>
+        val minecraftDownloads = (minecraftInfo["downloads"] as Map<*, *>)["server"] as Map<*, *>
+        val minecraftLibrarySources = (minecraftInfo["libraries"] as List<*>).mapNotNull { library ->
+            val downloads = (library as Map<*, *>)["downloads"] as? Map<*, *> ?: return@mapNotNull null
+            val download = downloads["artifact"] as? Map<*, *> ?: return@mapNotNull null
+            (download["path"] as String).substringAfterLast('/') to (download["url"] as String)
+        }.toMap()
+        val lockedSources = (paperApiArtifacts + adventureArtifacts).associate { entry ->
+            val source = rootProject.file(entry["cachePath"] as String)
+            val coordinate = (entry["coordinate"] as String).split(':')
+            val version = (entry["resolvedVersion"] as? String) ?: coordinate[2]
+            val url = (entry["sourceUrl"] as? String)
+                    ?: "https://repo.maven.apache.org/maven2/${coordinate[0].replace('.', '/')}/${coordinate[1]}/$version/${source.name}"
+            source.canonicalPath to url
+        }
+        fun centralSources(url: String): List<String> = listOf(url,
+                url.replace("https://repo.maven.apache.org/maven2/", "https://repo1.maven.org/maven2/")).distinct()
+        fun downloadSources(source: java.io.File): List<String> {
+            // Generated projections and vendor-only artifacts remain in the small launcher.
+            if (source.canonicalFile == projectedPaperApi.canonicalFile || source.canonicalFile == commonsLang.canonicalFile) return emptyList()
+            lockedSources[source.canonicalPath]?.let { url ->
+                if (url.startsWith("https://repo.maven.apache.org/maven2/")) return centralSources(url)
+                if (url.startsWith("https://maven.fabricmc.net/")) return listOf(url)
+                return emptyList()
+            }
+            minecraftLibrarySources[source.name]?.let { return listOf(it) }
+            val parts = source.toPath().map { it.toString() }
+            val cache = parts.indexOf("files-2.1")
+            val localArtifacts = rootProject.file(".gradle/meldrite/artifacts").toPath().toAbsolutePath().normalize()
+            val local = source.toPath().toAbsolutePath().normalize()
+            val coordinates = if (cache >= 0 && parts.size > cache + 4) {
+                parts.subList(cache + 1, cache + 4)
+            } else {
+                check(local.startsWith(localArtifacts)) { "No pinned download source for $source" }
+                localArtifacts.relativize(local).map { it.toString() }.take(3)
+            }
+            check(coordinates.size == 3) { "Invalid dependency coordinates for $source" }
+            val group = coordinates[0]
+            val relative = "${group.replace('.', '/')}/${coordinates[1]}/${coordinates[2]}/${source.name}"
+            return if (group == "net.fabricmc" || group.startsWith("net.fabricmc.")) {
+                listOf("https://maven.fabricmc.net/$relative")
+            } else centralSources("https://repo.maven.apache.org/maven2/$relative")
+        }
+        fun runtimeEntry(source: java.io.File): Map<String, Any> = mapOf("path" to path(source),
+                "sha256" to sha256(source), "size" to source.length(), "urls" to downloadSources(source))
         val document = linkedMapOf(
             "schemaVersion" to 1,
             "id" to "mc-1.20.1",
@@ -111,10 +158,11 @@ val distributionManifest by tasks.registering {
             "artifact" to mapOf("path" to root.relativize(artifact.toPath()).toString().replace('\\', '/'), "sha256" to sha256(artifact)),
             "runtime" to mapOf(
                 "fabricLoaderJar" to mapOf("path" to path(loader), "sha256" to sha256(loader)),
-                "minecraftServerJar" to mapOf("path" to path(serverJar), "sha256" to sha256(serverJar)),
-                "classpath" to launchLibraries.map { mapOf("path" to path(it), "sha256" to sha256(it)) },
+                "minecraftServerJar" to mapOf("path" to path(serverJar), "sha256" to sha256(serverJar),
+                        "size" to serverJar.length(), "urls" to listOf(minecraftDownloads["url"] as String)),
+                "classpath" to launchLibraries.map(::runtimeEntry),
                 "adventureApi" to mapOf("path" to path(adventureApiFile), "sha256" to adventureApi["sha256"]),
-                "modJars" to listOf(mapOf("path" to path(fabricApi), "sha256" to sha256(fabricApi)))
+                "modJars" to listOf(runtimeEntry(fabricApi))
             ),
             "toolchain" to mapOf(
                 "loom" to "1.17.21", "loader" to "0.19.5", "fabricApi" to "0.92.12+1.20.1",
@@ -141,7 +189,7 @@ val bundleRuntime by tasks.registering {
         output.mkdirs()
         val properties = Properties()
         val embedded = linkedMapOf<String, Int>()
-        fun embed(entry: Map<*, *>): Int {
+        fun stage(entry: Map<*, *>): Int {
             val source = rootProject.file(entry["path"] as String)
             val expected = entry["sha256"] as String
             val digest = MessageDigest.getInstance("SHA-256")
@@ -159,17 +207,24 @@ val bundleRuntime by tasks.registering {
             return embedded.getOrPut(key) {
                 val index = embedded.size
                 val resource = "META-INF/meldrite/runtime/$key"
-                source.copyTo(output.resolve(resource).apply { parentFile.mkdirs() }, overwrite = true)
-                properties.setProperty("$index.resource", resource)
+                val urls = (entry["urls"] as? List<*>)?.map { it as String }.orEmpty()
+                if (urls.isEmpty()) {
+                    source.copyTo(output.resolve(resource).apply { parentFile.mkdirs() }, overwrite = true)
+                    properties.setProperty("$index.resource", resource)
+                } else {
+                    properties.setProperty("$index.urlCount", urls.size.toString())
+                    urls.forEachIndexed { number, url -> properties.setProperty("$index.url.$number", url) }
+                }
                 properties.setProperty("$index.path", "libraries/meldrite/$key")
                 properties.setProperty("$index.sha256", actual)
+                properties.setProperty("$index.size", source.length().toString())
                 index
             }
         }
-        val classpath = (runtime["classpath"] as List<*>).map { embed(it as Map<*, *>) }.distinct()
-        val minecraft = embed(runtime["minecraftServerJar"] as Map<*, *>)
-        val mods = listOf(embed(document["artifact"] as Map<*, *>)) +
-                (runtime["modJars"] as List<*>).map { embed(it as Map<*, *>) }
+        val classpath = (runtime["classpath"] as List<*>).map { stage(it as Map<*, *>) }.distinct()
+        val minecraft = stage(runtime["minecraftServerJar"] as Map<*, *>)
+        val mods = listOf(stage(document["artifact"] as Map<*, *>)) +
+                (runtime["modJars"] as List<*>).map { stage(it as Map<*, *>) }
         properties.setProperty("artifactCount", embedded.size.toString())
         properties.setProperty("classpath", classpath.joinToString(","))
         properties.setProperty("minecraft", minecraft.toString())

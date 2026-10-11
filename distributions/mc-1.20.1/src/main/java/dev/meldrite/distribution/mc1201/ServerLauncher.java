@@ -3,22 +3,16 @@ package dev.meldrite.distribution.mc1201;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-/** Unpacks the locked distribution and starts the unmodified Fabric server launcher. */
+/** Installs locked dependencies and starts the unmodified Fabric server launcher. */
 public final class ServerLauncher {
     private ServerLauncher() {}
 
@@ -32,16 +26,7 @@ public final class ServerLauncher {
             throw new IllegalStateException("Meldrite requires Java " + requiredJava + " or newer");
         }
         Path directory = Path.of("").toAbsolutePath().normalize();
-        List<Path> artifacts = new ArrayList<>();
-        int count = Integer.parseInt(required(bundle, "artifactCount"));
-        for (int index = 0; index < count; index++) {
-            Path target = directory.resolve(required(bundle, index + ".path")).normalize();
-            if (!target.startsWith(directory.resolve("libraries/meldrite"))) {
-                throw new IOException("Invalid bundled artifact path: " + target);
-            }
-            extract(required(bundle, index + ".resource"), target, required(bundle, index + ".sha256"));
-            artifacts.add(target);
-        }
+        List<Path> artifacts = DependencyInstaller.install(bundle, directory);
         Files.createDirectories(directory.resolve("mods"));
         Files.createDirectories(directory.resolve("plugins"));
 
@@ -88,43 +73,13 @@ public final class ServerLauncher {
         System.exit(exit);
     }
 
-    private static void extract(String resource, Path target, String sha256) throws Exception {
-        if (!sha256.matches("[0-9a-f]{64}")) throw new IOException("Invalid bundled artifact checksum");
-        if (Files.isRegularFile(target) && checksum(target).equals(sha256)) return;
-        Files.createDirectories(target.getParent());
-        Path temporary = Files.createTempFile(target.getParent(), "extract-", ".tmp");
-        try {
-            try (InputStream input = resource(resource)) {
-                Files.copy(input, temporary, StandardCopyOption.REPLACE_EXISTING);
-            }
-            if (!checksum(temporary).equals(sha256)) {
-                throw new IOException("Bundled artifact checksum mismatch: " + resource);
-            }
-            try {
-                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-            } catch (AtomicMoveNotSupportedException unsupported) {
-                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } finally {
-            Files.deleteIfExists(temporary);
-        }
-    }
-
-    private static String checksum(Path path) throws Exception {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        try (InputStream input = new DigestInputStream(Files.newInputStream(path), digest)) {
-            input.transferTo(OutputStream.nullOutputStream());
-        }
-        return HexFormat.of().formatHex(digest.digest());
-    }
-
     private static InputStream resource(String name) throws IOException {
         InputStream input = ServerLauncher.class.getClassLoader().getResourceAsStream(name);
         if (input == null) throw new IOException("Missing bundled resource: " + name);
         return input;
     }
 
-    private static String required(Properties properties, String key) throws IOException {
+    static String required(Properties properties, String key) throws IOException {
         String value = properties.getProperty(key);
         if (value == null || value.isBlank()) throw new IOException("Missing bundled setting: " + key);
         return value;

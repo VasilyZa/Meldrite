@@ -18,6 +18,8 @@ Meldrite 是基于 Fabric 的 Minecraft 服务端，提供 Bukkit/Paper 插件�
 java -Xms2G -Xmx6G -jar meldrite-1.20.1.jar nogui
 ```
 
+发行 JAR 仅包含启动器、Meldrite 和必要的本地 API 文件。首次启动会从 Mojang、Fabric 和 Maven Central 下载锁定的依赖，并按 SHA-256 校验，保存到 `libraries/meldrite/`；后续启动复用缓存，依赖齐全时可离线启动。缓存缺失或损坏时会重新下载。首次启动需要联网，下载失败时会显示具体依赖和原因，修复网络后再次执行启动命令即可。
+
 首次启动后阅读并接受 Minecraft EULA，将 `eula.txt` 中的 `eula` 设置为 `true`，然后重新启动。Mod 放入 `mods/`，插件放入 `plugins/`。
 
 控制台支持 `--nojline`（普通输入）和 `--noconsole`（关闭命令输入）。权限管理使用权限 Mod 的原有命令，例如 `lp user 玩家名 permission set 插件权限节点 true`。
