@@ -129,6 +129,8 @@ public final class VersionComposition implements AutoCloseable {
         if (started && coordinator.phase() == BootstrapCoordinator.Phase.READY) profile.tick();
     }
 
+    public String workerStatus() { return profile.workerStatus(); }
+
     @Override
     public void close() {
         try {

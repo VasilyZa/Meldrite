@@ -9,14 +9,19 @@ import org.jline.reader.*;
 
 /** Providers run on the server thread, with bounded waits and no abandoned queue entries. */
 public final class ConsoleCompleter implements Completer {
+    private static final long MAX_WAIT_MILLIS = 100;
+    private static final long CACHE_NANOS = TimeUnit.MILLISECONDS.toNanos(250);
     private final Queue<Runnable> tasks;
     private final Function<String, CompletableFuture<Suggestions>> provider;
     private final long timeoutMillis;
+    private CachedSuggestions cached;
 
     public ConsoleCompleter(Queue<Runnable> tasks, Function<String, CompletableFuture<Suggestions>> provider, long timeoutMillis) {
         this.tasks = tasks;
         this.provider = provider;
-        this.timeoutMillis = timeoutMillis;
+        // JLine holds its editing lock while invoking the completer. A delayed server
+        // must not also freeze editing, log redraws and the terminal's Ctrl+C handler.
+        this.timeoutMillis = Math.min(MAX_WAIT_MILLIS, Math.max(1, timeoutMillis));
     }
 
     @Override public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {
@@ -24,12 +29,17 @@ public final class ConsoleCompleter implements Completer {
         boolean slash = input.startsWith("/");
         String command = slash ? input.substring(1) : input;
         int wordStart = line.cursor() - line.wordCursor() - (slash ? 1 : 0);
-        var task = new FutureTask<>(() -> provider.apply(command));
         long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
-        tasks.add(task);
+        FutureTask<CompletableFuture<Suggestions>> task = null;
         try {
-            var suggestions = task.get(remaining(deadline), TimeUnit.NANOSECONDS)
-                    .get(remaining(deadline), TimeUnit.NANOSECONDS);
+            var request = cached;
+            if (request == null || !request.reusable(command)) {
+                task = new FutureTask<>(() -> provider.apply(command));
+                tasks.add(task);
+                request = new CachedSuggestions(command, task.get(remaining(deadline), TimeUnit.NANOSECONDS));
+                cached = request;
+            }
+            var suggestions = request.value.get(remaining(deadline), TimeUnit.NANOSECONDS);
             suggestions.getList().stream().map(suggestion -> {
                 // Brigadier may replace several words (greedy arguments); JLine replaces the current word.
                 String applied = suggestion.apply(command);
@@ -44,8 +54,25 @@ public final class ConsoleCompleter implements Completer {
             Thread.currentThread().interrupt();
         } finally {
             // Interrupting a running FutureTask here would interrupt the Minecraft server thread.
-            task.cancel(false);
-            tasks.remove(task);
+            if (task != null) {
+                task.cancel(false);
+                tasks.remove(task);
+            }
+        }
+    }
+
+    /** Retains one pending async response so a timeout does not restart slow providers on every Tab. */
+    private static final class CachedSuggestions {
+        final String command;
+        final CompletableFuture<Suggestions> value;
+        volatile long completedAt;
+        CachedSuggestions(String command, CompletableFuture<Suggestions> suggestions) {
+            this.command = command;
+            value = suggestions.whenComplete((result, failure) -> completedAt = System.nanoTime());
+        }
+        boolean reusable(String input) {
+            return command.equals(input) && !value.isCompletedExceptionally() && !value.isCancelled()
+                    && (!value.isDone() || System.nanoTime() - completedAt < CACHE_NANOS);
         }
     }
 

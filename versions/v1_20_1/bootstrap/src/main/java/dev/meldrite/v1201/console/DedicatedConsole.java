@@ -33,7 +33,7 @@ public final class DedicatedConsole implements AutoCloseable {
                 if (closed || server.getOverworld() == null) return Suggestions.empty();
                 var dispatcher = server.getCommandManager().getDispatcher();
                 return dispatcher.getCompletionSuggestions(dispatcher.parse(command, server.getCommandSource()));
-            }, 1000);
+            }, 100);
             reader = ConsoleReaderFactory.create(terminal, server.getRunDirectory().toPath().resolve(".console_history"), completer, highlighter);
             ConsoleLogging.setReader(reader);
             var thread = new Thread(() -> {

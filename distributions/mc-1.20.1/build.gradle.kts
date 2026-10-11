@@ -250,6 +250,7 @@ val executableServerJar by tasks.registering(Jar::class) {
     destinationDirectory.set(layout.buildDirectory.dir("server"))
     archiveFileName.set("meldrite-1.20.1.jar")
     manifest.attributes["Main-Class"] = "dev.meldrite.distribution.mc1201.ServerLauncher"
+    manifest.attributes["Launcher-Agent-Class"] = "dev.meldrite.distribution.mc1201.RuntimeClasspath"
     val versionedJar = layout.buildDirectory.file("server/meldrite-${project.version}.jar")
     outputs.file(versionedJar)
     doLast { archiveFile.get().asFile.copyTo(versionedJar.get().asFile, overwrite = true) }

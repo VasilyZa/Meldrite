@@ -48,6 +48,11 @@ public final class PotionEffectRegistryTransform implements Opcodes {
                     JarEntry entry = new JarEntry(name); entry.setTime(original.getTime()); projected.putNextEntry(entry);
                     if (!original.isDirectory()) {
                         if (name.equals(TYPE + ".class")) projected.write(target);
+                        else if (name.equals("org/bukkit/map/MapPalette.class")) {
+                            try (var bytes = input.getInputStream(original)) {
+                                projected.write(MapPaletteImageTransform.transform(bytes.readAllBytes()));
+                            }
+                        }
                         else if (name.equals("io/papermc/paper/plugin/loader/library/impl/MavenLibraryResolver.class") && resolverTarget != null) projected.write(resolverTarget);
                         else try (var bytes = input.getInputStream(original)) { bytes.transferTo(projected); }
                     }

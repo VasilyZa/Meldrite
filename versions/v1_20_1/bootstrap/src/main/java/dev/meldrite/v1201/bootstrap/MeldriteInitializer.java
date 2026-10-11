@@ -16,6 +16,15 @@ public final class MeldriteInitializer implements ModInitializer {
         dev.meldrite.bootstrap.StartupBanner.print(net.fabricmc.loader.api.FabricLoader.getInstance()
                 .getModContainer("meldrite").orElseThrow().getMetadata().getVersion().getFriendlyString(), LOGGER::info);
         dev.meldrite.v1201.compat.FabricPermissionBridge.install();
+        net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registries, environment) ->
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("meldrite:workers")
+                        .requires(source -> source.hasPermissionLevel(2))
+                        .executes(context -> {
+                            VersionComposition current = composition;
+                            context.getSource().sendFeedback(() -> net.minecraft.text.Text.literal(current == null
+                                    ? "Meldrite workers are not initialized" : current.workerStatus()), false);
+                            return current == null ? 0 : 1;
+                        })));
         ServerLifecycleEvents.SERVER_STARTING.register(this::starting);
         ServerLifecycleEvents.SERVER_STARTED.register(this::started);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::stopping);

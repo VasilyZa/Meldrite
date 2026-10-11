@@ -113,7 +113,13 @@ public final class ProfileBootstrap implements AutoCloseable {
             // Close the tick scheduler before the async executor.  PluginScope
             // cancellation removes pending handles first; otherwise the
             // executor drains stale queued callbacks during server shutdown.
-            async = own(new AsyncScheduler(2, 128, Duration.ofSeconds(10)));
+            var workers = WorkerSettings.system();
+            dev.meldrite.paper.map.VectorMapColors.configureWorkers(workers);
+            own((AutoCloseable) dev.meldrite.paper.map.VectorMapColors::closeWorkers);
+            async = own(AsyncScheduler.configured(Duration.ofSeconds(10)));
+            Logger.getLogger("Meldrite.Workers").info("Background workers: CPUs=" + workers.processors()
+                    + ", async=" + workers.asyncThreads() + ", async queue=" + workers.asyncQueueCapacity()
+                    + ", compute lanes=" + workers.computeThreads());
             ticks = own(new TickScheduler(execution, execution.currentTick(),
                     failure -> Logger.getLogger("Meldrite.Scheduler").log(Level.SEVERE, "Plugin task failed", failure.cause())));
             scheduler = new SchedulerAdapter(ticks, async, this::scope, this::plugin, engine);
@@ -232,6 +238,17 @@ public final class ProfileBootstrap implements AutoCloseable {
         }
     }
     public void tick() { primary(); if (!closed) ticks.tick(execution.currentTick()); }
+    public String workerStatus() {
+        var background = async.statistics();
+        var compute = dev.meldrite.paper.map.VectorMapColors.workerStatistics();
+        return "Async: limit=" + background.threads() + ", active=" + background.active()
+                + ", queued=" + background.queued() + "/" + background.queueCapacity()
+                + ", completed=" + background.completed() + ", rejected=" + background.rejected()
+                + " | Compute: lanes=" + compute.parallelism() + ", active=" + compute.active()
+                + ", queued=" + compute.queued() + "/" + compute.queueCapacity()
+                + ", completed=" + compute.completed() + ", caller fallbacks=" + compute.callerFallbacks()
+                + ", vector=" + dev.meldrite.paper.map.VectorMapColors.vectorBits() + " bits";
+    }
     public int remapCalls() { return remaps.get(); }
     public long enabledPlugins() { primary(); return plan.serverOrder().stream().filter(id -> controller.state(id) == PluginState.ENABLED).count(); }
     private PluginManager pluginManager() {

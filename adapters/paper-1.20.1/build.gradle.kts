@@ -2,6 +2,17 @@ import groovy.json.JsonSlurper
 import java.io.File
 plugins { id("meldrite.java") }
 sourceSets.main { resources.srcDir(rootProject.file("versions/v1_20_1/mappings/resources")) }
+// Keep incubator references separate so the ordinary runtime does not require the module.
+val vector = sourceSets.create("vector")
+val compileMain = tasks.named<JavaCompile>("compileJava")
+vector.compileClasspath += sourceSets.main.get().compileClasspath + files(compileMain.flatMap { it.destinationDirectory }).builtBy(compileMain)
+tasks.named<JavaCompile>(vector.compileJavaTaskName) {
+    options.release.unset()
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+    options.compilerArgs.add("--add-modules=jdk.incubator.vector")
+}
+tasks.jar { from(vector.output) }
 val contractIndex = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/api-index.json")) as Map<*, *>
 val contractArtifacts = (contractIndex["artifacts"] as List<*>).map { artifact -> rootProject.file((artifact as Map<*, *>)["cachePath"] as String) }
 val runtimeArtifacts = contractArtifacts.filterNot {
