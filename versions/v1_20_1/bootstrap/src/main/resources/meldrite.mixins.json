@@ -18,6 +18,7 @@
     "MainConsoleOptionsMixin",
     "DedicatedConsoleMixin",
     "ServerSingletonMixin",
+    "ServerHandshakeStatusClientMixin",
     "ServerQueryPingEventMixin",
     "PlayerProfileExtensionsMixin",
     "LegacyLiteralTextAliasesMixin",

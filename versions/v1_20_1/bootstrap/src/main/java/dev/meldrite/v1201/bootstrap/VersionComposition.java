@@ -75,6 +75,7 @@ public final class VersionComposition implements AutoCloseable {
             dev.meldrite.v1201.compat.NativeEnchantmentProjection.install();
             dev.meldrite.v1201.compat.NativeScoreboardBinding.bind(server);
             coordinator.own(profile);
+            org.bukkit.util.permissions.DefaultPermissions.registerCorePermissions();
             bridges.gateway().install(profile.eventIngress());
             coordinator.pluginsDiscovered();
             profile.discover();

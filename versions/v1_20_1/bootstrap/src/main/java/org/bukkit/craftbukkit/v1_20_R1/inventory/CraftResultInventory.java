@@ -13,7 +13,11 @@ public class CraftResultInventory extends CraftInventory {
         this.resultInventory = Objects.requireNonNull(resultInventory, "resultInventory");
     }
     protected CraftResultInventory(Inventory inventory, Inventory resultInventory, InventoryType type) {
-        super(inventory, null, type);
+        this(inventory, resultInventory, null, type, type.getDefaultTitle());
+    }
+    protected CraftResultInventory(Inventory inventory, Inventory resultInventory,
+            org.bukkit.inventory.InventoryHolder holder, InventoryType type, String title) {
+        super(inventory, holder, type, title);
         this.resultInventory = Objects.requireNonNull(resultInventory, "resultInventory");
     }
     public Inventory getIngredientsInventory() { return inventory; }

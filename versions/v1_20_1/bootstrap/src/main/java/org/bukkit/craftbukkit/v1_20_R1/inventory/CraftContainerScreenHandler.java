@@ -16,6 +16,14 @@ public final class CraftContainerScreenHandler extends ScreenHandler {
     private final net.minecraft.inventory.InventoryChangedListener craftingListener = this::onContentChanged;
     private final String title;
 
+    public static ScreenHandler create(int syncId, PlayerInventory playerInventory, CraftInventory inventory,
+            PlayerEntity player, String title) {
+        if (inventory instanceof CraftInventoryCustomAnvil anvil) {
+            return new CraftAnvilScreenHandler(syncId, playerInventory, anvil, title);
+        }
+        return new CraftContainerScreenHandler(syncId, playerInventory, inventory, player, title);
+    }
+
     public CraftContainerScreenHandler(int syncId, PlayerInventory playerInventory, CraftInventory inventory, PlayerEntity player) {
         this(syncId, playerInventory, inventory, player, inventory.getTitle());
     }

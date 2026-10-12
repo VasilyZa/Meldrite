@@ -66,7 +66,7 @@ public final class InventoryEventBridge {
             else if (handler instanceof net.minecraft.screen.SmithingScreenHandler) event = new org.bukkit.event.inventory.PrepareSmithingEvent(view, output);
             else if (handler instanceof net.minecraft.screen.GrindstoneScreenHandler) event = new org.bukkit.event.inventory.PrepareGrindstoneEvent(view, output);
             else event = new com.destroystokyo.paper.event.inventory.PrepareResultEvent(view, output);
-            Bukkit.getPluginManager().callEvent(event);
+            NativeAnvilContext.withHandler(handler, () -> Bukkit.getPluginManager().callEvent(event));
             var resultSlot = handler.getSlot(slot);
             resultSlot.inventory.setStack(resultSlot.getIndex(), CraftItemStack.asNMSCopy(event.getResult()));
             handler.sendContentUpdates();
@@ -150,7 +150,9 @@ public final class InventoryEventBridge {
                     ? new SmithItemEvent(view, slotType, rawSlot, click, action, packet.getButton())
                     : new SmithItemEvent(view, slotType, rawSlot, click, action);
         }
-        java.util.Objects.requireNonNull(dispatcher, "dispatcher").accept(event);
+        InventoryClickEvent clickEvent = event;
+        NativeAnvilContext.withHandler(handler,
+                () -> java.util.Objects.requireNonNull(dispatcher, "dispatcher").accept(clickEvent));
         return event.isCancelled();
     }
 
@@ -255,7 +257,8 @@ public final class InventoryEventBridge {
         InventoryDragEvent event = new InventoryDragEvent(view,
                 newCursor.getType() != org.bukkit.Material.AIR ? newCursor : null,
                 CraftItemStack.asBukkitCopy(oldCursor), state.meldrite$getQuickCraftButton() == 1, eventItems);
-        java.util.Objects.requireNonNull(dispatcher, "dispatcher").accept(event);
+        NativeAnvilContext.withHandler(handler,
+                () -> java.util.Objects.requireNonNull(dispatcher, "dispatcher").accept(event));
         boolean handlerClosed = player.currentScreenHandler != handler && handler.getCursorStack().isEmpty();
         boolean needsUpdate = event.getResult() != org.bukkit.event.Event.Result.DEFAULT;
         if (event.getResult() != org.bukkit.event.Event.Result.DENY) {
@@ -391,11 +394,15 @@ public final class InventoryEventBridge {
                 if (handler == null || !(menuPlayer instanceof ServerPlayerEntity serverPlayer)) return handler;
                 InventoryView view = view(serverPlayer, handler);
                 view.setTitle(org.bukkit.craftbukkit.v1_20_R1.util.CraftChatMessage.fromComponent(factory.getDisplayName()));
-                InventoryOpenEvent event = java.util.Objects.requireNonNull(openEventDispatcher, "openEventDispatcher")
-                        .apply(view);
+                InventoryOpenEvent event = NativeAnvilContext.withHandlerResult(handler,
+                        () -> java.util.Objects.requireNonNull(openEventDispatcher, "openEventDispatcher").apply(view));
                 if (event.isCancelled()) {
                     withCloseEventsSuppressed(() -> handler.onClosed(menuPlayer));
                     unregisterView(view);
+                    if (serverPlayer.currentScreenHandler != handler && serverPlayer.currentScreenHandler != null) {
+                        InventoryView current = cachedView(serverPlayer.currentScreenHandler);
+                        if (current != null) registerView(current);
+                    }
                     return null;
                 }
                 if (event.titleOverride() != null) {
@@ -444,7 +451,7 @@ public final class InventoryEventBridge {
         Deque<InventoryCloseEvent.Reason> reasons = CLOSE_REASONS.get();
         InventoryCloseEvent.Reason reason = reasons.isEmpty() ? InventoryCloseEvent.Reason.UNKNOWN : reasons.peek();
         try {
-            callCloseEvent(view, reason);
+            NativeAnvilContext.withHandler(handler, () -> callCloseEvent(view, reason));
         } finally {
             unregisterView(view);
             if (reasons.isEmpty()) CLOSE_REASONS.remove();
@@ -481,6 +488,10 @@ public final class InventoryEventBridge {
         if (!(human instanceof CraftHumanEntity craftHuman)) {
             throw new IllegalStateException("Native player has no CraftHumanEntity wrapper");
         }
+        if (handler instanceof org.bukkit.craftbukkit.v1_20_R1.inventory.CraftAnvilScreenHandler anvil) {
+            CraftInventory top = anvil.getCraftInventory();
+            return new CraftInventoryView(human, top, craftHuman.getInventory(), top.getType(), anvil.getTitle(), handler);
+        }
         if (handler instanceof CraftContainerScreenHandler custom) {
             CraftInventory top = custom.getCraftInventory();
             return new CraftInventoryView(human, top, craftHuman.getInventory(), top.getType(), custom.getTitle(), handler);
@@ -513,6 +524,15 @@ public final class InventoryEventBridge {
         }
         if (view.getBottomInventory() instanceof CraftInventory bottom) {
             CraftInventory.unregisterViewer(bottom.getInventory(), view.getPlayer());
+        }
+    }
+
+    private static void registerView(InventoryView view) {
+        if (view.getTopInventory() instanceof CraftInventory top) {
+            CraftInventory.registerViewer(top.getInventory(), view.getPlayer());
+        }
+        if (view.getBottomInventory() instanceof CraftInventory bottom) {
+            CraftInventory.registerViewer(bottom.getInventory(), view.getPlayer());
         }
     }
 }

@@ -192,7 +192,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements org.bukkit.en
     }
     private org.bukkit.inventory.InventoryView openInventory(ServerPlayerEntity player, CraftInventory craft, String title) {
         var factory = new net.minecraft.screen.SimpleNamedScreenHandlerFactory(
-                (syncId, playerInventory, ignored) -> new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftContainerScreenHandler(
+                (syncId, playerInventory, ignored) -> org.bukkit.craftbukkit.v1_20_R1.inventory.CraftContainerScreenHandler.create(
                         syncId, playerInventory, craft, player, title),
                 org.bukkit.craftbukkit.v1_20_R1.util.CraftChatMessage.fromString(title)[0]);
         if (player.openHandledScreen(factory).isEmpty()) return null;
