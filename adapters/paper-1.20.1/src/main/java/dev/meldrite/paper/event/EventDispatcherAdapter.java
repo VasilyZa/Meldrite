@@ -2,19 +2,28 @@ package dev.meldrite.paper.event;
 import dev.meldrite.event.*;
 import dev.meldrite.plugin.spi.PluginScope;
 import dev.meldrite.plugin.classloading.*;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Consumer;
 import org.bukkit.event.*;
 import org.bukkit.plugin.*;
-/** HandlerList is the authoritative ABI store; common code supplies its dispatch algorithm. */
+/** HandlerList owns ordered snapshots; common code supplies cancellation and failure handling. */
 public final class EventDispatcherAdapter {
-    private final ListenerRegistry<Event> registry=new ListenerRegistry<>();private final PluginLoaderEngine engine;private final EventPolicy policy;private final Consumer<ListenerRegistry.Failure> failures;
+    private final PluginLoaderEngine engine;private final EventPolicy policy;private final Consumer<ListenerRegistry.Failure> failures;
+    private final ListenerRegistry.OrderedListenerAccess<Event,RegisteredListener> listenerAccess=new ListenerRegistry.OrderedListenerAccess<>() {
+        @Override public String owner(RegisteredListener listener){return listener.getPlugin().getName();}
+        @Override public boolean enabled(RegisteredListener listener){return listener.getPlugin().isEnabled();}
+        @Override public boolean ignoreCancelled(RegisteredListener listener){return listener.isIgnoringCancelled();}
+        @Override public boolean cancelled(Event event){return event instanceof Cancellable cancellable&&cancellable.isCancelled();}
+        @Override public void call(RegisteredListener listener,Event event)throws Exception {callOwned(listener,event);}
+    };
     public EventDispatcherAdapter(EventPolicy policy,Consumer<ListenerRegistry.Failure> failures,PluginLoaderEngine engine){this.engine=Objects.requireNonNull(engine);this.policy=Objects.requireNonNull(policy);this.failures=Objects.requireNonNull(failures);}
     public void callEvent(Event event){
-        policy.check(event.isAsynchronous());var source=event.getHandlers().getRegisteredListeners();var snapshot=new ArrayList<ListenerRegistry.Registration<Event>>();
-        for(int i=0;i<source.length;i++){RegisteredListener listener=source[i];snapshot.add(new ListenerRegistry.Registration<>(listener.getPlugin().getName(),ListenerRegistry.Priority.valueOf(listener.getPriority().name()),i,listener.isIgnoringCancelled(),listener.getPlugin()::isEnabled,value->callOwned(listener,value)));}
-        registry.dispatchSnapshot(event,()->event instanceof Cancellable cancellable&&cancellable.isCancelled(),snapshot,failures);
+        policy.check(event.isAsynchronous());
+        ListenerRegistry.dispatchOrdered(event,event.getHandlers().getRegisteredListeners(),listenerAccess,failures);
     }
     private void callOwned(RegisteredListener listener,Event event)throws Exception {
         ClassLoader loader=listener.getPlugin().getClass().getClassLoader();
@@ -50,7 +59,10 @@ public final class EventDispatcherAdapter {
                 if(method.getParameterCount()!=1||!Event.class.isAssignableFrom(method.getParameterTypes()[0])||method.getReturnType()!=void.class||Modifier.isStatic(method.getModifiers()))throw new IllegalArgumentException("Invalid annotated event handler: "+method);
                 if(!method.trySetAccessible())throw new IllegalArgumentException("Inaccessible event handler: "+method);
                 Class<? extends Event> eventType=method.getParameterTypes()[0].asSubclass(Event.class);
-                EventExecutor executor=(target,event)->{if(!eventType.isInstance(event))return;try{method.invoke(target,event);}catch(InvocationTargetException failure){throw new EventException(failure.getCause());}catch(ReflectiveOperationException failure){throw new EventException(failure);}};
+                MethodHandle callback;
+                try{callback=MethodHandles.lookup().unreflect(method).asType(MethodType.methodType(void.class,Listener.class,Event.class));}
+                catch(IllegalAccessException failure){throw new IllegalArgumentException("Inaccessible event handler: "+method,failure);}
+                EventExecutor executor=(target,event)->{if(!eventType.isInstance(event))return;try{callback.invokeExact(target,event);}catch(Throwable failure){throw new EventException(failure);}};
                 result.computeIfAbsent(eventType,key->new LinkedHashSet<>()).add(new RegisteredListener(listener,executor,annotation.priority(),plugin,annotation.ignoreCancelled()));
             }
         }
