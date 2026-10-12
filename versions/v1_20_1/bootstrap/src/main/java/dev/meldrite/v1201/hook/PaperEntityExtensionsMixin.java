@@ -1,5 +1,7 @@
 package dev.meldrite.v1201.hook;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.meldrite.v1201.compat.NativeEntityExtensions;
 import dev.meldrite.v1201.compat.PaperEntityAccess;
 import net.minecraft.entity.Entity;
@@ -9,6 +11,7 @@ import org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_20_R1.persistence.CraftPersistentDataContainer;
 import org.bukkit.craftbukkit.v1_20_R1.persistence.CraftPersistentDataTypeRegistry;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,6 +30,7 @@ import org.bukkit.plugin.Plugin;
 
 @Mixin(Entity.class)
 public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
+    @Shadow private Entity vehicle;
     @Unique private boolean meldrite$visibleByDefault = true;
     @Override public boolean meldrite$isVisibleByDefault() { return meldrite$visibleByDefault; }
     @Override public void meldrite$setVisibleByDefault(boolean visible) { meldrite$visibleByDefault = visible; }
@@ -133,6 +137,19 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
             meldrite$persistentDataContainer = new CraftPersistentDataContainer(MELDRITE_DATA_TYPES);
         }
         return meldrite$persistentDataContainer;
+    }
+
+    @WrapOperation(method = "dismountVehicle", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;removePassenger(Lnet/minecraft/entity/Entity;)V"), require = 1)
+    private void meldrite$dismountEvent(Entity mount, Entity passenger, Operation<Void> original) {
+        // The rider link is already null, so listener cleanup can remove the
+        // mount without recursively emitting the same dismount event.
+        if (!NativeEntityExtensions.allowDismount(passenger, mount) && vehicle == null
+                && !passenger.isRemoved() && !mount.isRemoved() && mount.hasPassenger(passenger)) {
+            vehicle = mount;
+            return;
+        }
+        // A listener may remount the rider. Keep that relationship intact.
+        if (vehicle != mount) original.call(mount, passenger);
     }
 
     @Inject(method = {"saveSelfNbt", "saveNbt"}, at = @At("HEAD"), cancellable = true)

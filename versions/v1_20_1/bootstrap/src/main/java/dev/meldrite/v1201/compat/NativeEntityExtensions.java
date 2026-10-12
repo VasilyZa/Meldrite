@@ -19,6 +19,7 @@ import org.spigotmc.event.entity.EntityDismountEvent;
 public final class NativeEntityExtensions {
     private record Binding(FacadeContext context, NativeEntityPort entities) { }
     private static volatile Binding binding;
+    private static final ThreadLocal<Entity> FORCED_DISMOUNT = new ThreadLocal<>();
 
     private NativeEntityExtensions() { }
     public static void bind(FacadeContext context, NativeEntityPort entities) {
@@ -83,14 +84,28 @@ public final class NativeEntityExtensions {
 
     public static void dismount(Entity entity, boolean suppressCancellation) {
         requireThread(entity);
-        Entity vehicle = entity.getVehicle();
-        if (vehicle == null) return;
-        if (state(entity).meldrite$isTracked()) {
-            var event = new EntityDismountEvent(bukkit(entity), bukkit(vehicle), !suppressCancellation);
-            requireBinding().context.server().getPluginManager().callEvent(event);
-            if (event.isCancelled() || entity.getVehicle() != vehicle) return;
+        if (!entity.hasVehicle()) return;
+        if (!suppressCancellation) {
+            entity.stopRiding();
+            return;
         }
-        entity.stopRiding();
+        Entity previous = FORCED_DISMOUNT.get();
+        FORCED_DISMOUNT.set(entity);
+        try { entity.stopRiding(); }
+        finally {
+            if (previous == null) FORCED_DISMOUNT.remove(); else FORCED_DISMOUNT.set(previous);
+        }
+    }
+
+    /** Vanilla clears the rider link before removing it from the vehicle's passenger list. */
+    public static boolean allowDismount(Entity entity, Entity vehicle) {
+        if (!(entity.getWorld() instanceof ServerWorld) || !eventsAvailable()
+                || !state(entity).meldrite$isTracked()) return true;
+        requireThread(entity);
+        boolean cancellable = FORCED_DISMOUNT.get() != entity && !entity.isRemoved() && !vehicle.isRemoved();
+        var event = new EntityDismountEvent(bukkit(entity), bukkit(vehicle), cancellable);
+        requireBinding().context.server().getPluginManager().callEvent(event);
+        return !event.isCancelled();
     }
 
     public static void teleport(ServerPlayNetworkHandler connection, Location destination) {
