@@ -16,10 +16,13 @@ import java.util.Set;
 
 /** Adds compatibility members directly to the real game class before plugin reflection sees it. */
 public final class MeldriteMixinPlugin implements IMixinConfigPlugin {
+    private static final org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("Meldrite");
     private static final String ACCESS = "dev/meldrite/v1201/runtime/ServerSingletonAccess";
 
     @Override
     public void onLoad(String mixinPackage) {
+        dev.meldrite.bootstrap.StartupBanner.print(FabricLoader.getInstance()
+                .getModContainer("meldrite").orElseThrow().getMetadata().getVersion().getFriendlyString(), LOGGER::info);
     }
 
     @Override
