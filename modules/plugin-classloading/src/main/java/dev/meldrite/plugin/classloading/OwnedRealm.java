@@ -15,7 +15,7 @@ abstract class OwnedRealm extends URLClassLoader {
     private final Map<String,byte[]> definitions=new HashMap<>();
     volatile boolean closed;
     OwnedRealm(List<Path> jars,ApiAuthority authority,TransformContext context,ClassTransform transform)throws IOException {
-        super(urls(jars),ClassLoader.getPlatformClassLoader());this.authority=authority;this.context=context;this.transform=transform;
+        super(urls(jars),authority.realmParent());this.authority=authority;this.context=context;this.transform=transform;
         try{for(Path path:jars)authority.validate(path);}catch(IOException|RuntimeException failure){try{super.close();}catch(IOException cleanup){failure.addSuppressed(cleanup);}throw failure;}
     }
     private static URL[] urls(List<Path> jars)throws MalformedURLException {List<URL> urls=new ArrayList<>();for(Path path:jars)urls.add(path.toUri().toURL());return urls.toArray(URL[]::new);}

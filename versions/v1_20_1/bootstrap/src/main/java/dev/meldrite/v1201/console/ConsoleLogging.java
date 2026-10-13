@@ -15,6 +15,10 @@ import org.apache.logging.log4j.core.appender.*;
 import org.apache.logging.log4j.core.config.*;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.status.StatusData;
+import org.apache.logging.log4j.status.StatusListener;
+import org.apache.logging.log4j.status.StatusLogger;
 import org.bukkit.craftbukkit.util.ForwardLogHandler;
 import org.jline.reader.LineReader;
 import org.jline.terminal.Terminal;
@@ -35,6 +39,7 @@ public final class ConsoleLogging {
     private static ForwardLogHandler jul;
     private static PrintStream previousOut, previousErr;
     private static PropertyChangeListener reconfigure;
+    private static StatusListener status;
     private ConsoleLogging() {}
 
     public static synchronized void install() {
@@ -47,6 +52,8 @@ public final class ConsoleLogging {
         };
         context.addPropertyChangeListener(reconfigure);
         route(context.getConfiguration());
+        status = new FileStatusListener(context);
+        StatusLogger.getLogger().registerListener(status);
         if (jul == null) {
             var root = java.util.logging.Logger.getLogger("");
             for (var handler : root.getHandlers()) if (handler instanceof ConsoleHandler) root.removeHandler(handler);
@@ -114,6 +121,8 @@ public final class ConsoleLogging {
         var current = terminal; terminal = null;
         if (current != null) try { current.close(); } catch (IOException ignored) { }
         System.setOut(previousOut); System.setErr(previousErr);
+        StatusLogger.getLogger().removeListener(status);
+        status = null;
         // JUL routing outlives stdin/TTY: plugin shutdown hooks can still log here.
         context = null;
         configured = null;
@@ -121,6 +130,36 @@ public final class ConsoleLogging {
     }
 
     private record ConsoleRoute(org.apache.logging.log4j.Level level, Filter filter) {}
+
+    /** StatusLogger keeps its own console stream and otherwise bypasses the server file appenders. */
+    private static final class FileStatusListener implements StatusListener {
+        private final LoggerContext context;
+        private final ThreadLocal<Boolean> forwarding = ThreadLocal.withInitial(() -> false);
+        FileStatusListener(LoggerContext context) { this.context = context; }
+        @Override public org.apache.logging.log4j.Level getStatusLevel() { return org.apache.logging.log4j.Level.WARN; }
+        @Override public void log(StatusData data) {
+            // Appender failures report through StatusLogger too; its original console listener handles those.
+            if (forwarding.get() || !data.getLevel().isMoreSpecificThan(getStatusLevel())) return;
+            forwarding.set(true);
+            try {
+                var root = context.getConfiguration().getRootLogger();
+                var event = Log4jLogEvent.newBuilder().setLoggerName("Log4jStatus")
+                        .setLoggerFqcn(StatusLogger.class.getName()).setLevel(data.getLevel())
+                        .setMessage(data.getMessage()).setThrown(data.getThrowable())
+                        .setTimeMillis(data.getTimestamp()).setThreadName(data.getThreadName())
+                        .setSource(data.getStackTraceElement()).build();
+                if (!data.getLevel().isMoreSpecificThan(root.getLevel()) || root.isFiltered(event)) return;
+                for (var appender : root.getAppenders().values()) {
+                    // Keep StatusLogger's existing terminal output without printing the event twice.
+                    if (appender instanceof ConsoleAppender || APPENDER.equals(appender.getName()) || ASYNC.equals(appender.getName())) continue;
+                    var reference = root.getAppenderRefs().stream().filter(ref -> ref.getRef().equals(appender.getName())).findFirst();
+                    new AppenderControl(appender, reference.map(AppenderRef::getLevel).orElse(null),
+                            reference.map(AppenderRef::getFilter).orElse(null)).callAppender(event);
+                }
+            } finally { forwarding.remove(); }
+        }
+        @Override public void close() { }
+    }
 
     /** Ref ACCEPT never bypasses the separate appender-level DENY in Log4j. */
     private static final class ConsoleRouteFilter extends AbstractFilter {
