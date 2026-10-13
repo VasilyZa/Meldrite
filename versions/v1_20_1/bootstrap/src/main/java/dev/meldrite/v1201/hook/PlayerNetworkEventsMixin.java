@@ -39,6 +39,7 @@ public abstract class PlayerNetworkEventsMixin {
     // the server thread. Preserve its parse/signature/execution path when unchanged.
     @WrapMethod(method = "handleCommandExecution")
     private void meldrite$preprocessCommand(CommandExecutionC2SPacket packet, LastSeenMessageList messages, Operation<Void> original) {
+        NativePlayerChat.logCommand(player.getGameProfile().getName(), "/" + packet.command());
         if (PlayerCommandPreprocessEvent.getHandlerList().getRegisteredListeners().length == 0) {
             original.call(packet, messages);
             return;

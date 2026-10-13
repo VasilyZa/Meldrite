@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.identity.Identity;
@@ -31,9 +32,15 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public final class NativePlayerChat {
     private static final String DEFAULT_LEGACY_FORMAT = "<%1$s> %2$s";
     private static final LegacyComponentSerializer LEGACY = LegacyComponentSerializer.legacySection();
+    private static final Logger COMMAND_LOGGER = Logger.getLogger("Minecraft");
     private static final ThreadLocal<Prepared> PREPARED = new ThreadLocal<>();
     private record Prepared(ServerPlayerEntity player, net.minecraft.network.message.SignedMessage message, AbstractChatEvent event) { }
     private NativePlayerChat() {}
+
+    /** Records slash-prefixed input before plugin interception, independently of event listeners. */
+    public static void logCommand(String playerName, String message) {
+        if (org.spigotmc.SpigotConfig.logCommands) COMMAND_LOGGER.info(playerName + " issued server command: " + message);
+    }
 
     /** Input and result omit the slash; null means plugins cancelled execution. */
     public static String preprocessCommand(Player player, String command) {
@@ -45,6 +52,7 @@ public final class NativePlayerChat {
 
     public static void command(Player player, String message) {
         var server = player.getServer();
+        logCommand(player.getName(), message);
         var event = new PlayerCommandPreprocessEvent(player, message, new LinkedHashSet<>(server.getOnlinePlayers()));
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) return;
