@@ -195,7 +195,8 @@ public final class VersionComposition implements AutoCloseable {
     /**
      * Legacy Paper plugins use Mojang's readable NMS names while a production Fabric
      * server exposes intermediary names.  Keep the route explicit and resolve only
-     * game/CraftBukkit namespaces; Bukkit API classes remain governed by ApiAuthority.
+     * game/CraftBukkit namespaces and their exported native runtime libraries;
+     * Bukkit API classes remain governed by ApiAuthority.
      */
     private static NativeRoute nativeRoute(FabricLoader loader) {
         ClassLoader runtime = VersionComposition.class.getClassLoader();
@@ -266,7 +267,11 @@ public final class VersionComposition implements AutoCloseable {
                     || name.equals("net.minecraft.server.MinecraftServer$TickTimes")) {
                 return "dev.meldrite.v1201.compat.LegacyTickTimes";
             }
-            if (name.startsWith("com.mojang.brigadier.")) {
+            // DataFixerUpper types occur in native packet and codec signatures.
+            // Use the runtime's definitions even when a plugin bundles its own copy.
+            if (name.startsWith("com.mojang.brigadier.")
+                    || name.startsWith("com.mojang.datafixers.")
+                    || name.startsWith("com.mojang.serialization.")) {
                 try { runtime.loadClass(name); return name; } catch (ClassNotFoundException ignored) { return null; }
             }
             if (name.startsWith("org.bukkit.craftbukkit.v1_20_R1.")) {

@@ -55,13 +55,18 @@ public final class NativePlayerSessionEvents {
     }
 
     public static void remove(ServerPlayerEntity player, Runnable original) {
-        if (!NativeEntityExtensions.eventsAvailable() || !online(player)) { original.run(); return; }
+        if (!NativeEntityExtensions.eventsAvailable() || !online(player)) {
+            original.run();
+            NativeEntitySchedulerLifecycle.loggedOut(player);
+            return;
+        }
         var previous = QUIT.get();
         var quit = previous != null && previous.player == player ? previous : new Quit(player);
         QUIT.set(quit);
         try {
             dispatchQuit(quit, notification(player, null));
             original.run();
+            NativeEntitySchedulerLifecycle.loggedOut(player);
         } finally {
             if (previous == null) QUIT.remove(); else QUIT.set(previous);
         }

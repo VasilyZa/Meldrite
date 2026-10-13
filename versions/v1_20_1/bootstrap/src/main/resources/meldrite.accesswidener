@@ -26,6 +26,10 @@ accessible method net/minecraft/entity/decoration/ArmorStandEntity setMarker (Z)
 accessible method net/minecraft/entity/mob/ShulkerEntity setAttachedFace (Lnet/minecraft/util/math/Direction;)V
 accessible field net/minecraft/server/PlayerManager maxPlayers I
 mutable field net/minecraft/server/PlayerManager maxPlayers I
+accessible field net/minecraft/server/PlayerManager whitelistEnabled Z
+accessible field net/minecraft/server/dedicated/MinecraftDedicatedServer propertiesLoader Lnet/minecraft/server/dedicated/ServerPropertiesLoader;
+accessible field net/minecraft/server/dedicated/ServerPropertiesLoader path Ljava/nio/file/Path;
+accessible field net/minecraft/server/dedicated/ServerPropertiesLoader propertiesHandler Lnet/minecraft/server/dedicated/ServerPropertiesHandler;
 accessible field net/minecraft/server/ServerAdvancementLoader manager Lnet/minecraft/advancement/AdvancementManager;
 accessible field net/minecraft/server/ServerAdvancementLoader GSON Lcom/google/gson/Gson;
 accessible field net/minecraft/advancement/AdvancementManager advancements Ljava/util/Map;

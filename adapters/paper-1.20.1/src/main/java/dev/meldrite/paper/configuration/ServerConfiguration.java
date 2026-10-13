@@ -1,6 +1,7 @@
 package dev.meldrite.paper.configuration;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +60,23 @@ public final class ServerConfiguration {
     public YamlConfiguration bukkit() { return bukkit; }
     public YamlConfiguration spigot() { return spigot; }
     public YamlConfiguration paper() { return paper; }
+
+    /** Validate every document before replacing the values exposed through the API. */
+    public synchronized void reload() throws IOException, InvalidConfigurationException {
+        String bukkitSource = read(bukkitFile);
+        String spigotSource = read(spigotFile);
+        String paperSource = read(paperFile);
+        for (String source : new String[]{bukkitSource, spigotSource, paperSource}) {
+            new YamlConfiguration().loadFromString(source);
+        }
+        bukkit.loadFromString(bukkitSource);
+        spigot.loadFromString(spigotSource);
+        paper.loadFromString(paperSource);
+    }
+
+    private static String read(File file) throws IOException {
+        return file.exists() ? Files.readString(file.toPath()) : "";
+    }
 
     public synchronized void save() throws IOException {
         bukkit.save(bukkitFile);

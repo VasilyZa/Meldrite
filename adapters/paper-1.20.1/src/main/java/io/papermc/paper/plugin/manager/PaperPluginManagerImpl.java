@@ -118,7 +118,18 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
     }
     @Override public Plugin[] loadPlugins(File directory) { return delegate.loadPlugins(directory); }
     @Override public void disablePlugins() { delegate.disablePlugins(); refresh(); }
-    @Override public synchronized void clearPlugins() { delegate.clearPlugins(); permissions.clearPermissions(); paperEventManager.clearEvents(); refresh(); }
+    @Override public synchronized void clearPlugins() {
+        try { delegate.clearPlugins(); }
+        finally {
+            // A lifecycle precondition rejection retains the live generation.
+            // Completed cleanup still removes registrations when onDisable failed.
+            if (delegate.getPlugins().length == 0) {
+                permissions.clearPermissions();
+                paperEventManager.clearEvents();
+            }
+            refresh();
+        }
+    }
     @Override public void enablePlugin(Plugin plugin) { delegate.enablePlugin(plugin); refresh(); }
     @Override public void disablePlugin(Plugin plugin) { delegate.disablePlugin(plugin); refresh(); }
     @Override public void callEvent(Event event) { delegate.callEvent(event); }

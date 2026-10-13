@@ -39,21 +39,33 @@ public class SimpleHelpMap implements HelpMap {
     public SimpleHelpMap(CraftServer server) {
         this.server = java.util.Objects.requireNonNull(server, "server");
         this.yaml = new HelpYamlReader(server);
+        resetDefaultTopic();
+        registerHelpTopicFactory(MultipleCommandAlias.class, new MultipleCommandAliasHelpTopicFactory());
+    }
+
+    private void resetDefaultTopic() {
         Predicate<HelpTopic> filter = Predicates.not(Predicates.instanceOf(CommandAliasHelpTopic.class));
         if (!yaml.commandTopicsInMasterIndex()) filter = Predicates.and(filter, Predicates.not(new IsCommandTopicPredicate()));
         defaultTopic = new IndexHelpTopic("Index", null, null, Collections2.filter(helpTopics.values(), filter),
                 "Use /help [n] to get page n of help.");
-        registerHelpTopicFactory(MultipleCommandAlias.class, new MultipleCommandAliasHelpTopicFactory());
     }
 
     @Override public synchronized HelpTopic getHelpTopic(String topicName) { return topicName.equals("") ? defaultTopic : helpTopics.get(topicName); }
     @Override public Collection<HelpTopic> getHelpTopics() { return helpTopics.values(); }
     @Override public synchronized void addTopic(HelpTopic topic) { helpTopics.putIfAbsent(topic.getName(), topic); }
     @Override public synchronized void clear() { helpTopics.clear(); }
+    /** Retire the complete help generation before replacement plugins register topics and factories. */
+    public synchronized void resetForReload() {
+        helpTopics.clear();
+        topicFactoryMap.clear();
+        resetDefaultTopic();
+        registerHelpTopicFactory(MultipleCommandAlias.class, new MultipleCommandAliasHelpTopicFactory());
+    }
     @Override public List<String> getIgnoredPlugins() { return yaml.getIgnoredPlugins(); }
 
     public synchronized void initializeGeneralTopics() {
         yaml = new HelpYamlReader(server);
+        resetDefaultTopic();
         for (HelpTopic topic : yaml.getGeneralTopics()) addTopic(topic);
         for (HelpTopic topic : yaml.getIndexTopics()) {
             if (topic.getName().equals("Default")) defaultTopic = topic;

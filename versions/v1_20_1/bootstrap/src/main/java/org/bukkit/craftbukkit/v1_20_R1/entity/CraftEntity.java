@@ -43,6 +43,11 @@ public class CraftEntity extends dev.meldrite.paper.facade.EntityAdapter impleme
         if (!delegate.valid()) throw new IllegalStateException("STALE_CRAFT_ENTITY");
         return nativeEntity;
     }
+    @Override protected boolean meldrite$schedulerPresent() {
+        Entity entity = nativeEntity;
+        return !entity.isRemoved() && entity.getWorld() instanceof net.minecraft.server.world.ServerWorld world
+                && world.getEntity(entity.getUuid()) == entity;
+    }
     /** Replaces the native object while retaining this facade and its plugin state. */
     public void meldrite$rebindNative(Entity replacement) {
         java.util.Objects.requireNonNull(replacement, "replacement");

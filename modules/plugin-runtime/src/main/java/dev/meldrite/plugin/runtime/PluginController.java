@@ -29,6 +29,8 @@ public final class PluginController {
         scopes=new ScopeRegistry(owned);
     }
     public ScopeRegistry scopes(){return scopes;}
+    /** Check before a caller changes state shared with this lifecycle controller. */
+    public void checkIdle(){checkOperation();}
     public PluginState state(String id){checkThread();return entry(id).state;}
     public List<Diagnostic> diagnostics(){checkThread();return List.copyOf(diagnostics);}
     public Optional<Throwable> failure(String id){checkThread();entry(id);return Optional.ofNullable(failures.get(id));}

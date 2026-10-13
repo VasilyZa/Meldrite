@@ -1,5 +1,9 @@
 package dev.meldrite.paper.facade;
 public class PlayerAdapter implements org.bukkit.entity.Player {
+  private io.papermc.paper.threadedregions.scheduler.EntityScheduler entityScheduler;
+  private boolean schedulerRetired;
+  protected boolean meldrite$schedulerPresent(){return delegate.valid();}
+  public void meldrite$retireScheduler(){io.papermc.paper.threadedregions.scheduler.EntityScheduler scheduler;synchronized(this){schedulerRetired=true;scheduler=entityScheduler;}if(scheduler!=null)context.retireEntityScheduler(scheduler);}
   protected final dev.meldrite.craft.EntityDelegate delegate; protected final FacadeContext context;
   private final org.bukkit.entity.Player.Spigot spigot = new org.bukkit.entity.Player.Spigot() {
     @Override public void sendMessage(net.md_5.bungee.api.chat.BaseComponent message) { if (message != null) PlayerAdapter.this.sendMessage(message.toLegacyText()); }
@@ -198,7 +202,7 @@ public class PlayerAdapter implements org.bukkit.entity.Player {
   @Override public org.bukkit.event.player.PlayerResourcePackStatusEvent.Status getResourcePackStatus() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getResourcePackStatus()Lorg/bukkit/event/player/PlayerResourcePackStatusEvent$Status;#METHOD"); }
   @Override public int getSaturatedRegenRate() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getSaturatedRegenRate()I#INHERITED_METHOD"); }
   @Override public float getSaturation() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getSaturation()F#INHERITED_METHOD"); }
-  @Override public io.papermc.paper.threadedregions.scheduler.EntityScheduler getScheduler() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getScheduler()Lio/papermc/paper/threadedregions/scheduler/EntityScheduler;#INHERITED_METHOD"); }
+  @Override public synchronized io.papermc.paper.threadedregions.scheduler.EntityScheduler getScheduler() { if(entityScheduler==null)entityScheduler=context.entityScheduler(this::meldrite$schedulerPresent,schedulerRetired);return entityScheduler; }
   @Override public org.bukkit.scoreboard.Scoreboard getScoreboard() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getScoreboard()Lorg/bukkit/scoreboard/Scoreboard;#METHOD"); }
   @Override public java.lang.String getScoreboardEntryName() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getScoreboardEntryName()Ljava/lang/String;#INHERITED_METHOD"); }
   @Override public java.util.Set<java.lang.String> getScoreboardTags() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Player#getScoreboardTags()Ljava/util/Set;#INHERITED_METHOD"); }

@@ -2,7 +2,7 @@ package dev.meldrite.scheduler;
 import dev.meldrite.plugin.spi.PluginScope;
 import java.util.*;
 /** Cancellation is cooperative: closing prevents new work and cancels pending work, never kills a thread. */
-public final class TaskOwner implements AutoCloseable {
+public class TaskOwner implements AutoCloseable {
     private final String identity;private final PluginScope scope;private final Set<TaskHandle> tasks=new LinkedHashSet<>();private boolean closed;
     public TaskOwner(String identity,PluginScope scope){this.identity=Objects.requireNonNull(identity);if(identity.isBlank())throw new IllegalArgumentException("Empty task owner");this.scope=Objects.requireNonNull(scope);scope.register(this);}
     public String identity(){return identity;}

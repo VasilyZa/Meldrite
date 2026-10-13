@@ -3,12 +3,14 @@ package dev.meldrite.v1201.hook;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import dev.meldrite.v1201.compat.NativeEntityExtensions;
+import dev.meldrite.v1201.compat.NativeEntityToggleEvents;
 import dev.meldrite.v1201.compat.NativePlayerChat;
 import dev.meldrite.v1201.compat.NativePlayerMovement;
 import java.util.Set;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.MinecraftServer;
@@ -45,6 +47,13 @@ public abstract class PlayerNetworkEventsMixin {
         if (command == null) return;
         if (command.equals(packet.command())) original.call(packet, messages);
         else server.getCommandManager().executeWithPrefix(player.getCommandSource().withSignedArguments(SignedCommandArguments.EMPTY), command);
+    }
+
+    // Vanilla has returned from forceMainThread. Cancellation must precede both
+    // the last-action timestamp and the shift flag written by the client command.
+    @Inject(method = "onClientCommand", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;updateLastActionTime()V"), cancellable = true, require = 1)
+    private void meldrite$sneakingEvent(ClientCommandC2SPacket packet, CallbackInfo callback) {
+        if (!NativeEntityToggleEvents.clientCommand(player, packet.getMode())) callback.cancel();
     }
 
     @Inject(method = "onPlayerMove", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkThreadUtils;forceMainThread(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/listener/PacketListener;Lnet/minecraft/server/world/ServerWorld;)V", shift = At.Shift.AFTER), require = 1)

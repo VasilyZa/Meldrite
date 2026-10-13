@@ -2,19 +2,22 @@ package dev.meldrite.paper.scheduler;
 public final class SchedulerAdapter implements org.bukkit.scheduler.BukkitScheduler {
   private final dev.meldrite.scheduler.TickScheduler ticks; private final dev.meldrite.scheduler.AsyncScheduler async;
   private final java.util.function.Function<org.bukkit.plugin.Plugin,dev.meldrite.plugin.spi.PluginScope> scopes;
-  private final java.util.function.Function<String,org.bukkit.plugin.Plugin> plugins;
   private final dev.meldrite.plugin.classloading.PluginLoaderEngine engine;
   private final java.util.Map<org.bukkit.plugin.Plugin,dev.meldrite.scheduler.TaskOwner> owners=new java.util.IdentityHashMap<>();
-  public SchedulerAdapter(dev.meldrite.scheduler.TickScheduler ticks,dev.meldrite.scheduler.AsyncScheduler async,java.util.function.Function<org.bukkit.plugin.Plugin,dev.meldrite.plugin.spi.PluginScope> scopes,java.util.function.Function<String,org.bukkit.plugin.Plugin> plugins,dev.meldrite.plugin.classloading.PluginLoaderEngine engine){this.ticks=java.util.Objects.requireNonNull(ticks);this.async=java.util.Objects.requireNonNull(async);this.scopes=java.util.Objects.requireNonNull(scopes);this.plugins=java.util.Objects.requireNonNull(plugins);this.engine=java.util.Objects.requireNonNull(engine);}
+  private static final class PluginTaskOwner extends dev.meldrite.scheduler.TaskOwner {
+    final org.bukkit.plugin.Plugin plugin;
+    PluginTaskOwner(org.bukkit.plugin.Plugin plugin,dev.meldrite.plugin.spi.PluginScope scope){super(plugin.getName(),scope);this.plugin=plugin;}
+  }
+  public SchedulerAdapter(dev.meldrite.scheduler.TickScheduler ticks,dev.meldrite.scheduler.AsyncScheduler async,java.util.function.Function<org.bukkit.plugin.Plugin,dev.meldrite.plugin.spi.PluginScope> scopes,dev.meldrite.plugin.classloading.PluginLoaderEngine engine){this.ticks=java.util.Objects.requireNonNull(ticks);this.async=java.util.Objects.requireNonNull(async);this.scopes=java.util.Objects.requireNonNull(scopes);this.engine=java.util.Objects.requireNonNull(engine);}
   private synchronized dev.meldrite.scheduler.TaskOwner owner(org.bukkit.plugin.Plugin plugin){
     java.util.Objects.requireNonNull(plugin);if(!plugin.isEnabled())throw new org.bukkit.plugin.IllegalPluginAccessException("Plugin is not enabled: "+plugin.getName());
     var existing=owners.get(plugin);if(existing!=null)return existing;
-    var scope=java.util.Objects.requireNonNull(scopes.apply(plugin),"Unknown plugin scope");var owner=new dev.meldrite.scheduler.TaskOwner(plugin.getName(),scope);
+    var scope=java.util.Objects.requireNonNull(scopes.apply(plugin),"Unknown plugin scope");var owner=new PluginTaskOwner(plugin,scope);
     scope.register(()->{synchronized(this){owners.remove(plugin,owner);}});owners.put(plugin,owner);return owner;
   }
   private dev.meldrite.plugin.classloading.PluginRealm realm(org.bukkit.plugin.Plugin plugin){var loader=plugin.getClass().getClassLoader();if(loader instanceof dev.meldrite.plugin.classloading.PluginRealm realm)return realm;throw new UnsupportedOperationException("UNSUPPORTED_PLUGIN_REALM: "+loader);}
   private <T> T owned(org.bukkit.plugin.Plugin plugin,java.util.concurrent.Callable<T> callback)throws Exception{return engine.withContext(realm(plugin),callback);}
-  private org.bukkit.scheduler.BukkitTask task(dev.meldrite.scheduler.TaskHandle handle){org.bukkit.plugin.Plugin plugin=plugins.apply(handle.owner().identity());if(plugin==null)throw new IllegalStateException("TASK_OWNER_UNAVAILABLE: "+handle.owner().identity());return new org.bukkit.scheduler.BukkitTask(){public int getTaskId(){return handle.id();}public org.bukkit.plugin.Plugin getOwner(){return plugin;}public boolean isSync(){return handle.synchronous();}public boolean isCancelled(){return handle.cancelled();}public void cancel(){handle.cancel();}};}
+  private org.bukkit.scheduler.BukkitTask task(dev.meldrite.scheduler.TaskHandle handle){if(!(handle.owner() instanceof PluginTaskOwner owner))throw new IllegalStateException("TASK_OWNER_UNAVAILABLE: "+handle.owner().identity());var plugin=owner.plugin;return new org.bukkit.scheduler.BukkitTask(){public int getTaskId(){return handle.id();}public org.bukkit.plugin.Plugin getOwner(){return plugin;}public boolean isSync(){return handle.synchronous();}public boolean isCancelled(){return handle.cancelled();}public void cancel(){handle.cancel();}};}
   private org.bukkit.scheduler.BukkitTask schedule(org.bukkit.plugin.Plugin plugin,Runnable runnable,long delay,long period,boolean asynchronous){java.util.Objects.requireNonNull(runnable);return schedule(plugin,task->runnable.run(),delay,period,asynchronous);}
   private org.bukkit.scheduler.BukkitTask schedule(org.bukkit.plugin.Plugin plugin,java.util.function.Consumer<org.bukkit.scheduler.BukkitTask> callback,long delay,long period,boolean asynchronous){
     java.util.Objects.requireNonNull(callback);var owner=owner(plugin);long normalizedDelay=Math.max(0,delay),normalizedPeriod=period==0?1:Math.max(-1,period);
@@ -23,7 +26,7 @@ public final class SchedulerAdapter implements org.bukkit.scheduler.BukkitSchedu
   }
   private <T> java.util.concurrent.Future<T> syncCall(org.bukkit.plugin.Plugin plugin,java.util.concurrent.Callable<T> callback){java.util.Objects.requireNonNull(callback);return ticks.callSync(owner(plugin),()->owned(plugin,callback));}
   private void cancel(int id){for(var handle:ticks.tasks())if(handle.id()==id)handle.cancel();}
-  private void cancelOwned(org.bukkit.plugin.Plugin plugin){java.util.Objects.requireNonNull(plugin);for(var handle:ticks.tasks())if(handle.owner().identity().equals(plugin.getName()))handle.cancel();}
+  private void cancelOwned(org.bukkit.plugin.Plugin plugin){java.util.Objects.requireNonNull(plugin);for(var handle:ticks.tasks())if(handle.owner() instanceof PluginTaskOwner owner && owner.plugin==plugin)handle.cancel();}
   private java.util.List<org.bukkit.scheduler.BukkitTask> pendingTasks(){return ticks.tasks().stream().map(this::task).toList();}
   private java.util.List<org.bukkit.scheduler.BukkitWorker> activeWorkers(){return async.workers().stream().map(worker->{var task=task(worker.task());return (org.bukkit.scheduler.BukkitWorker)new org.bukkit.scheduler.BukkitWorker(){public int getTaskId(){return task.getTaskId();}public org.bukkit.plugin.Plugin getOwner(){return task.getOwner();}public Thread getThread(){return worker.thread();}};}).toList();}
   private java.util.concurrent.Executor executor(org.bukkit.plugin.Plugin plugin){java.util.Objects.requireNonNull(plugin);return command->schedule(plugin,java.util.Objects.requireNonNull(command),0,-1,false);}

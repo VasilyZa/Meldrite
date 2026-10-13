@@ -59,12 +59,13 @@ public final class ProfileBootstrap implements AutoCloseable {
     private final CommandMap commandMap;
     private final Set<Plugin> commandsRegistered = Collections.newSetFromMap(new IdentityHashMap<>());
     private final ComponentCodec components = new ComponentCodec();
-    private List<PluginHostAdapter> hosts = List.of();
+    private volatile List<PluginHostAdapter> hosts = List.of();
     private LoadPlan plan;
     private PaperProviderAdapter provider;
     private PluginController controller;
     private boolean closed;
     private boolean serverLoaded;
+    private boolean reloading;
 
     public static ProfileBootstrap create(BridgeBundle bridges, Path directory) throws Exception {
         return create(bridges, directory, List.of());
@@ -122,8 +123,9 @@ public final class ProfileBootstrap implements AutoCloseable {
                     + ", compute lanes=" + workers.computeThreads());
             ticks = own(new TickScheduler(execution, execution.currentTick(),
                     failure -> Logger.getLogger("Meldrite.Scheduler").log(Level.SEVERE, "Plugin task failed", failure.cause())));
-            scheduler = new SchedulerAdapter(ticks, async, this::scope, this::plugin, engine);
+            scheduler = new SchedulerAdapter(ticks, async, this::scope, engine);
             paperScheduler = new PaperSchedulerAdapter(scheduler);
+            facade.installEntitySchedulers(own(new dev.meldrite.paper.scheduler.EntitySchedulerService(execution, this::scope, engine)));
             itemFactory = org.bukkit.craftbukkit.inventory.CraftItemFactory.instance();
             own(new ConfigurationService(directory.resolve("plugin-data")));
             own(new PersistentDataService());
@@ -133,6 +135,7 @@ public final class ProfileBootstrap implements AutoCloseable {
             if (components.fromJson(components.json(net.kyori.adventure.text.Component.text("Meldrite"))) == null) {
                 throw new IllegalStateException("ADVENTURE_CODEC_UNAVAILABLE");
             }
+            own(this::shutdownPlugins);
         } catch (Throwable failure) {
             try { close(); } catch (Throwable cleanup) { failure.addSuppressed(cleanup); }
             throw failure;
@@ -151,6 +154,8 @@ public final class ProfileBootstrap implements AutoCloseable {
     }
     public void discover() throws Exception {
         primary();
+        if (closed) throw new IllegalStateException("PROFILE_CLOSED");
+        if (controller != null) throw new IllegalStateException("PLUGINS_ALREADY_DISCOVERED");
         var descriptor = new DescriptorAdapter();
         var discovered = new PluginDiscovery(descriptor).discover(pluginsDirectory);
         plan = new DependencyPlanner().plan(discovered.stream().map(PluginDiscovery.DiscoveredPlugin::descriptor).toList(), descriptor.dependencyRules());
@@ -158,11 +163,78 @@ public final class ProfileBootstrap implements AutoCloseable {
                 new LibraryResolver(pluginsDirectory.resolve(".libraries"), List.of(), List.of(), true, true));
         hosts = provider.prepare(discovered, plan);
         controller = new PluginController(plan, new ArrayList<PluginHost>(hosts), Set.of(PluginController.Step.ENABLE));
-        own(() -> {
-            controller.disableAll();
-            if (controller.diagnostics().stream().anyMatch(diagnostic -> diagnostic.code().equals("PLUGIN_DISABLE_FAILED")
-                    || diagnostic.code().equals("PLUGIN_CLEANUP_FAILED"))) throw new IllegalStateException("PLUGIN_SHUTDOWN_FAILED: " + controller.diagnostics());
-        });
+    }
+    private void shutdownPlugins() {
+        if (controller == null) return;
+        controller.disableAll();
+        var failures = controller.diagnostics().stream().filter(diagnostic -> diagnostic.code().equals("PLUGIN_DISABLE_FAILED")
+                || diagnostic.code().equals("PLUGIN_CLEANUP_FAILED")).toList();
+        if (!failures.isEmpty()) {
+            var failure = new IllegalStateException("PLUGIN_SHUTDOWN_FAILED: " + failures);
+            for (var diagnostic : failures) {
+                Logger.getLogger("Meldrite.Plugins").log(Level.SEVERE, diagnostic.message(), diagnostic.cause());
+                if (diagnostic.cause() != null) failure.addSuppressed(diagnostic.cause());
+            }
+            throw failure;
+        }
+    }
+    private void clearPluginHosts() {
+        primary();
+        if (controller != null) controller.checkIdle();
+        try { shutdownPlugins(); }
+        finally {
+            hosts = List.of();
+            plan = null;
+            provider = null;
+            controller = null;
+            commandsRegistered.clear();
+            org.bukkit.event.HandlerList.unregisterAll();
+        }
+    }
+    private void reload(Runnable clearPluginState, Runnable reloadResources, Runnable publishCommands) {
+        primary();
+        if (closed || ((ServerAdapter) facade.server()).isStopping()) throw new IllegalStateException("PROFILE_STOPPING");
+        if (!serverLoaded) throw new IllegalStateException("RELOAD_BEFORE_WORLDS_READY");
+        if (reloading) throw new IllegalStateException("PLUGIN_RELOAD_REENTRANT");
+        if (controller != null) controller.checkIdle();
+        var manager = facade.server().getPluginManager();
+        reloading = true;
+        boolean pluginsChanged = false;
+        try {
+            var configuration = dev.meldrite.paper.configuration.ServerConfiguration.current();
+            configuration.reload();
+            org.spigotmc.SpigotConfig.init(configuration.directory().resolve("spigot.yml").toFile());
+            pluginsChanged = true;
+            engine.prepareReload();
+            manager.clearPlugins();
+            commandMap.clearCommands();
+            clearPluginState.run();
+            reloadResources.run();
+            if (manager instanceof io.papermc.paper.plugin.manager.PaperPluginManagerImpl) {
+                org.bukkit.util.permissions.DefaultPermissions.registerCorePermissions();
+            }
+            discover();
+            bootstrapPlugins();
+            loadPlugins();
+            enable(PluginDescriptor.EnablePhase.STARTUP);
+            enable(PluginDescriptor.EnablePhase.POSTWORLD);
+            publishCommands.run();
+            events.callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.RELOAD));
+        } catch (Exception | Error failure) {
+            if (pluginsChanged) {
+                cleanupAfterReloadFailure(failure, manager::clearPlugins);
+                cleanupAfterReloadFailure(failure, commandMap::clearCommands);
+                cleanupAfterReloadFailure(failure, clearPluginState);
+                cleanupAfterReloadFailure(failure, publishCommands);
+            }
+            Logger.getLogger("Meldrite.Plugins").log(Level.SEVERE, "Bukkit plugin reload failed", failure);
+            if (failure instanceof Error error) throw error;
+            throw new IllegalStateException("PLUGIN_RELOAD_FAILED", failure);
+        } finally { reloading = false; }
+    }
+    private static void cleanupAfterReloadFailure(Throwable original, Runnable operation) {
+        try { operation.run(); }
+        catch (Throwable cleanup) { if (cleanup != original) original.addSuppressed(cleanup); }
     }
     public void bootstrapPlugins() throws Exception { primary(); provider.bootstrap(hosts, plan); }
     public void loadPlugins() { primary(); controller.loadAll(); reportFailures(); }
@@ -234,10 +306,12 @@ public final class ProfileBootstrap implements AutoCloseable {
         for (var diagnostic : diagnostics) Logger.getLogger("Meldrite.Plugins").log(Level.SEVERE, diagnostic.message(), diagnostic.cause());
         if (diagnostics.stream().anyMatch(diagnostic -> diagnostic.code().startsWith("PLUGIN_")
                 && diagnostic.code().endsWith("_FAILED"))) {
-            throw new IllegalStateException("PLUGIN_LIFECYCLE_FAILURES: " + diagnostics);
+            var failure = new IllegalStateException("PLUGIN_LIFECYCLE_FAILURES: " + diagnostics);
+            for (var diagnostic : diagnostics) if (diagnostic.cause() != null) failure.addSuppressed(diagnostic.cause());
+            throw failure;
         }
     }
-    public void tick() { primary(); if (!closed) ticks.tick(execution.currentTick()); }
+    public void tick() { primary(); if (!closed) { facade.tickEntitySchedulers(); ticks.tick(execution.currentTick()); } }
     public String workerStatus() {
         var background = async.statistics();
         var compute = dev.meldrite.paper.map.VectorMapColors.workerStatistics();
@@ -286,11 +360,11 @@ public final class ProfileBootstrap implements AutoCloseable {
                                 return null;
                             }
                             if (method.getName().equals("disablePlugins")) {
-                                controller.disableAll();
+                                shutdownPlugins();
                                 return null;
                             }
                             if (method.getName().equals("clearPlugins")) {
-                                controller.disableAll();
+                                clearPluginHosts();
                                 return null;
                             }
                             if (method.getName().equals("loadPlugin") && args != null && args.length == 1
@@ -369,7 +443,16 @@ public final class ProfileBootstrap implements AutoCloseable {
         @Override public org.bukkit.command.CommandMap getCommandMap() { return runtime.commandMap(); }
         @Override public org.bukkit.command.PluginCommand getPluginCommand(String name) { return runtime.pluginCommand(name); }
         @Override public boolean dispatchCommand(org.bukkit.command.CommandSender sender, String command) throws org.bukkit.command.CommandException {
-            return runtime.commandMap.dispatch(sender, command);
+            Objects.requireNonNull(command, "command");
+            int separator = command.indexOf(' ');
+            String label = (separator < 0 ? command : command.substring(0, separator)).toLowerCase(Locale.ENGLISH);
+            var target = runtime.commandMap.getCommand(label);
+            ClassLoader loader = target instanceof org.bukkit.command.PluginIdentifiableCommand owned
+                    ? owned.getPlugin().getClass().getClassLoader() : target == null ? null : target.getClass().getClassLoader();
+            if (!(loader instanceof PluginRealm realm)) return runtime.commandMap.dispatch(sender, command);
+            try { return runtime.engine.withContext(realm, () -> runtime.commandMap.dispatch(sender, command)); }
+            catch (RuntimeException | Error failure) { throw failure; }
+            catch (Exception failure) { throw new org.bukkit.command.CommandException("Plugin command failed: " + label, failure); }
         }
         @Override public org.bukkit.scheduler.BukkitScheduler getScheduler() { return runtime.scheduler; }
         @Override public io.papermc.paper.threadedregions.scheduler.AsyncScheduler getAsyncScheduler() { return runtime.paperScheduler; }
@@ -377,6 +460,11 @@ public final class ProfileBootstrap implements AutoCloseable {
         @Override public io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler getGlobalRegionScheduler() { return runtime.paperScheduler; }
         @Override public org.bukkit.inventory.ItemFactory getItemFactory() { return runtime.itemFactory(); }
         @Override public org.bukkit.plugin.ServicesManager getServicesManager() { return runtime.services; }
+        @Override public void reload() { runtime.reload(this::clearPluginState, this::reloadServerResources, this::publishReloadedPlugins); }
+        /** Version-owned resources stay outside the shared plugin lifecycle. */
+        protected void clearPluginState() { }
+        protected void reloadServerResources() { }
+        protected void publishReloadedPlugins() { syncCommands(); }
         /** Version-specific servers publish the command map to their native dispatcher. */
         public void syncCommands() { }
     }

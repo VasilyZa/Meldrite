@@ -326,8 +326,9 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     @Override public double getAverageTickTime() { return console.getTickTime(); }
     @Override public boolean isTickingWorlds() { return console.isRunning(); }
     @Override public void shutdown() {
-        try { ((java.lang.AutoCloseable) (Object) console).close(); }
-        catch (Exception failure) { throw new IllegalStateException("NATIVE_SERVER_SHUTDOWN_FAILED", failure); }
+        markStopping();
+        // The native loop owns cleanup after the current tick has returned.
+        console.stop(false);
     }
     @Override public boolean getOnlineMode() { return console.isOnlineMode(); }
     @Override public boolean getAllowEnd() { return console.getWorldRegistryKeys().contains(net.minecraft.world.World.END); }
@@ -381,6 +382,18 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     }
     @Override public SimpleCommandMap getCommandMap() { return commandMap; }
     @Override public PluginManager getPluginManager() { return paperPluginManager; }
+    @Override protected void clearPluginState() { helpMap.resetForReload(); }
+    @Override protected void reloadServerResources() {
+        dev.meldrite.v1201.compat.NativeServerProperties.reload(console);
+        reloadWhitelist();
+        reloadData();
+    }
+    @Override protected void publishReloadedPlugins() {
+        refreshHelpMap();
+        getConsoleSender().recalculatePermissions();
+        for (var player : getOnlinePlayers()) player.recalculatePermissions();
+        syncCommands();
+    }
     @Override public void syncCommands() {
         requireServerThread();
         var commands = console.getCommandManager();

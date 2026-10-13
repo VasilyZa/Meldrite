@@ -3,6 +3,7 @@ package dev.meldrite.v1201.hook;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.meldrite.v1201.compat.NativeEntityExtensions;
+import dev.meldrite.v1201.compat.NativeEntityToggleEvents;
 import dev.meldrite.v1201.compat.PaperEntityAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -139,6 +140,11 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
         return meldrite$persistentDataContainer;
     }
 
+    @WrapOperation(method = "setSwimming", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setFlag(IZ)V"), require = 1)
+    private void meldrite$swimmingEvent(Entity entity, int flag, boolean swimming, Operation<Void> original) {
+        if (NativeEntityToggleEvents.swimming(entity, swimming)) original.call(entity, flag, swimming);
+    }
+
     @WrapOperation(method = "dismountVehicle", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;removePassenger(Lnet/minecraft/entity/Entity;)V"), require = 1)
     private void meldrite$dismountEvent(Entity mount, Entity passenger, Operation<Void> original) {
         // The rider link is already null, so listener cleanup can remove the
@@ -172,6 +178,10 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
     }
     @Inject(method = "setRemoved", at = @At("HEAD"))
     private void meldrite$removed(Entity.RemovalReason reason, CallbackInfo result) { valid = false; }
+    @Inject(method = "setRemoved", at = @At("TAIL"), require = 1)
+    private void meldrite$retireEntityTasks(Entity.RemovalReason reason, CallbackInfo result) {
+        dev.meldrite.v1201.compat.NativeEntitySchedulerLifecycle.removed((Entity) (Object) this);
+    }
     @Inject(method = "getMaxAir", at = @At("HEAD"), cancellable = true)
     private void meldrite$maxAir(CallbackInfoReturnable<Integer> result) {
         if (meldrite$maxAirOverridden) result.setReturnValue(meldrite$maxAirOverride);

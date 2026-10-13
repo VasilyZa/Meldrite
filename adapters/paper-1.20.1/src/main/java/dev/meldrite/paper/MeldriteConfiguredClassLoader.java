@@ -35,7 +35,21 @@ public final class MeldriteConfiguredClassLoader extends PluginRealm implements 
     @Override public synchronized void init(JavaPlugin plugin){if(this.plugin!=null)throw new IllegalStateException("DUPLICATE_JAVA_PLUGIN_INIT: "+getConfiguration().getName());if(plugin.getClass().getClassLoader()!=this)throw new IllegalArgumentException("FOREIGN_PLUGIN_INSTANCE");plugin.init(server,metadata.description(),dataDirectory.toFile(),source.toFile(),this,metadata.meta(),logger);this.plugin=plugin;initCalls++;}
     @Override public synchronized JavaPlugin getPlugin(){return plugin;}
     @Override public PluginClassLoaderGroup getGroup(){return group;}
+    Map<String, MeldriteConfiguredClassLoader> groupProviders() {
+        var providers = new LinkedHashMap<String, MeldriteConfiguredClassLoader>();
+        routingRealms().forEach((id, realm) -> {
+            if (realm instanceof MeldriteConfiguredClassLoader configured) providers.put(id, configured);
+        });
+        return providers;
+    }
     public synchronized int initializationCount(){return initCalls;}
-    @Override public void close()throws IOException {registered.remove(getConfiguration().getName(),this);try{super.close();}finally{synchronized(this){plugin=null;}}}
+    @Override public void close() throws IOException {
+        registered.remove(getConfiguration().getName(), this);
+        super.close();
+    }
+    @Override protected void closeResources() throws IOException {
+        try { super.closeResources(); }
+        finally { synchronized (this) { plugin = null; } }
+    }
 
 }

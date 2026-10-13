@@ -118,6 +118,18 @@ public final class NativeEntityTeleport {
         transfer.replacement = replacement;
     }
 
+    /** Native portals and teleports also clone entities without a Bukkit teleport in progress. */
+    public static void beforeDimensionInsert(Entity previous, Entity replacement) {
+        Transfer transfer = CURRENT.get();
+        if (transfer != null && transfer.previous == previous) {
+            beforeDimensionInsert(replacement);
+            return;
+        }
+        if (previous instanceof ServerPlayerEntity || !(previous instanceof PaperEntityAccess access)) return;
+        CraftEntity facade = access.meldrite$getCachedBukkitEntity();
+        if (facade != null) NativeEntityExtensions.rebind(facade, previous, replacement);
+    }
+
     /** A player transfer retains the same native object but changes its world identity. */
     public static void playerWorldChanged(ServerPlayerEntity player) {
         Transfer transfer = CURRENT.get();

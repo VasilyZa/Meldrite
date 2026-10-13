@@ -31,7 +31,17 @@ public final class PluginLoaderEngine implements AutoCloseable {
         try{PluginRealm realm=factory.create(this,plugin,library,authority,context,definitions,policy);realms.put(id,realm);return realm;}
         catch(IOException|RuntimeException|Error failure){try{library.close();}catch(IOException cleanup){failure.addSuppressed(cleanup);}throw failure;}
     }
-    private synchronized Map<String,PluginRealm> snapshot(){return new LinkedHashMap<>(realms);}
+    synchronized Map<String,PluginRealm> snapshot(){return new LinkedHashMap<>(realms);}
+    /** Freeze the current dependency routes before retiring a complete plugin generation. */
+    public void prepareReload() throws IOException {
+        ReloadRealmGroup group;
+        synchronized (this) {
+            if (closed) throw new IllegalStateException("ENGINE_CLOSED");
+            group = new ReloadRealmGroup(realms);
+            for (var realm : realms.values()) realm.prepareReload(group);
+        }
+        group.prepared();
+    }
     Class<?> load(PluginRealm realm,String name,boolean checkGroup,boolean checkLibraries)throws ClassNotFoundException {
         if (name.equals("dev.meldrite.plugin.classloading.LegacyClassLookup")) {
             return LegacyClassLookup.class;
@@ -50,7 +60,7 @@ public final class PluginLoaderEngine implements AutoCloseable {
         }catch(ClassNotFoundException absent){
         }}
         try{return realm.exported(name,checkLibraries);}catch(ClassNotFoundException absent){if(absent.getCause()!=null)throw absent;}
-        Map<String,PluginRealm> available=snapshot();
+        Map<String,PluginRealm> available=realm.routingRealms();
         for(String id:checkGroup?realm.policy.routes(realm.pluginId(),available.keySet()):List.<String>of()){PluginRealm provider=available.get(id);if(provider==realm)continue;
             try{Class<?> found=provider.exported(name,realm.policy.exportLibraries(realm.pluginId(),id));realm.policy.accessed(realm.pluginId(),id,name);return found;}catch(ClassNotFoundException absent){if(absent.getCause()!=null)throw absent;}}
         // Paper plugins legitimately use Class.forName for NMS and CraftBukkit
@@ -62,12 +72,31 @@ public final class PluginLoaderEngine implements AutoCloseable {
     List<URL> resources(PluginRealm realm,String name)throws IOException {
         LinkedHashSet<URL> urls=new LinkedHashSet<>(authority.resources(name));
         if (!name.equals("META-INF/services/org.slf4j.spi.SLF4JServiceProvider")) urls.addAll(realm.exportedResources(name,true));
-        Map<String,PluginRealm> available=snapshot();
+        Map<String,PluginRealm> available=realm.routingRealms();
         for(String id:realm.policy.routes(realm.pluginId(),available.keySet())){PluginRealm provider=available.get(id);if(provider==realm)continue;var exported=provider.exportedResources(name,realm.policy.exportLibraries(realm.pluginId(),id));if(!exported.isEmpty()){realm.policy.accessed(realm.pluginId(),id,name);urls.addAll(exported);}}
         if (realm.context.access() == TransformContext.Access.INTERNAL) for(NativeRoute route:nativeRoutes)if(route.resources().contains(name))urls.addAll(Collections.list(route.loader().getResources(name)));
         return List.copyOf(urls);
     }
     synchronized void removed(PluginRealm realm){realms.remove(realm.pluginId(),realm);}
-    public <T> T withContext(PluginRealm realm,Callable<T> operation)throws Exception {if(realm.closed)throw new IllegalStateException("REALM_CLOSED: "+realm.pluginId());Thread thread=Thread.currentThread();ClassLoader previous=thread.getContextClassLoader();try{thread.setContextClassLoader(realm);return operation.call();}finally{thread.setContextClassLoader(previous);}}
+    public <T> T withContext(PluginRealm realm, Callable<T> operation) throws Exception {
+        Thread thread = Thread.currentThread();
+        ClassLoader previous = thread.getContextClassLoader();
+        realm.retainExecution();
+        Throwable original = null;
+        try {
+            thread.setContextClassLoader(realm);
+            try { return operation.call(); }
+            finally { thread.setContextClassLoader(previous); }
+        } catch (Exception | Error failure) {
+            original = failure;
+            throw failure;
+        } finally {
+            try { realm.releaseExecution(); }
+            catch (Exception | Error cleanup) {
+                if (original == null) throw cleanup;
+                original.addSuppressed(cleanup);
+            }
+        }
+    }
     @Override public void close()throws IOException {List<PluginRealm> owned;synchronized(this){if(closed)return;closed=true;owned=new ArrayList<>(realms.values());}Collections.reverse(owned);IOException aggregate=null;for(PluginRealm realm:owned)try{realm.close();}catch(IOException failure){if(aggregate==null)aggregate=new IOException("REALM_CLOSE_FAILED");aggregate.addSuppressed(failure);}if(aggregate!=null)throw aggregate;}
 }

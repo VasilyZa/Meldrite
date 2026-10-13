@@ -1,5 +1,9 @@
 package dev.meldrite.paper.facade;
 public class EntityAdapter implements org.bukkit.entity.Entity {
+  private io.papermc.paper.threadedregions.scheduler.EntityScheduler entityScheduler;
+  private boolean schedulerRetired;
+  protected boolean meldrite$schedulerPresent(){return delegate.valid();}
+  public void meldrite$retireScheduler(){io.papermc.paper.threadedregions.scheduler.EntityScheduler scheduler;synchronized(this){schedulerRetired=true;scheduler=entityScheduler;}if(scheduler!=null)context.retireEntityScheduler(scheduler);}
   protected final dev.meldrite.craft.EntityDelegate delegate; protected final FacadeContext context; public EntityAdapter(dev.meldrite.craft.EntityDelegate delegate,FacadeContext context){this.delegate=java.util.Objects.requireNonNull(delegate);this.context=java.util.Objects.requireNonNull(context);}
   @Override public org.bukkit.permissions.PermissionAttachment addAttachment(org.bukkit.plugin.Plugin p0) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#addAttachment(Lorg/bukkit/plugin/Plugin;)Lorg/bukkit/permissions/PermissionAttachment;#INHERITED_METHOD"); }
   @Override public org.bukkit.permissions.PermissionAttachment addAttachment(org.bukkit.plugin.Plugin p0, int p1) { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#addAttachment(Lorg/bukkit/plugin/Plugin;I)Lorg/bukkit/permissions/PermissionAttachment;#INHERITED_METHOD"); }
@@ -38,7 +42,7 @@ public class EntityAdapter implements org.bukkit.entity.Entity {
   @Override public float getPitch() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getPitch()F#METHOD"); }
   @Override public int getPortalCooldown() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getPortalCooldown()I#METHOD"); }
   @Override public org.bukkit.entity.Pose getPose() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getPose()Lorg/bukkit/entity/Pose;#METHOD"); }
-  @Override public io.papermc.paper.threadedregions.scheduler.EntityScheduler getScheduler() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getScheduler()Lio/papermc/paper/threadedregions/scheduler/EntityScheduler;#METHOD"); }
+  @Override public synchronized io.papermc.paper.threadedregions.scheduler.EntityScheduler getScheduler() { if(entityScheduler==null)entityScheduler=context.entityScheduler(this::meldrite$schedulerPresent,schedulerRetired);return entityScheduler; }
   @Override public java.lang.String getScoreboardEntryName() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getScoreboardEntryName()Ljava/lang/String;#METHOD"); }
   @Override public java.util.Set<java.lang.String> getScoreboardTags() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getScoreboardTags()Ljava/util/Set;#METHOD"); }
   @Override public org.bukkit.Server getServer() { throw new UnsupportedOperationException("UNSUPPORTED_OPERATION: org/bukkit/entity/Entity#getServer()Lorg/bukkit/Server;#METHOD"); }

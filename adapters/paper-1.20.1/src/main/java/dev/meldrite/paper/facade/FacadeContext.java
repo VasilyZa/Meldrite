@@ -21,6 +21,7 @@ public final class FacadeContext implements AutoCloseable {
     private boolean factoryUsed;
     private Function<BlockDelegate,org.bukkit.block.Block> blockCreator;
     private volatile boolean worldsReady,closed;
+    private volatile dev.meldrite.paper.scheduler.EntitySchedulerService entitySchedulers;
     private final Server server;
     public FacadeContext(EntityService entities,WorldService worlds,ExecutionPort execution,ServerInfo info){this(entities,worlds,execution,info,ServerAdapter::new);}
     public FacadeContext(EntityService entities,WorldService worlds,ExecutionPort execution,ServerInfo info,Function<FacadeContext,Server> serverCreator){this.entities=Objects.requireNonNull(entities);this.worlds=Objects.requireNonNull(worlds);this.execution=Objects.requireNonNull(execution);this.info=Objects.requireNonNull(info);factory=new FacadeFactory<>(entities,worlds,d->new EntityAdapter(d,this),d->new PlayerAdapter(d,this),d->new WorldAdapter(d,this));server=Objects.requireNonNull(serverCreator.apply(this));var materials=new dev.meldrite.paper.registry.MaterialProjection();blockCreator=d->new BlockAdapter(d,this,materials);}
@@ -29,6 +30,10 @@ public final class FacadeContext implements AutoCloseable {
     public synchronized org.bukkit.block.Block block(BlockPosition position){available();factoryUsed=true;return factory.block(worlds.reference(position.world()),position,blockCreator);}
     public Optional<Entity> entityForHandle(EntityHandle handle){available();EntityService.Identity identity=identities.get(handle);return identity==null||!entities.valid(identity)?Optional.empty():Optional.of(entity(identity));}
     public ServerInfo info(){return info;}public Server server(){return server;}public boolean primaryThread(){return execution.isPrimaryThread();}
+    public synchronized void installEntitySchedulers(dev.meldrite.paper.scheduler.EntitySchedulerService service){requireOpen();if(entitySchedulers!=null)throw new IllegalStateException("ENTITY_SCHEDULERS_ALREADY_INSTALLED");entitySchedulers=Objects.requireNonNull(service);}
+    public io.papermc.paper.threadedregions.scheduler.EntityScheduler entityScheduler(java.util.function.BooleanSupplier present,boolean retired){requireOpen();var service=entitySchedulers;if(service==null)throw new IllegalStateException("ENTITY_SCHEDULERS_NOT_INSTALLED");return service.create(present,retired);}
+    public void retireEntityScheduler(io.papermc.paper.threadedregions.scheduler.EntityScheduler scheduler){var service=entitySchedulers;if(service!=null)service.retire(scheduler);}
+    public void tickEntitySchedulers(){var service=entitySchedulers;if(service!=null)service.tick();}
     public boolean entitiesReady(){return worldsReady&&!closed;}
     public synchronized void markWorldsReady(){worlds.requirePrimary();if(closed)throw new IllegalStateException("FACADE_CONTEXT_CLOSED");worldsReady=true;}
     public synchronized Entity entity(EntityService.Identity identity){requireOpen();identities.put(identity.handle(),identity);factoryUsed=true;return factory.entity(identity);}
