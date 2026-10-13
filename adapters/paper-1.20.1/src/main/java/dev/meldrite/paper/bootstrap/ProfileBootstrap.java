@@ -291,7 +291,10 @@ public final class ProfileBootstrap implements AutoCloseable {
     private void enable(PluginHostAdapter host) {
         Plugin plugin = host.loader().getPlugin();
         if (commandsRegistered.add(plugin)) {
-            commandMap.registerAll(plugin.getName(), org.bukkit.command.PluginCommandYamlParser.parse(plugin));
+            // Paper plugins register their commands in code; legacy YAML must not reserve those labels.
+            if (host.descriptor().kind() == PluginDescriptor.Kind.LEGACY) {
+                commandMap.registerAll(plugin.getName(), org.bukkit.command.PluginCommandYamlParser.parse(plugin));
+            }
             for (var permission : plugin.getDescription().getPermissions()) {
                 try { facade.server().getPluginManager().addPermission(permission); }
                 catch (IllegalArgumentException duplicate) {
