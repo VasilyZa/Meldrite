@@ -1,0 +1,65 @@
+name: Bug 报告
+description: 报告崩溃、异常行为或 Mod / 插件功能问题。
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 请先搜索已有 Issue，并填写具体版本及操作过程。插件显示已启用不代表其业务功能正常。
+  - type: input
+    id: meldrite-version
+    attributes:
+      label: Meldrite 版本
+      description: 填写启动日志中的完整版本号；自行构建时请附提交编号。
+      placeholder: 2026.10.13.12-1.20.1-release
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 运行环境
+      description: Minecraft、Java 版本及操作系统。
+      placeholder: Minecraft 1.20.1，Java 21，Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 说明实际发生了什么，以及影响哪些功能。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤
+      description: 写明命令、玩家操作及必要配置；无法稳定复现时说明出现频率和触发条件。
+      placeholder: |
+        1. 安装……
+        2. 执行……
+        3. 出现……
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 正常情况下应该出现什么结果？
+    validations:
+      required: true
+  - type: textarea
+    id: extensions
+    attributes:
+      label: Mod / 插件及版本
+      description: 附相关 Mod、插件的准确版本和必要配置；没有安装时填“无”。
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或崩溃报告
+      description: 附完整异常堆栈及上下文；也可上传 latest.log 或 crash report。没有日志输出时说明“无异常日志”。
+      render: text
+  - type: textarea
+    id: additional
+    attributes:
+      label: 补充信息
+      description: 可附截图、视频，以及同样操作在原版 Fabric / Paper 中的表现。

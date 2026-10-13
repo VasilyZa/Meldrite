@@ -1,0 +1,29 @@
+name: 功能建议
+description: 提出新功能、API 补充或性能改进建议。
+title: "[建议] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 背景与需求
+      description: 你遇到了什么限制？这项改进会帮助哪些使用场景？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 建议方案
+      description: 描述期望的行为和使用方式。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 替代方案
+      description: 目前如何解决这个问题？还考虑过哪些方案？
+  - type: textarea
+    id: references
+    attributes:
+      label: 相关资料
+      description: 可附 API 文档、示例、性能数据或其他参考。

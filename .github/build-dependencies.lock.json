@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    {
+      "coordinate": "org.xerial:sqlite-jdbc:3.42.0.0",
+      "sha256": "53174d76087bb73cc29db9c02766fb921fd7fc652f7952f3609e0018e3dd5ded",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/org/xerial/sqlite-jdbc/3.42.0.0/sqlite-jdbc-3.42.0.0.jar"
+    },
+    {
+      "coordinate": "org.apache.httpcomponents:httpclient:4.5.13",
+      "sha256": "6fe9026a566c6a5001608cf3fc32196641f6c1e5e1986d1037ccdbd5f31ef743",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar"
+    },
+    {
+      "coordinate": "org.apache.httpcomponents:httpcore:4.4.15",
+      "sha256": "3cbaed088c499a10f96dde58f39dc0e7985171abd88138ca1655a872011bb142",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/org/apache/httpcomponents/httpcore/4.4.15/httpcore-4.4.15.jar"
+    },
+    {
+      "coordinate": "commons-logging:commons-logging:1.2",
+      "sha256": "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"
+    },
+    {
+      "coordinate": "javax.inject:javax.inject:1",
+      "sha256": "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/javax/inject/javax.inject/1/javax.inject-1.jar"
+    },
+    {
+      "coordinate": "net.fabricmc:intermediary:1.20.1",
+      "sha256": "26b60a7dac40e19609cdf095f7124a79ea426d8a84344bc8883c7210f0294799",
+      "sourceUrl": "https://maven.fabricmc.net/net/fabricmc/intermediary/1.20.1/intermediary-1.20.1-v2.jar",
+      "classifier": "v2"
+    },
+    {
+      "coordinate": "org.apache.maven.resolver:maven-resolver-connector-basic:1.6.3",
+      "cache": "project",
+      "sha256": "52fa1c85e9162c9b0f60511d2d07b74e2a1a9132761bf5ced42da1f09a026f23",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/org/apache/maven/resolver/maven-resolver-connector-basic/1.6.3/maven-resolver-connector-basic-1.6.3.jar"
+    },
+    {
+      "coordinate": "org.apache.maven.resolver:maven-resolver-transport-http:1.6.3",
+      "cache": "project",
+      "sha256": "0a009a075f3cda76037585e2fdcf9d65e52d38f6d6be4382f1b5257c3a3b2f1b",
+      "sourceUrl": "https://repo.maven.apache.org/maven2/org/apache/maven/resolver/maven-resolver-transport-http/1.6.3/maven-resolver-transport-http-1.6.3.jar"
+    },
+    {
+      "coordinate": "commons-lang:commons-lang:2.6-mohist",
+      "sha256": "19bd6916c27fda4a70854025cedfefebb8caa296aca77630db590552edc176ca",
+      "sourceUrl": "https://github.com/VasilyZa/Meldrite/releases/download/2026.10.13.12-1.20.1-release/meldrite-2026.10.13.12-1.20.1-release.jar",
+      "archiveSha256": "7cb912da41114b082504db99f95117b834065f6610f36bd6580b68fb54b02964",
+      "archiveEntry": "META-INF/meldrite/runtime/19bd6916c27fda4a70854025cedfefebb8caa296aca77630db590552edc176ca/commons-lang-2.6-mohist.jar"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+name: Meldrite CI
+run-name: 构建 ${{ inputs.channel || 'dev' }} · ${{ github.ref_name }}
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 构建通道（release / pre-release 构建成功后发布到 GitHub Releases）
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - release
+          - pre-release
+
+permissions:
+  contents: read
+
+concurrency:
+  group: meldrite-ci-${{ github.ref }}-${{ github.event_name }}-${{ inputs.channel || 'dev' }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: 构建 Minecraft 1.20.1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BUILD_CHANNEL: ${{ inputs.channel || 'dev' }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      artifact-name: ${{ steps.version.outputs.artifact }}
+    steps:
+      - name: 检出源码与完整版本历史
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 安装 Java 17 编译工具链和 Java 21 构建环境
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+
+      - name: 配置 Gradle 缓存与 Wrapper 校验
+        uses: gradle/actions/setup-gradle@4c125117fe7c5aed11272ec4213f602f012f89f2 # v5
+
+      - name: 缓存锁定的契约依赖
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .gradle/meldrite/artifacts
+          key: meldrite-contracts-${{ runner.os }}-${{ hashFiles('contracts/locks/*.json', '.github/build-dependencies.lock.json') }}
+          restore-keys: |
+            meldrite-contracts-${{ runner.os }}-
+
+      - name: 确定构建版本
+        id: version
+        run: |
+          python3 - <<'PY'
+          import datetime
+          import os
+          import subprocess
+          from zoneinfo import ZoneInfo
+
+          channel = os.environ['BUILD_CHANNEL']
+          if channel not in ('dev', 'release', 'pre-release'):
+              raise ValueError('Unsupported build channel: ' + channel)
+          date = datetime.datetime.now(ZoneInfo('Asia/Shanghai')).strftime('%Y.%m.%d')
+          commits = subprocess.check_output(['git', 'rev-list', '--count', 'HEAD'], text=True).strip()
+          if not commits.isdecimal():
+              raise ValueError('Invalid commit count')
+          version = f'{date}.{commits}-1.20.1-{channel}'
+          artifact = f"meldrite-{version}-{os.environ['GITHUB_RUN_ID']}-{os.environ['GITHUB_RUN_ATTEMPT']}"
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write(f'version={version}\ndate={date}\ncommits={commits}\nartifact={artifact}\n')
+          print('Meldrite version: ' + version)
+          PY
+
+      - name: 准备并校验锁定的构建依赖
+        run: python3 .github/scripts/prepare-build.py --trust-loom-outputs
+
+      - name: 构建可执行服务端 JAR
+        # assemble only packages code; it never runs the Minecraft/Fabric game main.
+        env:
+          BUILD_DATE: ${{ steps.version.outputs.date }}
+          COMMIT_COUNT: ${{ steps.version.outputs.commits }}
+        run: |
+          mkdir -p build/ci
+          ./gradlew :mc1201:assemble \
+            -Pmc=1.20.1 \
+            -Pmeldrite.channel="$BUILD_CHANNEL" \
+            -Pmeldrite.buildDate="$BUILD_DATE" \
+            -Pmeldrite.commitCount="$COMMIT_COUNT" \
+            -Dorg.gradle.java.installations.paths="$JAVA_HOME_17_X64,$JAVA_HOME_21_X64" \
+            --configure-on-demand --no-daemon --console=plain | tee build/ci/build.log
+
+      - name: 收集版本化 JAR 与 SHA-256
+        env:
+          BUILD_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import shutil
+          import zipfile
+
+          distribution = Path('distributions/mc-1.20.1/build')
+          manifest = json.loads((distribution / 'distribution.json').read_text())
+          version = os.environ['BUILD_VERSION']
+          if manifest['version'] != version:
+              raise ValueError('Distribution version does not match the requested channel')
+          jar = distribution / 'server' / f'meldrite-{version}.jar'
+          with zipfile.ZipFile(jar) as archive:
+              if archive.testzip() is not None:
+                  raise ValueError('Invalid JAR archive')
+          output = Path('build/ci-artifacts')
+          output.mkdir(parents=True, exist_ok=True)
+          shutil.copyfile(jar, output / jar.name)
+          digest = hashlib.sha256(jar.read_bytes()).hexdigest()
+          (output / (jar.name + '.sha256')).write_text(f'{digest}  {jar.name}\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write(f'构建版本：`{version}`\n\nJAR SHA-256：`{digest}`\n')
+          PY
+
+      - name: 上传构建产物
+        id: upload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ${{ steps.version.outputs.artifact }}
+          path: build/ci-artifacts/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 保留失败构建日志
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: meldrite-build-log-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/ci/build.log
+          if-no-files-found: ignore
+
+  publish:
+    name: 发布手动选择的版本
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && inputs.channel != 'dev'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      BUILD_CHANNEL: ${{ inputs.channel }}
+      BUILD_VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - name: 检出本次构建的源码提交
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: 下载本次构建产物
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: artifacts
+
+      - name: 校验产物并创建 Release
+        run: |
+          cd artifacts
+          sha256sum --check "meldrite-$BUILD_VERSION.jar.sha256"
+          existing_tag=$(git ls-remote origin "refs/tags/$BUILD_VERSION")
+          if [[ -n "$existing_tag" ]]; then
+            echo "::error::Tag $BUILD_VERSION already exists; existing releases are preserved."
+            exit 1
+          fi
+          release_flags=(--latest)
+          if [[ "$BUILD_CHANNEL" == 'pre-release' ]]; then
+            release_flags=(--prerelease --latest=false)
+          fi
+          gh release create "$BUILD_VERSION" \
+            "meldrite-$BUILD_VERSION.jar" "meldrite-$BUILD_VERSION.jar.sha256" \
+            --target "$GITHUB_SHA" \
+            --title "Meldrite $BUILD_VERSION" \
+            --generate-notes \
+            "${release_flags[@]}"

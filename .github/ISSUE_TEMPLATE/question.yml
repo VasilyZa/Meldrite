@@ -1,0 +1,22 @@
+name: 使用咨询
+description: 咨询安装、配置、构建或使用方式。
+title: "[咨询] "
+labels: [question]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: 你的问题
+      description: 描述想完成的操作，以及目前遇到的疑问。
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本与环境
+      placeholder: Meldrite 完整版本号、Minecraft / Java 版本、操作系统
+  - type: textarea
+    id: attempted
+    attributes:
+      label: 已尝试的方法
+      description: 附相关命令、配置和日志，便于理解当前情况。

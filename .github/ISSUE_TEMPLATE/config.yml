@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 项目说明
+    url: https://github.com/VasilyZa/Meldrite#readme
+    about: 查看安装、运行方式和项目说明。
+  - name: 正式发行与预发布
+    url: https://github.com/VasilyZa/Meldrite/releases
+    about: 下载发行包并查看更新说明。

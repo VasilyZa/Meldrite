@@ -1,0 +1,19 @@
+name: 文档反馈
+description: 报告文档错误、过时内容或缺少的说明。
+title: "[文档] "
+labels: [documentation]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: 文档位置
+      description: 页面链接、文件路径或章节名称。
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题与建议
+      description: 哪些内容不准确或难以理解？建议如何修改？
+    validations:
+      required: true
