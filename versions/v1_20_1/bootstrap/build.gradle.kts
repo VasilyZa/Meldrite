@@ -287,6 +287,7 @@ dependencies {
     implementation(project(":paper-1201"))
     implementation(project(":craft-common"))
     implementation(project(":api-services"))
+    implementation(project(":scheduler"))
     implementation(project(":adventure"))
     implementation(files(sqliteJar))
     implementation(files(commonsLangJar))

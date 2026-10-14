@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import dev.meldrite.scheduler.ParallelRangeExecutor;
 import dev.meldrite.scheduler.WorkerSettings;
+import dev.meldrite.scheduler.ComputeService;
 
 /** Private pixel snapshots can use bounded parallelism and optional SIMD without game callbacks. */
 public final class VectorMapColors {
@@ -15,10 +16,6 @@ public final class VectorMapColors {
 
     private static final Converter CONVERTER = load();
     private static final Converter SCALAR = new ScalarMapColorConverter();
-    private record Work(ParallelRangeExecutor executor, int minimumBatch) {
-        Work(WorkerSettings settings) { this(new ParallelRangeExecutor(settings.computeThreads()), settings.computeMinimumBatch()); }
-    }
-    private static volatile Work work = new Work(WorkerSettings.system());
     private VectorMapColors() { }
 
     private static Converter load() {
@@ -38,18 +35,17 @@ public final class VectorMapColors {
     public static int vectorBits() { return enabled() ? CONVERTER.vectorBits() : 0; }
 
     public static synchronized void configureWorkers(WorkerSettings settings) {
-        work.executor.close();
-        work = new Work(settings);
+        ComputeService.configure(settings);
     }
-    public static void closeWorkers() { work.executor.close(); }
-    public static ParallelRangeExecutor.Statistics workerStatistics() { return work.executor.statistics(); }
+    public static void closeWorkers() { ComputeService.close(); }
+    public static ParallelRangeExecutor.Statistics workerStatistics() { return ComputeService.statistics(); }
 
     /** Null tells the API projection to use its original scalar implementation. */
     public static byte[] imageToBytes(Image image, Color[] palette) {
-        var batch = work;
+        int minimumBatch = ComputeService.minimumBatch();
         int width = image.getWidth(null), height = image.getHeight(null);
-        if (!enabled() && (batch.executor.statistics().parallelism() == 1
-                || (long) width * height < 2L * batch.minimumBatch)) return null;
+        if (!enabled() && (ComputeService.statistics().parallelism() == 1
+                || (long) width * height < 2L * minimumBatch)) return null;
         // Image/Graphics access stays on the caller; workers only see this finished snapshot.
         var temporary = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var graphics = temporary.createGraphics();
@@ -59,7 +55,7 @@ public final class VectorMapColors {
         byte[] result = new byte[pixels.length];
         Color[] colors = palette.clone();
         Converter converter = enabled() ? CONVERTER : SCALAR;
-        batch.executor.forEach(pixels.length, batch.minimumBatch,
+        ComputeService.forEach(pixels.length, minimumBatch,
                 (from, to) -> converter.convert(pixels, colors, result, from, to));
         return result;
     }

@@ -59,8 +59,10 @@ public final class NativeWorldPort implements WorldPort {
     }
 
     private ServerWorld find(WorldKey key) {
-        for (ServerWorld world : server.getWorlds()) if (key(world).equals(key)) return world;
-        return null;
+        var id = key.key();
+        if (!id.registryNamespace().equals("minecraft") || !id.registryPath().equals("dimension")) return null;
+        return server.getWorld(net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.WORLD,
+                new Identifier(id.entryNamespace(), id.entryPath())));
     }
 
     private static UUID uid(ServerWorld world) {

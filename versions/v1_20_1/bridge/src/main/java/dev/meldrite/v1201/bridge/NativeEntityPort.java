@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import java.util.Objects;
 import java.util.Optional;
 import java.lang.ref.WeakReference;
+import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,14 +22,25 @@ import java.util.concurrent.ConcurrentMap;
 public final class NativeEntityPort implements EntityPort {
     private final MinecraftServer server;
     private final NativeWorldPort worlds;
-    private final ConcurrentMap<EntityHandle, WeakReference<Entity>> projected = new ConcurrentHashMap<>();
+    private final ConcurrentMap<EntityHandle, Projection> projected = new ConcurrentHashMap<>();
+    private final ReferenceQueue<Entity> collected = new ReferenceQueue<>();
+    private static final class Projection extends WeakReference<Entity> {
+        final EntityHandle handle;
+        Projection(EntityHandle handle, Entity entity, ReferenceQueue<Entity> collected) {
+            super(entity, collected);
+            this.handle = handle;
+        }
+    }
 
     public NativeEntityPort(MinecraftServer server, NativeWorldPort worlds) {
         this.server = Objects.requireNonNull(server);
         this.worlds = Objects.requireNonNull(worlds);
     }
 
-    @Override public boolean isValid(EntityHandle handle) { return describe(handle).isPresent(); }
+    @Override public boolean isValid(EntityHandle handle) {
+        Entity entity = resolve(handle);
+        return entity != null && !entity.isRemoved() && matchesGeneration(handle, entity);
+    }
 
     @Override public Optional<EntityInfo> describe(EntityHandle handle) {
         if (!worlds.isLoaded(handle.world())) return Optional.empty();
@@ -62,8 +74,9 @@ public final class NativeEntityPort implements EntityPort {
             throw new IllegalStateException("ENTITY_NOT_IN_LIVE_SERVER_WORLD");
         }
         var handle = new EntityHandle(NativeWorldPort.key(world), entity.getUuid(), (long) entity.getId() + 1);
-        projected.entrySet().removeIf(entry -> entry.getValue().get() == null);
-        projected.put(handle, new WeakReference<>(entity));
+        Projection previous;
+        while ((previous = (Projection) collected.poll()) != null) projected.remove(previous.handle, previous);
+        projected.put(handle, new Projection(handle, entity, collected));
         return handle;
     }
 
@@ -79,9 +92,15 @@ public final class NativeEntityPort implements EntityPort {
 
     @Override public void remove(EntityHandle handle) { requirePrimary(); require(handle).discard(); }
 
-    @Override public EntityPosition position(EntityHandle handle) { return describe(handle).orElseThrow().position(); }
+    @Override public EntityPosition position(EntityHandle handle) {
+        Entity entity = require(handle);
+        return new EntityPosition(handle.world(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
+    }
 
-    @Override public ResourceKey type(EntityHandle handle) { return describe(handle).orElseThrow().type(); }
+    @Override public ResourceKey type(EntityHandle handle) {
+        Identifier id = Registries.ENTITY_TYPE.getId(require(handle).getType());
+        return new ResourceKey("minecraft", "entity_type", id.getNamespace(), id.getPath());
+    }
 
     @Override public boolean teleport(EntityHandle handle, EntityPosition position) {
         requirePrimary();

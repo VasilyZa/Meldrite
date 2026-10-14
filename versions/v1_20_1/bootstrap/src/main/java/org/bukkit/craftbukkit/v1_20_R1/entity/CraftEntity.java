@@ -99,10 +99,13 @@ public class CraftEntity extends dev.meldrite.paper.facade.EntityAdapter impleme
     }
     @Override public org.bukkit.Location getLocation(org.bukkit.Location location) {
         if (location == null) return null;
-        org.bukkit.Location current = getLocation();
-        location.setWorld(current.getWorld());
-        location.setX(current.getX()); location.setY(current.getY()); location.setZ(current.getZ());
-        location.setYaw(current.getYaw()); location.setPitch(current.getPitch());
+        Entity entity = getHandle();
+        org.bukkit.World world = getWorld();
+        double x = entity.getX(), y = entity.getY(), z = entity.getZ();
+        float yaw = entity.getYaw(), pitch = entity.getPitch();
+        location.setWorld(world);
+        location.setX(x); location.setY(y); location.setZ(z);
+        location.setYaw(yaw); location.setPitch(pitch);
         return location;
     }
     @Override public double getX() { return getHandle().getX(); }
