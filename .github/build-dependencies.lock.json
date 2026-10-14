@@ -47,9 +47,9 @@
     {
       "coordinate": "commons-lang:commons-lang:2.6-mohist",
       "sha256": "19bd6916c27fda4a70854025cedfefebb8caa296aca77630db590552edc176ca",
-      "sourceUrl": "https://github.com/VasilyZa/Meldrite/releases/download/2026.10.13.12-1.20.1-release/meldrite-2026.10.13.12-1.20.1-release.jar",
-      "archiveSha256": "7cb912da41114b082504db99f95117b834065f6610f36bd6580b68fb54b02964",
-      "archiveEntry": "META-INF/meldrite/runtime/19bd6916c27fda4a70854025cedfefebb8caa296aca77630db590552edc176ca/commons-lang-2.6-mohist.jar"
+      "sourceUrl": "https://api.github.com/repos/VasilyZa/Meldrite/releases/latest",
+      "archiveEntry": "META-INF/meldrite/runtime/19bd6916c27fda4a70854025cedfefebb8caa296aca77630db590552edc176ca/commons-lang-2.6-mohist.jar",
+      "archiveRelease": "latest"
     }
   ]
 }

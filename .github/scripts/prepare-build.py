@@ -111,6 +111,25 @@ def ensure_file(entry, check_only):
     path.write_bytes(data)
 
 
+def release_archive(entry):
+    if entry.get("archiveRelease") != "latest":
+        return download(entry["sourceUrl"], entry["archiveSha256"])
+    request = urllib.request.Request(entry["sourceUrl"], headers={
+        "User-Agent": "Meldrite-CI", "Accept": "application/vnd.github+json"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        release = json.load(response)
+    assets = [asset for asset in release["assets"]
+              if re.fullmatch(r"meldrite-.+-1\.20\.1-release\.jar", asset["name"])]
+    if len(assets) != 1:
+        raise ValueError("Latest release must contain exactly one Minecraft 1.20.1 release JAR")
+    asset = assets[0]
+    digest = asset.get("digest") or ""
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+        raise ValueError("Latest release JAR has no valid SHA-256 asset digest")
+    print(f"Fetching dependency archive from latest release: {release['tag_name']}")
+    return download(asset["browser_download_url"], digest.removeprefix("sha256:"))
+
+
 def ensure_extra(entry, check_only):
     group, module, version = entry["coordinate"].split(":")
     classifier = "-" + entry["classifier"] if "classifier" in entry else ""
@@ -130,7 +149,7 @@ def ensure_extra(entry, check_only):
     if "archiveEntry" in entry:
         # This vendor dependency is already embedded in a pinned release.
         # Check the archive as well as the extracted dependency, never run it.
-        archive = download(entry["sourceUrl"], entry["archiveSha256"])
+        archive = release_archive(entry)
         with zipfile.ZipFile(io.BytesIO(archive)) as bundle:
             data = bundle.read(entry["archiveEntry"])
         if sha256(data) != entry["sha256"]:
