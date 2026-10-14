@@ -16,6 +16,8 @@ import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /** Keeps the original shape calculation and virtual fluid/default-state calls. */
 @Mixin(value = FlowableFluid.class, priority = 900)
@@ -24,11 +26,17 @@ public abstract class FluidFlowablePerformanceMixin {
     private static final ThreadLocal<?> meldrite$uncachedPassage = new ThreadLocal<>();
     // Separate fluid instances also keep results contributed by other mixins apart.
     @Unique
-    private final ThreadLocal<FluidPassageCache<BlockState>> meldrite$passages =
-            ThreadLocal.withInitial(FluidPassageCache::new);
+    private ThreadLocal<FluidPassageCache<BlockState>> meldrite$passages;
     @Unique
-    private final ThreadLocal<FluidStateTransitionCache<FluidState>> meldrite$transitions =
-            ThreadLocal.withInitial(FluidStateTransitionCache::new);
+    private ThreadLocal<FluidStateTransitionCache<FluidState>> meldrite$transitions;
+
+    // Mixin's inferred initializer range can omit the first of adjacent field
+    // initializers. Explicit constructor injection initializes both caches.
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void meldrite$initializeCaches(CallbackInfo ci) {
+        meldrite$passages = ThreadLocal.withInitial(FluidPassageCache::new);
+        meldrite$transitions = ThreadLocal.withInitial(FluidStateTransitionCache::new);
+    }
 
     @WrapMethod(method = "receivesFlow")
     private boolean meldrite$cachedPassage(Direction face, BlockView world, BlockPos pos,

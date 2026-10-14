@@ -7,9 +7,13 @@ import org.spongepowered.asm.mixin.Shadow;
 
 /** Stable connection and latency names used by 1.20-era NMS integrations. */
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class LegacyNetworkHandlerAliasesMixin {
+public abstract class LegacyNetworkHandlerAliasesMixin implements dev.meldrite.v1201.compat.NativePlayerConnectionAccess {
     @Shadow private ClientConnection connection;
     @Shadow public net.minecraft.server.network.ServerPlayerEntity player;
+
+    @Override public ClientConnection meldrite$connection() {
+        return connection;
+    }
 
     public ClientConnection connection() {
         return connection;

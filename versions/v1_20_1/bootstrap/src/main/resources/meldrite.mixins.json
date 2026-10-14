@@ -20,8 +20,6 @@
     "PathNodeNavigatorPerformanceMixin",
     "ChunkHolderMapPerformanceMixin",
     "ThreadedChunkPerformanceMixin",
-    "ThreadExecutorPerformanceMixin",
-    "ThreadedServerPerformanceMixin",
     "ServerLifecycleMixin",
     "MainConsoleOptionsMixin",
     "DedicatedConsoleMixin",

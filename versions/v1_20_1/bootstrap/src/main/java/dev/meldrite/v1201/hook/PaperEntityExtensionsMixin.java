@@ -32,6 +32,7 @@ import org.bukkit.plugin.Plugin;
 @Mixin(Entity.class)
 public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
     @Shadow private Entity vehicle;
+    @Shadow private boolean hasVisualFire;
     @Unique private boolean meldrite$visibleByDefault = true;
     @Override public boolean meldrite$isVisibleByDefault() { return meldrite$visibleByDefault; }
     @Override public void meldrite$setVisibleByDefault(boolean visible) { meldrite$visibleByDefault = visible; }
@@ -51,14 +52,13 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
     @Unique private TriState meldrite$frictionState = TriState.NOT_SET;
     @Unique private int meldrite$shieldBlockingDelay = 5;
     @Unique private boolean meldrite$fixedPose;
-    @Unique private boolean meldrite$visualFire;
     @Unique private Map<String, IdentityHashMap<Plugin, MetadataValue>> meldrite$metadata;
 
     @Override public synchronized SessionState meldrite$exportSessionState() {
         return new SessionState(meldrite$visibleByDefault, persist, meldrite$getPersistentDataContainer(),
                 meldrite$maximumNoDamageTicks, meldrite$lastDamageCause, lastDamageCancelled, meldrite$maxAirOverridden,
                 meldrite$maxAirOverride, meldrite$collidable, meldrite$collidableOverridden, meldrite$collidableExemptions,
-                meldrite$frictionState, meldrite$shieldBlockingDelay, meldrite$fixedPose, meldrite$visualFire, meldrite$metadata);
+                meldrite$frictionState, meldrite$shieldBlockingDelay, meldrite$fixedPose, hasVisualFire, meldrite$metadata);
     }
     @Override public synchronized void meldrite$importSessionState(SessionState state) {
         java.util.Objects.requireNonNull(state, "state");
@@ -69,7 +69,7 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
         meldrite$collidable = state.collidable(); meldrite$collidableOverridden = state.collidableOverridden();
         meldrite$collidableExemptions = state.collidableExemptions(); meldrite$frictionState = state.friction();
         meldrite$shieldBlockingDelay = state.shieldBlockingDelay(); meldrite$fixedPose = state.fixedPose();
-        meldrite$visualFire = state.visualFire(); meldrite$metadata = state.metadata();
+        meldrite$setVisualFire(state.visualFire()); meldrite$metadata = state.metadata();
     }
 
     public CraftEntity getBukkitEntity() { return NativeEntityExtensions.bukkit((Entity) (Object) this); }
@@ -103,8 +103,14 @@ public abstract class PaperEntityExtensionsMixin implements PaperEntityAccess {
     @Override public void meldrite$setShieldBlockingDelay(int delay) { meldrite$shieldBlockingDelay = delay; }
     @Override public boolean meldrite$isFixedPose() { return meldrite$fixedPose; }
     @Override public void meldrite$setFixedPose(boolean fixed) { meldrite$fixedPose = fixed; }
-    @Override public boolean meldrite$hasVisualFire() { return meldrite$visualFire; }
-    @Override public void meldrite$setVisualFire(boolean visualFire) { meldrite$visualFire = visualFire; }
+    @Override public boolean meldrite$hasVisualFire() { return hasVisualFire; }
+    @Override public void meldrite$setVisualFire(boolean visualFire) {
+        hasVisualFire = visualFire;
+        Entity entity = (Entity) (Object) this;
+        // Publish the native flag without changing ignition or damage duration.
+        // Clearing forced visuals must preserve fire that is actually burning.
+        entity.setOnFire(entity.getFireTicks() > 0);
+    }
     @Override public synchronized void meldrite$setMetadata(String key, MetadataValue value) {
         if (meldrite$metadata == null) meldrite$metadata = new HashMap<>();
         if (value == null || value.getOwningPlugin() == null) throw new IllegalArgumentException("Metadata value must have an owning plugin");

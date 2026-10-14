@@ -134,8 +134,13 @@ public final class VersionComposition implements AutoCloseable {
 
     @Override
     public void close() {
-        try {
-            coordinator.close();
+        try (coordinator) {
+            var facade = profile.facadeContext().server();
+            ((dev.meldrite.paper.facade.ServerAdapter) facade).markStopping();
+            var message = facade.shutdownMessage();
+            var reason = message == null ? net.minecraft.text.Text.translatable("multiplayer.disconnect.server_shutdown")
+                    : dev.meldrite.v1201.compat.NativeChatMessage.text(message);
+            dev.meldrite.v1201.compat.NativeServerShutdown.disconnectPlayers(server, reason);
         } finally {
             emit("status", coordinator.phase() == BootstrapCoordinator.Phase.STOPPED ? "STOPPED" : "FAILED");
         }
