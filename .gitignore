@@ -44,6 +44,7 @@ docs/superpowers/
 **/*handoff*.md
 **/*agent*.md
 **/AGENTS.md
+!/AGENTS.md
 
 # Local test suites, fixtures and probe inputs
 **/src/test/
