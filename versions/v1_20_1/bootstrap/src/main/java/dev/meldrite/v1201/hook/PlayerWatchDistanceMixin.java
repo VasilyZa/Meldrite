@@ -78,6 +78,6 @@ public abstract class PlayerWatchDistanceMixin implements NativePlayerWatchDista
                 if (before != after) sendWatchPackets(player, new ChunkPos(x, z), new MutableObject<>(), before, after);
             }
         }
-        for (var tracker : entityTrackers.values()) if (tracker instanceof NativeEntityTrackerAccess access) access.updateTrackedStatus(player);
+        for (var tracker : entityTrackers.values()) if (tracker instanceof NativeEntityTrackerAccess access) access.meldrite$updateTrackedStatus(player);
     }
 }

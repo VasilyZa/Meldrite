@@ -245,6 +245,7 @@ public final class VersionComposition implements AutoCloseable {
             if (name.equals("dev.meldrite.v1201.compat.NativeEntityExtensions")
                     || name.equals("io.papermc.paper.chunk.system.entity.EntityLookup")
                     || name.equals("dev.meldrite.paper.compat.DedicatedServerFacade")
+                    || name.equals("dev.meldrite.paper.compat.WorldSpawnAbiTransform")
                     || name.equals("dev.meldrite.paper.facade.CraftItemStackAdapter")
                     || name.equals("dev.meldrite.paper.facade.EntityAdapter")
                     || name.equals("dev.meldrite.paper.facade.PlayerAdapter")

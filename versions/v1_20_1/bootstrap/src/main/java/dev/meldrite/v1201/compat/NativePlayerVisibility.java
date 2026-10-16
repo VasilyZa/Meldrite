@@ -23,7 +23,7 @@ public final class NativePlayerVisibility {
         var storage = world.getChunkManager().threadedAnvilChunkStorage;
         var tracker = ((PlayerEntityTrackersAccess) storage).meldrite$entityTrackers().get(entity.getId());
         if (tracker instanceof NativeEntityTrackerAccess access) {
-            if (visible) access.updateTrackedStatus(viewer); else access.stopTracking(viewer);
+            if (visible) access.meldrite$updateTrackedStatus(viewer); else access.meldrite$stopTracking(viewer);
         }
     }
 }

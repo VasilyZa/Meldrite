@@ -11,6 +11,7 @@ import dev.meldrite.paper.scheduler.PaperSchedulerAdapter;
 import dev.meldrite.paper.compat.LegacyNameTransform;
 import dev.meldrite.paper.compat.EntityAbiTransform;
 import dev.meldrite.paper.compat.LegacyTextConstructorTransform;
+import dev.meldrite.paper.compat.WorldSpawnAbiTransform;
 import dev.meldrite.plugin.classloading.*;
 import dev.meldrite.plugin.runtime.*;
 import dev.meldrite.plugin.spi.*;
@@ -84,9 +85,14 @@ public final class ProfileBootstrap implements AutoCloseable {
         primary();
         pluginsDirectory = Files.createDirectories(directory.resolve("plugins"));
         engine = own(new PluginLoaderEngine(new ApiAuthority(getClass().getClassLoader(), ApiProviderLocator.paths()),
-                (bytes, context) -> {
-                    remaps.incrementAndGet();
-                    return new LegacyNameTransform().apply(new EntityAbiTransform().apply(new LegacyTextConstructorTransform().apply(bytes, context), context), context);
+                new ClassTransform() {
+                    @Override public byte[] prepare(byte[] bytes, TransformContext context) {
+                        return new WorldSpawnAbiTransform().apply(bytes, context);
+                    }
+                    @Override public byte[] apply(byte[] bytes, TransformContext context) {
+                        remaps.incrementAndGet();
+                        return new LegacyNameTransform().apply(new EntityAbiTransform().apply(new LegacyTextConstructorTransform().apply(bytes, context), context), context);
+                    }
                 }, nativeRoutes));
         try {
             // Absent game effects reject explicitly. V1 installs only the proven lifecycle/execution bridges.
