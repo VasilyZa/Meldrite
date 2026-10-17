@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 public final class MeldriteInitializer implements ModInitializer {
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("Meldrite");
     private volatile VersionComposition composition;
+    private volatile dev.meldrite.v1201.compat.NativeAbiAuditExecutor abiAudits;
 
     @Override
     public void onInitialize() {
@@ -18,7 +19,7 @@ public final class MeldriteInitializer implements ModInitializer {
                 MeldriteCommands.register(dispatcher, () -> {
                     VersionComposition current = composition;
                     return current == null ? null : current.workerStatus();
-                }));
+                }, () -> abiAudits));
         ServerLifecycleEvents.SERVER_STARTING.register(this::starting);
         ServerLifecycleEvents.SERVER_STARTED.register(this::started);
         ServerLifecycleEvents.SERVER_STOPPING.register(this::stopping);
@@ -34,6 +35,7 @@ public final class MeldriteInitializer implements ModInitializer {
 
     private void starting(MinecraftServer server) {
         try {
+            abiAudits = new dev.meldrite.v1201.compat.NativeAbiAuditExecutor();
             composition = VersionComposition.start(server);
         } catch (Throwable failure) {
             String code = failure instanceof dev.meldrite.bootstrap.DistributionVerifier.Rejected rejected
@@ -59,6 +61,9 @@ public final class MeldriteInitializer implements ModInitializer {
     }
 
     private void stopping(MinecraftServer server) {
+        var audits = abiAudits;
+        abiAudits = null;
+        if (audits != null) audits.close();
         VersionComposition current = composition;
         if (current == null) return;
         try {

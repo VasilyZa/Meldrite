@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "minecraft": "1.20.1",
+  "namespace": "intermediary",
+  "scope": "Installed Meldrite native interface and critical Paper ABI declarations; not a complete upstream ABI inventory or behavior certification",
+  "requests": [
+    {
+      "id": "tracker-native-entity-tracker-interface",
+      "kind": "interface",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": null,
+      "descriptor": "Ldev/meldrite/v1201/compat/NativeEntityTrackerAccess;",
+      "declared": true
+    },
+    {
+      "id": "tracker-native-stop-tracking-bridge",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": "meldrite$stopTracking",
+      "descriptor": "(Lnet/minecraft/class_3222;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "tracker-native-update-status-bridge",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": "meldrite$updateTrackedStatus",
+      "descriptor": "(Lnet/minecraft/class_3222;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "tracker-snapshot-source-interface",
+      "kind": "interface",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": null,
+      "descriptor": "Ldev/meldrite/v1201/perf/TrackingSnapshotSource;",
+      "declared": true
+    },
+    {
+      "id": "tracker-snapshot-entity",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": "meldrite$trackedEntity",
+      "descriptor": "()Lnet/minecraft/class_1297;",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "tracker-snapshot-range",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": "meldrite$trackingRange",
+      "descriptor": "()I",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "tracker-snapshot-listener-presence",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898$class_3208",
+      "name": "meldrite$hasTrackingListener",
+      "descriptor": "(Lnet/minecraft/class_3222;)Z",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "chunk-storage-tracker-access-interface",
+      "kind": "interface",
+      "owner": "net.minecraft.class_3898",
+      "name": null,
+      "descriptor": "Ldev/meldrite/v1201/hook/PlayerEntityTrackersAccess;",
+      "declared": true
+    },
+    {
+      "id": "chunk-storage-entity-trackers-accessor",
+      "kind": "method",
+      "owner": "net.minecraft.class_3898",
+      "name": "meldrite$entityTrackers",
+      "descriptor": "()Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "interaction-process-breaking-action",
+      "kind": "method",
+      "owner": "net.minecraft.class_3225",
+      "name": "method_14263",
+      "descriptor": "(Lnet/minecraft/class_2338;Lnet/minecraft/class_2846$class_2847;Lnet/minecraft/class_2350;II)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "interaction-interact-block",
+      "kind": "method",
+      "owner": "net.minecraft.class_3225",
+      "name": "method_14262",
+      "descriptor": "(Lnet/minecraft/class_3222;Lnet/minecraft/class_1937;Lnet/minecraft/class_1799;Lnet/minecraft/class_1268;Lnet/minecraft/class_3965;)Lnet/minecraft/class_1269;",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "interaction-manager-player-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_3225",
+      "name": "field_14008",
+      "descriptor": "Lnet/minecraft/class_3222;",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "interaction-manager-mining-state",
+      "kind": "field",
+      "owner": "net.minecraft.class_3225",
+      "name": "field_14003",
+      "descriptor": "Z",
+      "static": false,
+      "declared": true,
+      "visibility": "private"
+    },
+    {
+      "id": "interaction-manager-failed-mining-position",
+      "kind": "field",
+      "owner": "net.minecraft.class_3225",
+      "name": "field_20329",
+      "descriptor": "Lnet/minecraft/class_2338;",
+      "static": false,
+      "declared": true,
+      "visibility": "private"
+    },
+    {
+      "id": "paper-section-block-packet-state-array-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_2637",
+      "name": "<init>",
+      "descriptor": "(Lnet/minecraft/class_4076;Lit/unimi/dsi/fastutil/shorts/ShortSet;[Lnet/minecraft/class_2680;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "paper-chunk-section-dual-palette-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_2826",
+      "name": "<init>",
+      "descriptor": "(Lnet/minecraft/class_2841;Lnet/minecraft/class_2841;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "paper-player-list-enumset-list-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_2703",
+      "name": "<init>",
+      "descriptor": "(Ljava/util/EnumSet;Ljava/util/List;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "paper-player-list-enumset-entry-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_2703",
+      "name": "<init>",
+      "descriptor": "(Ljava/util/EnumSet;Lnet/minecraft/class_2703$class_2705;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "legacy-mutable-text-string-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_5250",
+      "name": "<init>",
+      "descriptor": "(Ljava/lang/String;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "player-list-header-writable-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_2772",
+      "name": "field_12683",
+      "descriptor": "Lnet/minecraft/class_2561;",
+      "static": false,
+      "declared": true,
+      "visibility": "public",
+      "final": false
+    },
+    {
+      "id": "player-list-footer-writable-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_2772",
+      "name": "field_12684",
+      "descriptor": "Lnet/minecraft/class_2561;",
+      "static": false,
+      "declared": true,
+      "visibility": "public",
+      "final": false
+    },
+    {
+      "id": "player-manager-mutable-max-players",
+      "kind": "field",
+      "owner": "net.minecraft.class_3324",
+      "name": "field_14347",
+      "descriptor": "I",
+      "static": false,
+      "declared": true,
+      "visibility": "public",
+      "final": false
+    },
+    {
+      "id": "player-manager-player-list-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_3324",
+      "name": "field_14351",
+      "descriptor": "Ljava/util/List;",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "anvil-rename-text-writable-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_1706",
+      "name": "field_7774",
+      "descriptor": "Ljava/lang/String;",
+      "static": false,
+      "declared": true,
+      "visibility": "public",
+      "final": false
+    },
+    {
+      "id": "item-usage-context-paper-constructor",
+      "kind": "constructor",
+      "owner": "net.minecraft.class_1838",
+      "name": "<init>",
+      "descriptor": "(Lnet/minecraft/class_1937;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;Lnet/minecraft/class_1799;Lnet/minecraft/class_3965;)V",
+      "static": false,
+      "declared": true,
+      "visibility": "public"
+    },
+    {
+      "id": "ingredient-exact-field",
+      "kind": "field",
+      "owner": "net.minecraft.class_1856",
+      "name": "exact",
+      "descriptor": "Z",
+      "static": false,
+      "visibility": "public",
+      "declared": true
+    },
+    {
+      "id": "chunk-persistent-container",
+      "kind": "field",
+      "owner": "net.minecraft.class_2791",
+      "name": "persistentDataContainer",
+      "descriptor": "Lorg/bukkit/craftbukkit/v1_20_R1/persistence/DirtyCraftPersistentDataContainer;",
+      "static": false,
+      "visibility": "public",
+      "declared": true
+    },
+    {
+      "id": "chunk-section-special-count",
+      "kind": "field",
+      "owner": "net.minecraft.class_2826",
+      "name": "specialCollidingBlocks",
+      "descriptor": "I",
+      "static": false,
+      "visibility": "protected",
+      "declared": true
+    },
+    {
+      "id": "chunk-section-collision-data",
+      "kind": "field",
+      "owner": "net.minecraft.class_2826",
+      "name": "knownBlockCollisionData",
+      "descriptor": "[J",
+      "static": false,
+      "visibility": "private",
+      "declared": true
+    },
+    {
+      "id": "block-state-cache-interface",
+      "kind": "interface",
+      "owner": "net.minecraft.class_2680",
+      "descriptor": "Ldev/meldrite/v1201/compat/NativeBlockStateCacheAccess;"
+    },
+    {
+      "id": "craft-anvil-api-type",
+      "kind": "assignable",
+      "owner": "org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryAnvil",
+      "descriptor": "Lorg/bukkit/inventory/AnvilInventory;"
+    },
+    {
+      "id": "craft-world-native-world",
+      "kind": "field",
+      "owner": "org.bukkit.craftbukkit.v1_20_R1.CraftWorld",
+      "name": "world",
+      "descriptor": "Lnet/minecraft/class_3218;",
+      "static": false,
+      "visibility": "private",
+      "declared": true
+    },
+    {
+      "id": "craft-chunk-native-world",
+      "kind": "field",
+      "owner": "org.bukkit.craftbukkit.v1_20_R1.CraftChunk",
+      "name": "worldServer",
+      "descriptor": "Lnet/minecraft/class_3218;",
+      "static": false,
+      "visibility": "private",
+      "declared": true
+    }
+  ]
+}

@@ -48,7 +48,14 @@ public abstract class PlayerInteractionMixin {
         // STOP packets can arrive after a cancelled START. Vanilla compares the
         // old mining position even when mining=false. Only a new active mining
         // transaction can make a later STOP valid again.
-        if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK
+        if (action == PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK
+                && position.equals(meldrite$deniedMiningPosition)) {
+            // The denied START never installed vanilla's miningPos. Consume its
+            // matching ABORT here, retaining the denial for a delayed STOP.
+            world.setBlockBreakingInfo(player.getId(), position, -1);
+            NativePlayerInteractionEvents.resync(player, position, face);
+            callback.cancel();
+        } else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK
                 && meldrite$deniedMiningPosition != null) {
             if (position.equals(meldrite$deniedMiningPosition) || position.equals(miningPos)) {
                 NativePlayerInteractionEvents.resync(player, position, face);
