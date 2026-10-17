@@ -125,6 +125,27 @@ public final class NativeEntitySpawner {
         return falling;
     }
 
+    /**
+     * Implements Paper's native LevelWriter insertion path. A null reason deliberately bypasses
+     * Bukkit spawn events (for example, native transfers); non-null reasons use the same
+     * cancellable event projection as Bukkit spawns. Only the supplied entity is inserted.
+     */
+    public static boolean addNative(ServerWorld world, Entity entity, CreatureSpawnEvent.SpawnReason reason) {
+        java.util.Objects.requireNonNull(world, "world");
+        java.util.Objects.requireNonNull(entity, "entity");
+        NativeEntityExtensions.requireThread(world);
+        if (entity.isRemoved()) return false;
+        if (reason != null) {
+            var event = spawnEvent(NativeEntityExtensions.bukkit(entity), reason);
+            org.bukkit.Bukkit.getPluginManager().callEvent(event);
+            if (((org.bukkit.event.Cancellable) event).isCancelled() || entity.isRemoved()) {
+                discardWithPassengers(entity);
+                return false;
+            }
+        }
+        return world.spawnEntity(entity);
+    }
+
     private static Entity hanging(ServerWorld world, BlockPos position, org.bukkit.entity.EntityType type, boolean randomize) {
         boolean frame = type != org.bukkit.entity.EntityType.PAINTING;
         Direction facing = Direction.NORTH;

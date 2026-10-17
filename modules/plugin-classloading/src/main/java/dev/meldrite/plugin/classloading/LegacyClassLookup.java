@@ -9,6 +9,15 @@ import java.lang.reflect.Method;
 
 /** Resolves legacy server names to the actual host classes exposed by native routes. */
 public final class LegacyClassLookup {
+    @FunctionalInterface interface GlobalClasses {
+        java.util.Optional<Class<?>> find(String name, boolean initialize) throws ClassNotFoundException;
+    }
+    private static final java.util.concurrent.ConcurrentMap<ClassLoader, GlobalClasses> globalClasses = new java.util.concurrent.ConcurrentHashMap<>();
+    static AutoCloseable bindGlobal(ClassLoader loader, GlobalClasses lookup) {
+        if (globalClasses.putIfAbsent(java.util.Objects.requireNonNull(loader), lookup) != null)
+            throw new IllegalStateException("GLOBAL_LIBRARY_SOURCE_ALREADY_BOUND");
+        return () -> globalClasses.remove(loader, lookup);
+    }
     @FunctionalInterface public interface MemberNames {
         List<String> resolve(Class<?> owner, String name, boolean method, Class<?>[] parameters, boolean declared);
     }
@@ -97,6 +106,15 @@ public final class LegacyClassLookup {
         return forName(name, true, callerLoader());
     }
 
+    /** ClassLoader lookup resolves aliases without triggering class initialization. */
+    public static Class<?> loadClass(ClassLoader loader, String name) throws ClassNotFoundException {
+        Objects.requireNonNull(loader, "loader");
+        Objects.requireNonNull(name, "name");
+        // Unlike Class.forName, ClassLoader.loadClass accepts binary names only.
+        if (name.startsWith("[") || name.indexOf('/') >= 0) return loader.loadClass(name);
+        return forName(name, false, loader);
+    }
+
     public static Class<?> forName(String name, boolean initialize, ClassLoader requestedLoader)
             throws ClassNotFoundException {
         String mapped = classNames.apply(name);
@@ -105,6 +123,13 @@ public final class LegacyClassLookup {
         // bootstrap loader.  Only the one-argument compatibility shim should
         // infer the caller's plugin loader.
         ClassLoader loader = requestedLoader;
+        if (loader != null) {
+            GlobalClasses globals = globalClasses.get(loader);
+            if (globals != null) {
+                var found = globals.find(mapped, initialize);
+                if (found.isPresent()) return found.get();
+            }
+        }
         if (!mapped.equals(name)) {
             try {
                 return Class.forName(mapped, initialize, LegacyClassLookup.class.getClassLoader());

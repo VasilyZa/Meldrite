@@ -18,6 +18,9 @@ import org.bukkit.craftbukkit.help.SimpleHelpMap;
 /** CraftBukkit's native server ABI and the profile's Bukkit services share one server. */
 public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     private final MinecraftDedicatedServer console;
+    // Fabric creates this facade before the native player manager. The native
+    // setPlayerManager hook publishes the actual manager once setup reaches it.
+    protected volatile DedicatedPlayerManager playerList;
     /** CraftBukkit's reflective command ABI owns the same map used by the profile. */
     private final org.bukkit.craftbukkit.command.CraftCommandMap commandMap = new org.bukkit.craftbukkit.command.CraftCommandMap(this);
     private final java.util.Map<java.util.UUID, CraftOfflinePlayer> offlinePlayers = new java.util.HashMap<>();
@@ -28,6 +31,7 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     public CraftServer(FacadeContext context, ProfileBootstrap runtime, MinecraftDedicatedServer console) {
         super(context, runtime);
         this.console = java.util.Objects.requireNonNull(console);
+        meldrite$bindPlayerList(console.getPlayerManager());
         this.paperPluginManager = new io.papermc.paper.plugin.manager.PaperPluginManagerImpl(
                 this, commandMap, super.getPluginManager());
         this.helpMap = new SimpleHelpMap(this);
@@ -83,7 +87,20 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
         if (bar == null) return false;
         bar.clearPlayers(); console.getBossBarManager().remove(bar); return true;
     }
-    public DedicatedPlayerManager getHandle() { return (DedicatedPlayerManager) console.getPlayerManager(); }
+    /** Mirrors the native setter, including the real uninitialized/cleared state. */
+    public void meldrite$bindPlayerList(PlayerManager manager) {
+        if (manager != console.getPlayerManager()) throw new IllegalStateException("CRAFT_SERVER_PLAYER_MANAGER_MISMATCH");
+        if (manager != null && !(manager instanceof DedicatedPlayerManager)) {
+            throw new IllegalStateException("CRAFT_SERVER_REQUIRES_DEDICATED_PLAYER_MANAGER");
+        }
+        playerList = (DedicatedPlayerManager) manager;
+    }
+    /** Null only while native setup has not installed a player manager, or after its explicit removal. */
+    public DedicatedPlayerManager getHandle() {
+        DedicatedPlayerManager current = playerList;
+        if (current != console.getPlayerManager()) throw new IllegalStateException("CRAFT_SERVER_PLAYER_MANAGER_MISMATCH");
+        return current;
+    }
     @Override public org.bukkit.entity.Player getPlayer(java.util.UUID uuid) {
         java.util.Objects.requireNonNull(uuid, "uuid");
         var manager = getHandle(); if (manager == null) return null;

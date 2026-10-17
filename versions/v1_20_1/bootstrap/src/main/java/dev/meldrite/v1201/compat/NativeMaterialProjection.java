@@ -2,14 +2,18 @@ package dev.meldrite.v1201.compat;
 
 import com.google.common.collect.ImmutableMultimap;
 import java.lang.reflect.Field;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractBlock;
@@ -42,8 +46,12 @@ public final class NativeMaterialProjection {
     private record State(Map<Material, Entry> entries, Map<Identifier, Material> keys,
                          Map<Item, Material> items, Map<Block, Material> blocks) { }
     private static volatile State state;
+    private static final MutableBlockMaterialMap BLOCK_MATERIAL = new MutableBlockMaterialMap();
 
     private NativeMaterialProjection() { }
+
+    /** Stable Paper-facing conversion map; obtaining the reference does not bind Material. */
+    public static Map<Block, Material> blockMaterialMap() { return BLOCK_MATERIAL; }
 
     public static synchronized void bind() {
         if (state != null) {
@@ -100,8 +108,10 @@ public final class NativeMaterialProjection {
             if (block != null) blockMaterials.put(block, material);
         }
         MaterialEnumExtension.publish(additions);
-        state = new State(Collections.unmodifiableMap(entries), Map.copyOf(materials),
+        State published = new State(Collections.unmodifiableMap(entries), Map.copyOf(materials),
                 Collections.unmodifiableMap(itemMaterials), Collections.unmodifiableMap(blockMaterials));
+        BLOCK_MATERIAL.bind(blockMaterials);
+        state = published;
     }
 
     public static boolean extended(Material material) {
@@ -119,9 +129,46 @@ public final class NativeMaterialProjection {
 
     public static Material material(Block block) {
         State current = state;
-        if (current != null) return current.blocks.get(block);
+        if (current != null) return BLOCK_MATERIAL.get(block);
         Identifier key = Registries.BLOCK.getId(block);
         return key.getNamespace().equals("minecraft") ? Material.matchMaterial(key.toString()) : null;
+    }
+
+    private static final class MutableBlockMaterialMap extends AbstractMap<Block, Material> {
+        private volatile Map<Block, Material> backing;
+
+        private void bind(Map<Block, Material> canonical) {
+            if (backing != null) throw new IllegalStateException("Native block material map was already bound");
+            backing = Collections.synchronizedMap(new IdentityHashMap<>(canonical));
+        }
+
+        private Map<Block, Material> backing() {
+            State published = state;
+            Map<Block, Material> current = backing;
+            if (published == null || current == null) {
+                throw new IllegalStateException("NATIVE_BLOCK_MATERIAL_MAP_NOT_BOUND: NativeMaterialProjection.bind() has not completed");
+            }
+            return current;
+        }
+
+        @Override public Set<Map.Entry<Block, Material>> entrySet() {
+            Set<Map.Entry<Block, Material>> entries = backing().entrySet();
+            // IdentityHashMap's own spliterator returns immutable snapshots.
+            // An iterator-backed view keeps Paper's entries writable through streams as well.
+            return new AbstractSet<>() {
+                @Override public Iterator<Map.Entry<Block, Material>> iterator() { return entries.iterator(); }
+                @Override public int size() { return entries.size(); }
+                @Override public boolean contains(Object entry) { return entries.contains(entry); }
+                @Override public boolean remove(Object entry) { return entries.remove(entry); }
+                @Override public void clear() { entries.clear(); }
+            };
+        }
+        @Override public Material get(Object key) { return backing().get(key); }
+        @Override public boolean containsKey(Object key) { return backing().containsKey(key); }
+        @Override public Material put(Block key, Material value) { return backing().put(key, value); }
+        @Override public Material remove(Object key) { return backing().remove(key); }
+        @Override public void clear() { backing().clear(); }
+        @Override public int size() { return backing().size(); }
     }
 
     /**

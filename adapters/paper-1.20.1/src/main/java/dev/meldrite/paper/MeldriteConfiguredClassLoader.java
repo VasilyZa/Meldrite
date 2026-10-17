@@ -6,6 +6,7 @@ import io.papermc.paper.plugin.provider.classloader.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.logging.Logger;
 import org.bukkit.Server;
@@ -20,9 +21,12 @@ public final class MeldriteConfiguredClassLoader extends PluginRealm implements 
     private int initCalls;
     private final PluginClassLoaderGroup group;
     private final Map<String,MeldriteConfiguredClassLoader> registered;
+    // Paper consumers discover this field by its exact URLClassLoader type.
+    // It must be the managed private library realm used by class/resource routing.
+    private final URLClassLoader libraryLoader;
     public MeldriteConfiguredClassLoader(PluginLoaderEngine engine,Path source,LibraryRealm libraries,ApiAuthority authority,TransformContext context,ClassTransform transform,VisibilityPolicy policy,Server server,PluginMetaAdapter.Metadata metadata,Path dataDirectory,Logger logger,Map<String,MeldriteConfiguredClassLoader> registered)throws IOException {
         super(engine,source,libraries,authority,context,transform,policy);this.server=Objects.requireNonNull(server);this.metadata=Objects.requireNonNull(metadata);this.source=source;this.dataDirectory=dataDirectory;this.logger=logger;
-        this.registered=registered;group=new ConfiguredClassLoaderGroupAdapter(this,registered,policy);
+        this.registered=registered;this.libraryLoader=libraries;group=new ConfiguredClassLoaderGroupAdapter(this,registered,policy);
     }
     @Override public PluginMeta getConfiguration(){return metadata.meta();}
     @Override public Class<?> loadClass(String name,boolean resolve)throws ClassNotFoundException {return loadRoutedClass(name,resolve,true,true);}

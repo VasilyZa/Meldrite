@@ -73,8 +73,20 @@ public final class NativeRecipes {
 
     public static void synchronize() {
         requireThread();
-        for (var player : server().getPlayerManager().getPlayerList()) {
-            player.networkHandler.sendPacket(new net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket(server().getRecipeManager().values()));
+        synchronize(server().getPlayerManager());
+    }
+
+    /** Off-thread requests enqueue the native player-state reads without blocking plugin workers. */
+    public static void synchronize(net.minecraft.server.PlayerManager manager) {
+        MinecraftServer server = Objects.requireNonNull(manager, "manager").getServer();
+        if (server.isStopped()) throw new IllegalStateException("RECIPE_SYNCHRONIZATION_SERVER_STOPPED");
+        if (!server.isOnThread()) {
+            server.execute(() -> synchronize(manager));
+            return;
+        }
+        var packet = new net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket(server.getRecipeManager().values());
+        for (var player : manager.getPlayerList()) {
+            player.networkHandler.sendPacket(packet);
             player.getRecipeBook().sendInitRecipesPacket(player);
         }
     }

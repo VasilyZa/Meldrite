@@ -48,6 +48,14 @@ public final class MeldriteMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        if (mixinClassName.endsWith("ChunkSectionCollisionCacheMixin")) {
+            // Mixin rejects newly added public static methods; expose the real decoder
+            // through the same native-class forwarding mechanism as other Paper members.
+            addStaticForwarder(targetClass, "getKnownBlockInfo", "(IJ)J", targetClass.name,
+                    "meldrite$extractKnownBlockInfo");
+            addPaperChunkSectionConstructor(targetClass, FabricLoader.getInstance().getMappingResolver());
+            return;
+        }
         if (mixinClassName.endsWith("PlayerListOrderApiMixin")) {
             dev.meldrite.v1201.compat.NativePlayerListApiTransform.apply(targetClass);
             return;
@@ -56,8 +64,14 @@ public final class MeldriteMixinPlugin implements IMixinConfigPlugin {
             dev.meldrite.v1201.compat.NativeMaterialApiTransform.apply(targetClass);
             return;
         }
+        if (mixinClassName.endsWith("NativeSectionBlockPacketMixin")) {
+            dev.meldrite.v1201.compat.NativeSectionBlockPacketConstructorTransform.apply(targetClass,
+                    FabricLoader.getInstance().getMappingResolver());
+            return;
+        }
         if (mixinClassName.endsWith("LegacyPlayerListPacketAliasesMixin")) {
             addLegacyPlayerListArrayConstructor(targetClass);
+            addPaperPlayerListConstructors(targetClass, FabricLoader.getInstance().getMappingResolver());
             return;
         }
         if (mixinClassName.endsWith("ServerSingletonMixin")) {
@@ -125,6 +139,24 @@ public final class MeldriteMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
+    /** Paper narrows the biome palette parameter; retain both native palette identities and recount. */
+    private static void addPaperChunkSectionConstructor(ClassNode targetClass, MappingResolver mappings) {
+        String palette = "L" + mappings.mapClassName("intermediary", "net.minecraft.class_2841").replace('.', '/') + ";";
+        String readable = "L" + mappings.mapClassName("intermediary", "net.minecraft.class_7522").replace('.', '/') + ";";
+        String descriptor = "(" + palette + palette + ")V";
+        if (targetClass.methods.stream().anyMatch(method -> "<init>".equals(method.name) && descriptor.equals(method.desc))) return;
+        MethodNode constructor = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+        constructor.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+        constructor.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 1));
+        constructor.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 2));
+        constructor.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, targetClass.name, "<init>",
+                "(" + palette + readable + ")V", false));
+        constructor.instructions.add(new InsnNode(Opcodes.RETURN));
+        constructor.maxStack = 3;
+        constructor.maxLocals = 3;
+        targetClass.methods.add(constructor);
+    }
+
     private static void addStaticForwarder(ClassNode targetClass, String alias, String descriptor,
                                            String owner, String targetMethod) {
         if (targetClass.methods.stream().anyMatch(method -> alias.equals(method.name)
@@ -156,19 +188,66 @@ public final class MeldriteMixinPlugin implements IMixinConfigPlugin {
         String action = mappings.mapClassName("intermediary", "net.minecraft.class_2703$class_5893").replace('.', '/');
         String player = mappings.mapClassName("intermediary", "net.minecraft.class_3222").replace('.', '/');
         String descriptor = "(L" + action + ";[L" + player + ";)V";
-        if (targetClass.methods.stream().anyMatch(method -> "<init>".equals(method.name) && descriptor.equals(method.desc))) return;
-        MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
-        method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
-        method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 1));
-        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/EnumSet", "of",
-                "(Ljava/lang/Enum;)Ljava/util/EnumSet;", false));
-        method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 2));
-        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList",
-                "([Ljava/lang/Object;)Ljava/util/List;", false));
-        method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, targetClass.name, "<init>",
-                "(Ljava/util/EnumSet;Ljava/util/Collection;)V", false));
-        method.instructions.add(new org.objectweb.asm.tree.InsnNode(Opcodes.RETURN));
-        targetClass.methods.add(method);
+        if (targetClass.methods.stream().noneMatch(method -> "<init>".equals(method.name) && descriptor.equals(method.desc))) {
+            MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", descriptor, null, null);
+            method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+            method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 1));
+            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/EnumSet", "of",
+                    "(Ljava/lang/Enum;)Ljava/util/EnumSet;", false));
+            method.instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 2));
+            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList",
+                    "([Ljava/lang/Object;)Ljava/util/List;", false));
+            method.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, targetClass.name, "<init>",
+                    "(Ljava/util/EnumSet;Ljava/util/Collection;)V", false));
+            method.instructions.add(new org.objectweb.asm.tree.InsnNode(Opcodes.RETURN));
+            targetClass.methods.add(method);
+        }
+    }
+
+    /** Adds Paper's native Entry-based packet constructors while retaining its list ownership semantics. */
+    private static void addPaperPlayerListConstructors(ClassNode targetClass, MappingResolver mappings) {
+        String action = mappings.mapClassName("intermediary", "net.minecraft.class_2703$class_5893").replace('.', '/');
+        String entry = mappings.mapClassName("intermediary", "net.minecraft.class_2703$class_2705").replace('.', '/');
+        String actionsField = mappings.mapFieldName("intermediary", "net.minecraft.class_2703", "field_40698",
+                "Ljava/util/EnumSet;");
+        String entriesField = mappings.mapFieldName("intermediary", "net.minecraft.class_2703", "field_12369",
+                "Ljava/util/List;");
+        String listDescriptor = "(Ljava/util/EnumSet;Ljava/util/List;)V";
+        if (targetClass.methods.stream().noneMatch(method -> "<init>".equals(method.name)
+                && listDescriptor.equals(method.desc))) {
+            String signature = "(Ljava/util/EnumSet<L" + action + ";>;Ljava/util/List<L" + entry + ";>;)V";
+            MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", listDescriptor, signature, null);
+            InsnList instructions = method.instructions;
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 1));
+            instructions.add(new org.objectweb.asm.tree.FieldInsnNode(Opcodes.PUTFIELD, targetClass.name, actionsField,
+                    "Ljava/util/EnumSet;"));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 2));
+            instructions.add(new org.objectweb.asm.tree.FieldInsnNode(Opcodes.PUTFIELD, targetClass.name, entriesField,
+                    "Ljava/util/List;"));
+            instructions.add(new InsnNode(Opcodes.RETURN));
+            targetClass.methods.add(method);
+        }
+
+        String entryDescriptor = "(Ljava/util/EnumSet;L" + entry + ";)V";
+        if (targetClass.methods.stream().noneMatch(method -> "<init>".equals(method.name)
+                && entryDescriptor.equals(method.desc))) {
+            String signature = "(Ljava/util/EnumSet<L" + action + ";>;L" + entry + ";)V";
+            MethodNode method = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", entryDescriptor, signature, null);
+            InsnList instructions = method.instructions;
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 0));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 1));
+            instructions.add(new org.objectweb.asm.tree.VarInsnNode(Opcodes.ALOAD, 2));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/util/List", "of",
+                    "(Ljava/lang/Object;)Ljava/util/List;", true));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, targetClass.name, "<init>",
+                    listDescriptor, false));
+            instructions.add(new InsnNode(Opcodes.RETURN));
+            targetClass.methods.add(method);
+        }
     }
 
     @Override

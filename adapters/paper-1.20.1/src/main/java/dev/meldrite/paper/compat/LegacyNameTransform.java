@@ -28,6 +28,8 @@ public final class LegacyNameTransform implements ClassTransform {
     }
 
     private static final Map<String, String> NAMES = withCraftAliases(Map.ofEntries(
+            Map.entry("io/papermc/paper/plugin/entrypoint/classloader/PaperPluginClassLoader", "dev/meldrite/paper/MeldriteConfiguredClassLoader"),
+            Map.entry("io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader", "dev.meldrite.paper.MeldriteConfiguredClassLoader"),
             Map.entry("net/minecraft/network/chat/ChatComponentText", "net/minecraft/class_5250"),
             Map.entry("net.minecraft.network.chat.ChatComponentText", "net.minecraft.class_5250"),
             Map.entry("net/minecraft/server/MinecraftServer$TickTimes", "dev/meldrite/v1201/compat/LegacyTickTimes"),
@@ -286,7 +288,7 @@ public final class LegacyNameTransform implements ClassTransform {
         ClassReader reader = new ClassReader(source);
         index(reader, pluginId);
         ClassWriter writer = new ClassWriter(0);
-        ClassRemapper remapper = new ClassRemapper(writer, new Remapper() {
+        ClassRemapper remapper = new ReflectionMetadataRemapper(writer, new Remapper() {
             @Override public String map(String internalName) {
                 String mapped = LegacyMappings.className(internalName);
                 if (!mapped.equals(internalName)) return mapped;
@@ -305,6 +307,17 @@ public final class LegacyNameTransform implements ClassTransform {
             }
             @Override public Object mapValue(Object value) {
                 if (value instanceof String text) {
+                    // Craft package strings can be inputs to a version relocator.
+                    // Resolve them at the Java reflection/native loading boundary,
+                    // leaving symbolic JVM type references to map() above.
+                    String dotted = text.replace('/', '.');
+                    int typeStart = dotted.lastIndexOf('[') + 1;
+                    if (typeStart > 0 && typeStart < dotted.length() && dotted.charAt(typeStart) == 'L') typeStart++;
+                    if (dotted.startsWith("org.bukkit.craftbukkit.", typeStart)) return text;
+                    // A literal may feed a namespace-aware mapping reader. Preserve
+                    // names whose Mojang and Spigot meanings differ; direct Java
+                    // reflection still goes through the existing lookup bridge.
+                    if (LegacyMappings.isAmbiguousReflectionClass(text)) return text;
                     String mapped = LegacyMappings.reflectionClassName(text);
                     if (!mapped.equals(text)) return text.contains("/") ? mapped.replace('.', '/') : mapped;
                     if (names.containsKey(text)) {
@@ -321,6 +334,14 @@ public final class LegacyNameTransform implements ClassTransform {
                 MethodVisitor visitor = super.visitMethod(access, name, descriptor, signature, exceptions);
                 return new org.objectweb.asm.MethodVisitor(Opcodes.ASM9, visitor) {
                     @Override public void visitMethodInsn(int opcode, String owner, String method, String desc, boolean isInterface) {
+                        if (opcode == Opcodes.INVOKEVIRTUAL
+                                && (owner.equals("java/lang/ClassLoader") || owner.equals("java/net/URLClassLoader"))
+                                && method.equals("loadClass") && desc.equals("(Ljava/lang/String;)Ljava/lang/Class;")) {
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                    "dev/meldrite/plugin/classloading/LegacyClassLookup", "loadClass",
+                                    "(Ljava/lang/ClassLoader;Ljava/lang/String;)Ljava/lang/Class;", false);
+                            return;
+                        }
                         if (opcode == Opcodes.INVOKEVIRTUAL && owner.equals("java/lang/Class")
                                 && ((method.equals("getField") || method.equals("getDeclaredField"))
                                         && desc.equals("(Ljava/lang/String;)Ljava/lang/reflect/Field;")

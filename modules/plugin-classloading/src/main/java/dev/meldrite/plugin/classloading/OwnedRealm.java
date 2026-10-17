@@ -13,12 +13,59 @@ abstract class OwnedRealm extends URLClassLoader {
     final TransformContext context;
     private final ClassTransform transform;
     private final Map<String,byte[]> definitions=new HashMap<>();
+    private final Set<String> validatedUrls=new HashSet<>();
     volatile boolean closed;
     OwnedRealm(List<Path> jars,ApiAuthority authority,TransformContext context,ClassTransform transform)throws IOException {
         super(urls(jars),authority.realmParent());this.authority=authority;this.context=context;this.transform=transform;
-        try{for(Path path:jars)authority.validate(path);}catch(IOException|RuntimeException failure){try{super.close();}catch(IOException cleanup){failure.addSuppressed(cleanup);}throw failure;}
+        try{for(Path path:jars){authority.validate(path);validatedUrls.add(path.toUri().toURL().toExternalForm());}}catch(IOException|RuntimeException failure){try{super.close();}catch(IOException cleanup){failure.addSuppressed(cleanup);}throw failure;}
     }
     private static URL[] urls(List<Path> jars)throws MalformedURLException {List<URL> urls=new ArrayList<>();for(Path path:jars)urls.add(path.toUri().toURL());return urls.toArray(URL[]::new);}
+    /** Reflection-based appenders may mutate URLClassPath without calling addURL. */
+    private synchronized void validateAppendedUrls() throws IOException {
+        for (URL url : getURLs()) {
+            validateUrl(url);
+        }
+    }
+    private synchronized void validateUrl(URL url) throws IOException {
+        String key = url.toExternalForm();
+        if (validatedUrls.contains(key)) return;
+        if (!url.getProtocol().equals("file")) throw new IOException("UNSUPPORTED_LIBRARY_URL: " + url);
+        final Path path;
+        try { path = Path.of(url.toURI()); }
+        catch (URISyntaxException | IllegalArgumentException failure) { throw new IOException("INVALID_LIBRARY_URL: " + url, failure); }
+        authority.validate(path);
+        try { transform.prepareLibrary(path, context); }
+        catch (IOException | RuntimeException failure) { throw failure; }
+        catch (Exception failure) { throw new IOException("LIBRARY_PREPARATION_FAILED: " + path, failure); }
+        validatedUrls.add(key);
+    }
+    /** Appenders can mutate URLClassPath between its snapshot and the actual lookup. */
+    private void validateOrigin(URL resource) throws IOException {
+        if (resource == null) return;
+        if (!resource.getProtocol().equals("jar")) throw new IOException("UNSUPPORTED_LIBRARY_RESOURCE: " + resource);
+        var connection = (JarURLConnection) resource.openConnection();
+        connection.setUseCaches(false);
+        URL origin = connection.getJarFileURL();
+        if (Arrays.stream(getURLs()).noneMatch(url -> url.toExternalForm().equals(origin.toExternalForm())))
+            throw new IOException("UNDECLARED_LIBRARY_RESOURCE: " + origin);
+        validateUrl(origin);
+    }
+    @Override public URL findResource(String name) {
+        if (closed) return null;
+        try {
+            validateAppendedUrls();
+            URL resource = super.findResource(name);
+            validateOrigin(resource);
+            return resource;
+        } catch (IOException failure) { throw new UncheckedIOException(failure); }
+    }
+    @Override public Enumeration<URL> findResources(String name) throws IOException {
+        if (closed) return Collections.emptyEnumeration();
+        validateAppendedUrls();
+        var found = Collections.list(super.findResources(name));
+        for (URL resource : found) validateOrigin(resource);
+        return Collections.enumeration(found);
+    }
     final Class<?> shared(String name)throws ClassNotFoundException {
         try{return ClassLoader.getPlatformClassLoader().loadClass(name);}catch(ClassNotFoundException absent){if(authority.owns(name))return authority.load(name);throw absent;}
     }

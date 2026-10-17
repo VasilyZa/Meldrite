@@ -2,6 +2,7 @@ package org.bukkit.craftbukkit.v1_20_R1;
 
 import dev.meldrite.v1201.compat.NativeChunkTickets;
 import dev.meldrite.v1201.compat.NativeChunkPersistentDataAccess;
+import dev.meldrite.v1201.compat.WorldBukkitAccess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,40 +28,83 @@ import org.bukkit.plugin.Plugin;
 public final class CraftChunk implements Chunk {
     private static final CraftPersistentDataTypeRegistry DATA_TYPES = new CraftPersistentDataTypeRegistry();
     private final CraftWorld world;
+    private volatile ServerWorld worldServer;
     private final int x, z;
 
     public CraftChunk(CraftWorld world, int x, int z) {
         this.world = Objects.requireNonNull(world);
+        this.worldServer = world.getHandle();
         this.x = x;
         this.z = z;
     }
 
+    public CraftChunk(WorldChunk chunk) {
+        Objects.requireNonNull(chunk, "chunk");
+        if (!(chunk.getWorld() instanceof ServerWorld nativeWorld)) {
+            throw new IllegalStateException("CRAFT_CHUNK_REQUIRES_SERVER_WORLD");
+        }
+        if (!(nativeWorld instanceof WorldBukkitAccess worldAccess)) {
+            throw new IllegalStateException("WORLD_FACADE_NOT_PRESENT");
+        }
+        CraftWorld craftWorld = worldAccess.meldrite$getBukkitWorld();
+        if (craftWorld == null) throw new IllegalStateException("WORLD_FACADE_NOT_PRESENT");
+        if (craftWorld.getHandle() != nativeWorld) throw new IllegalStateException("CRAFT_CHUNK_WORLD_MISMATCH");
+
+        var position = Objects.requireNonNull(chunk.getPos(), "chunk.pos");
+        this.world = craftWorld;
+        this.worldServer = nativeWorld;
+        this.x = position.x;
+        this.z = position.z;
+    }
+
+    private ServerWorld requireWorldServer() {
+        ServerWorld current = worldServer;
+        if (current == null) throw new IllegalStateException("STALE_CRAFT_CHUNK");
+
+        ServerWorld canonical;
+        try {
+            canonical = world.getHandle();
+        } catch (IllegalStateException invalidWorld) {
+            if ("STALE_CRAFT_WORLD".equals(invalidWorld.getMessage())) {
+                throw new IllegalStateException("STALE_CRAFT_CHUNK", invalidWorld);
+            }
+            if ("UNSUPPORTED_CRAFT_WORLD_REBIND".equals(invalidWorld.getMessage())) {
+                throw new IllegalStateException("UNSUPPORTED_CRAFT_CHUNK_REBIND", invalidWorld);
+            }
+            throw invalidWorld;
+        }
+        if (canonical != current) throw new IllegalStateException("UNSUPPORTED_CRAFT_CHUNK_REBIND");
+        return current;
+    }
+
     public WorldChunk getHandle() {
-        var chunk = world.getHandle().getChunkManager().getChunk(x, z, ChunkStatus.FULL, false);
+        var chunk = requireWorldServer().getChunkManager().getChunk(x, z, ChunkStatus.FULL, false);
         if (!(chunk instanceof WorldChunk loaded)) throw new IllegalStateException("CHUNK_NOT_LOADED: " + x + "," + z);
         return loaded;
     }
     /** Returns this chunk at a specific native generation status. */
     public net.minecraft.world.chunk.Chunk getHandle(ChunkStatus status) {
-        return world.getHandle().getChunkManager().getChunk(x, z, Objects.requireNonNull(status, "status"), true);
+        return requireWorldServer().getChunkManager().getChunk(x, z, Objects.requireNonNull(status, "status"), true);
     }
     @Override public int getX() { return x; }
     @Override public int getZ() { return z; }
-    @Override public CraftWorld getWorld() { return world; }
+    @Override public CraftWorld getWorld() { requireWorldServer(); return world; }
     @Override public String toString() { return "CraftChunk{" + x + "," + z + "}"; }
     @Override public Block getBlock(int blockX, int blockY, int blockZ) {
         if (blockX < 0 || blockX > 15 || blockZ < 0 || blockZ > 15) throw new IllegalArgumentException("Chunk-local X/Z must be in [0, 15]");
-        if (blockY < world.getMinHeight() || blockY >= world.getMaxHeight()) throw new IllegalArgumentException("Y outside world height: " + blockY);
+        ServerWorld current = requireWorldServer();
+        if (blockY < current.getBottomY() || blockY >= current.getTopY()) throw new IllegalArgumentException("Y outside world height: " + blockY);
         return world.getBlockAt((x << 4) + blockX, blockY, (z << 4) + blockZ);
     }
     @Override public org.bukkit.ChunkSnapshot getChunkSnapshot() { return getChunkSnapshot(true, false, false); }
     @Override public org.bukkit.ChunkSnapshot getChunkSnapshot(boolean includeMaxBlockY, boolean includeBiome, boolean includeBiomeTemp) {
         return new CraftChunkSnapshot(world, getHandle(), includeBiome, includeBiomeTemp);
     }
-    @Override public boolean isEntitiesLoaded() { return world.getHandle().getChunkManager().isChunkLoaded(x, z); }
+    @Override public boolean isEntitiesLoaded() { return requireWorldServer().getChunkManager().isChunkLoaded(x, z); }
     @Override public Entity[] getEntities() {
+        ServerWorld current = requireWorldServer();
         var result = new ArrayList<Entity>();
-        for (var nativeEntity : world.getNMSEntities()) {
+        for (var nativeEntity : current.iterateEntities()) {
             var position = nativeEntity.getChunkPos();
             if (position.x == x && position.z == z && !nativeEntity.isRemoved()) result.add(dev.meldrite.v1201.compat.NativeEntityExtensions.bukkit(nativeEntity));
         }
@@ -79,23 +123,23 @@ public final class CraftChunk implements Chunk {
         }
         return result;
     }
-    @Override public boolean isGenerated() { return world.getHandle().getChunkManager().getChunk(x, z, ChunkStatus.FULL, false) instanceof WorldChunk; }
-    @Override public boolean isLoaded() { return world.getHandle().getChunkManager().isChunkLoaded(x, z); }
-    @Override public boolean load(boolean generate) { return world.loadChunk(x, z, generate); }
+    @Override public boolean isGenerated() { return requireWorldServer().getChunkManager().getChunk(x, z, ChunkStatus.FULL, false) instanceof WorldChunk; }
+    @Override public boolean isLoaded() { return requireWorldServer().getChunkManager().isChunkLoaded(x, z); }
+    @Override public boolean load(boolean generate) { requireWorldServer(); return world.loadChunk(x, z, generate); }
     @Override public boolean load() { return load(true); }
-    @Override public boolean unload(boolean save) { return world.unloadChunk(x, z, save); }
+    @Override public boolean unload(boolean save) { requireWorldServer(); return world.unloadChunk(x, z, save); }
     @Override public boolean unload() { return unload(true); }
     @Override public boolean isSlimeChunk() {
-        var random = net.minecraft.util.math.random.ChunkRandom.getSlimeRandom(x, z, world.getSeed(), 987234911L);
+        var random = net.minecraft.util.math.random.ChunkRandom.getSlimeRandom(x, z, requireWorldServer().getSeed(), 987234911L);
         return random.nextInt(10) == 0;
     }
-    @Override public boolean isForceLoaded() { return world.getHandle().getForcedChunks().contains(net.minecraft.util.math.ChunkPos.toLong(x, z)); }
-    @Override public void setForceLoaded(boolean forced) { world.getHandle().setChunkForced(x, z, forced); }
-    @Override public boolean addPluginChunkTicket(Plugin plugin) { return NativeChunkTickets.addPlugin(world.getHandle(), x, z, plugin); }
-    @Override public boolean removePluginChunkTicket(Plugin plugin) { return NativeChunkTickets.removePlugin(world.getHandle(), x, z, plugin); }
-    @Override public Collection<Plugin> getPluginChunkTickets() { return NativeChunkTickets.plugins(world.getHandle(), x, z); }
+    @Override public boolean isForceLoaded() { return requireWorldServer().getForcedChunks().contains(net.minecraft.util.math.ChunkPos.toLong(x, z)); }
+    @Override public void setForceLoaded(boolean forced) { requireWorldServer().setChunkForced(x, z, forced); }
+    @Override public boolean addPluginChunkTicket(Plugin plugin) { return NativeChunkTickets.addPlugin(requireWorldServer(), x, z, plugin); }
+    @Override public boolean removePluginChunkTicket(Plugin plugin) { return NativeChunkTickets.removePlugin(requireWorldServer(), x, z, plugin); }
+    @Override public Collection<Plugin> getPluginChunkTickets() { return NativeChunkTickets.plugins(requireWorldServer(), x, z); }
     @Override public long getInhabitedTime() { return getHandle().getInhabitedTime(); }
-    @Override public void setInhabitedTime(long time) { dev.meldrite.v1201.compat.NativeEntityExtensions.requireThread(world.getHandle()); getHandle().setInhabitedTime(time); }
+    @Override public void setInhabitedTime(long time) { dev.meldrite.v1201.compat.NativeEntityExtensions.requireThread(requireWorldServer()); getHandle().setInhabitedTime(time); }
     @Override public boolean contains(BlockData data) {
         var nativeData = dev.meldrite.v1201.compat.NativeBlockData.require(Objects.requireNonNull(data));
         for (var section : getHandle().getSectionArray()) if (section.hasAny(state -> state == nativeData)) return true;

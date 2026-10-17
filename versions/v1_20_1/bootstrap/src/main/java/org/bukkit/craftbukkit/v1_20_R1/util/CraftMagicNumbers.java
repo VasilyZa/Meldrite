@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TranslatableComponent;
@@ -65,6 +66,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 @SuppressWarnings({"deprecation", "removal"})
 public final class CraftMagicNumbers implements UnsafeValues {
     public static final UnsafeValues INSTANCE = new CraftMagicNumbers();
+    private static final Map<Block, Material> BLOCK_MATERIAL = NativeMaterialProjection.blockMaterialMap();
     private static final List<String> SUPPORTED_API = List.of("1.13", "1.14", "1.15", "1.16", "1.17", "1.18", "1.19", "1.20");
     private static final ComponentFlattener FLATTENER = ComponentFlattener.basic().toBuilder()
             .mapper(TranslatableComponent.class, component -> {

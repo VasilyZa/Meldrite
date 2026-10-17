@@ -108,6 +108,82 @@ public final class LegacyMappings {
         return mapped.equals(internal) ? name : mapped.replace('/', '.');
     }
 
+    private static final class AmbiguousReflectionNames {
+        static final java.util.Set<String> CLASSES = read();
+        private static java.util.Set<String> read() {
+            String resource = "/meldrite/mappings/1.20.1/reflection-names.tiny.gz";
+            try (var input = LegacyMappings.class.getResourceAsStream(resource)) {
+                if (input == null) throw new IOException("REFLECTION_MAPPINGS_MISSING: " + resource);
+                try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(
+                        new GZIPInputStream(input), java.nio.charset.StandardCharsets.UTF_8))) {
+                    var result = new HashSet<String>();
+                    for (String line; (line = reader.readLine()) != null;) {
+                        String[] columns = line.split("\t", -1);
+                        if (columns.length == 3 && columns[0].equals("c")) {
+                            String legacy = INSTANCE.classes.get(columns[2]);
+                            if (legacy != null && !legacy.equals(columns[1])) result.add(columns[2]);
+                        }
+                    }
+                    return java.util.Set.copyOf(result);
+                }
+            } catch (IOException failure) { throw new ExceptionInInitializerError(failure); }
+        }
+    }
+
+    static boolean isAmbiguousReflectionClass(String text) {
+        String name = text.replace('.', '/');
+        if (name.startsWith("[")) {
+            int type = name.lastIndexOf('[') + 1;
+            if (type >= name.length() || name.charAt(type) != 'L' || !name.endsWith(";")) return false;
+            name = name.substring(type + 1, name.length() - 1);
+        }
+        return AmbiguousReflectionNames.CLASSES.contains(name);
+    }
+
+    /**
+     * Paper's reobf.tiny protocol calls its server-runtime column "spigot".
+     * Export the real active Fabric symbols in that column, without changing
+     * reflection objects or inferring which input namespace a caller intended.
+     */
+    public static void writePaperReflectionMappings(java.io.OutputStream destination) throws IOException {
+        RuntimeNamespace namespace = runtime;
+        String resource = "/meldrite/mappings/1.20.1/reflection-names.tiny.gz";
+        try (var input = LegacyMappings.class.getResourceAsStream(resource)) {
+            if (input == null) throw new IOException("REFLECTION_MAPPINGS_MISSING: " + resource);
+            try (var reader = new java.io.BufferedReader(new java.io.InputStreamReader(
+                    new GZIPInputStream(input), java.nio.charset.StandardCharsets.UTF_8))) {
+                if (!"tiny\t2\t0\tintermediary\tmojang".equals(reader.readLine()))
+                    throw new IOException("REFLECTION_MAPPINGS_FORMAT_INVALID");
+                List<String[]> rows = reader.lines().map(line -> line.split("\t", -1)).toList();
+                Map<String, String> readableClasses = new HashMap<>();
+                for (String[] row : rows) if (row.length == 3 && row[0].equals("c"))
+                    readableClasses.put(row[1], row[2]);
+                Remapper readable = new Remapper() {
+                    @Override public String map(String name) { return readableClasses.getOrDefault(name, name); }
+                };
+                StringBuilder tiny = new StringBuilder("tiny\t2\t0\tmojang\tspigot\n");
+                String owner = null;
+                for (String[] columns : rows) {
+                    if (columns.length == 3 && columns[0].equals("c")) {
+                        owner = columns[1];
+                        tiny.append("c\t").append(columns[2]).append('\t').append(namespace.className(owner)).append('\n');
+                    } else if (owner != null && columns.length == 5 && columns[0].isEmpty()
+                            && (columns[1].equals("f") || columns[1].equals("m"))) {
+                        String name = columns[3];
+                        boolean method = columns[1].equals("m");
+                        String mapped = name.startsWith("<") ? name : method
+                                ? namespace.methodName(owner, name, columns[2])
+                                : namespace.fieldName(owner, name, columns[2]);
+                        String descriptor = method ? readable.mapMethodDesc(columns[2]) : readable.mapDesc(columns[2]);
+                        tiny.append('\t').append(columns[1]).append('\t').append(descriptor).append('\t')
+                                .append(columns[4]).append('\t').append(mapped).append('\n');
+                    } else throw new IOException("REFLECTION_MAPPINGS_ENTRY_INVALID");
+                }
+                destination.write(tiny.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }
+        }
+    }
+
     static void registerHierarchy(String plugin, String owner, String superclass, String[] interfaces, int access) {
         var inheritance = new ArrayList<String>();
         if (superclass != null) inheritance.add(superclass);

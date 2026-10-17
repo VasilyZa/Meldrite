@@ -30,6 +30,9 @@ public final class InternalAccessDetector {
         for (Path library : libraries) index(pluginId, library);
         index(pluginId, plugin);
     }
+    public static void indexLibrary(String ownerId, Path library) throws IOException {
+        index(ownerId, library);
+    }
 
     private static void index(String pluginId, Path path) throws IOException {
         try (JarFile jar = new JarFile(path.toFile())) {
@@ -74,6 +77,6 @@ public final class InternalAccessDetector {
         if (dotted.startsWith("[")) dotted = dotted.replaceFirst("^\\[+L?", "");
         return dotted.startsWith("net.minecraft.") || dotted.startsWith("org.bukkit.craftbukkit.")
                 || dotted.equals("org.bukkit.craftbukkit") || dotted.equals("net.minecraft")
-                || !LegacyMappings.className(name.replace('.', '/')).equals(name.replace('.', '/'));
+                || !LegacyNameTransform.reflectionClassName(dotted).equals(dotted);
     }
 }

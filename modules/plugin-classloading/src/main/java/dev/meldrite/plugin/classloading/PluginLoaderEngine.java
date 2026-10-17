@@ -12,8 +12,13 @@ public final class PluginLoaderEngine implements AutoCloseable {
     private final List<NativeRoute> nativeRoutes;
     private final Map<String,PluginRealm> realms=new LinkedHashMap<>();
     private boolean closed;
+    private GlobalLibraryRegistry globals;
     public PluginLoaderEngine(ApiAuthority authority,ClassTransform transform){this(authority,transform,List.of());}
     public PluginLoaderEngine(ApiAuthority authority,ClassTransform transform,List<NativeRoute> nativeRoutes){this.authority=Objects.requireNonNull(authority);this.transform=Objects.requireNonNull(transform);this.nativeRoutes=List.copyOf(nativeRoutes);}
+    public PluginLoaderEngine(ApiAuthority authority,ClassTransform transform,List<NativeRoute> nativeRoutes,GlobalLibraryAccess globalAccess,Path cache)throws IOException {
+        this(authority,transform,nativeRoutes);
+        this.globals=new GlobalLibraryRegistry(authority,transform,globalAccess,cache);
+    }
     public PluginRealm open(String id,Path plugin,List<Path> libraries,TransformContext.Access access,VisibilityPolicy policy)throws IOException {return open(id,plugin,libraries,access,policy,PluginRealm::new);}
     @FunctionalInterface public interface RealmFactory {
         PluginRealm create(PluginLoaderEngine engine,Path plugin,LibraryRealm libraries,ApiAuthority authority,TransformContext context,ClassTransform transform,VisibilityPolicy policy)throws IOException;
@@ -24,11 +29,12 @@ public final class PluginLoaderEngine implements AutoCloseable {
     public synchronized PluginRealm open(String id,Path plugin,List<Path> libraries,TransformContext.Access access,VisibilityPolicy policy,ClassTransform preparation,RealmFactory factory)throws IOException {
         if(closed)throw new IllegalStateException("ENGINE_CLOSED");if(realms.containsKey(id))throw new IllegalStateException("DUPLICATE_REALM: "+id);
         ClassTransform definitions=new ClassTransform(){
+            @Override public void prepareLibrary(Path source,TransformContext context)throws Exception{transform.prepareLibrary(source,context);}
             @Override public byte[] prepare(byte[] bytes,TransformContext context)throws Exception{return transform.prepare(preparation.apply(bytes,context),context);}
             @Override public byte[] apply(byte[] bytes,TransformContext context)throws Exception{return transform.apply(bytes,context);}
         };
-        TransformContext context=new TransformContext(id,access);LibraryRealm library=new LibraryRealm(libraries,authority,context,definitions,nativeRoutes);
-        try{PluginRealm realm=factory.create(this,plugin,library,authority,context,definitions,policy);realms.put(id,realm);return realm;}
+        TransformContext context=new TransformContext(id,access);LibraryRealm library=new LibraryRealm(libraries,authority,context,definitions,nativeRoutes,globals);
+        try{PluginRealm realm=factory.create(this,plugin,library,authority,context,definitions,policy);realm.attachGlobals(globals);realms.put(id,realm);return realm;}
         catch(IOException|RuntimeException|Error failure){try{library.close();}catch(IOException cleanup){failure.addSuppressed(cleanup);}throw failure;}
     }
     synchronized Map<String,PluginRealm> snapshot(){return new LinkedHashMap<>(realms);}
@@ -59,6 +65,10 @@ public final class PluginLoaderEngine implements AutoCloseable {
             return resolved;
         }catch(ClassNotFoundException absent){
         }}
+        if (globals != null) {
+            var global = globals.find(name, false);
+            if (global.isPresent()) return global.get();
+        }
         try{return realm.exported(name,checkLibraries);}catch(ClassNotFoundException absent){if(absent.getCause()!=null)throw absent;}
         Map<String,PluginRealm> available=realm.routingRealms();
         for(String id:checkGroup?realm.policy.routes(realm.pluginId(),available.keySet()):List.<String>of()){PluginRealm provider=available.get(id);if(provider==realm)continue;
@@ -75,8 +85,10 @@ public final class PluginLoaderEngine implements AutoCloseable {
         Map<String,PluginRealm> available=realm.routingRealms();
         for(String id:realm.policy.routes(realm.pluginId(),available.keySet())){PluginRealm provider=available.get(id);if(provider==realm)continue;var exported=provider.exportedResources(name,realm.policy.exportLibraries(realm.pluginId(),id));if(!exported.isEmpty()){realm.policy.accessed(realm.pluginId(),id,name);urls.addAll(exported);}}
         if (realm.context.access() == TransformContext.Access.INTERNAL) for(NativeRoute route:nativeRoutes)if(route.resources().contains(name))urls.addAll(Collections.list(route.loader().getResources(name)));
+        if (globals != null) urls.addAll(globals.resources(name));
         return List.copyOf(urls);
     }
+    List<URL> globalResources(String name) throws IOException { return globals == null ? List.of() : globals.resources(name); }
     synchronized void removed(PluginRealm realm){realms.remove(realm.pluginId(),realm);}
     public <T> T withContext(PluginRealm realm, Callable<T> operation) throws Exception {
         Thread thread = Thread.currentThread();
@@ -98,5 +110,5 @@ public final class PluginLoaderEngine implements AutoCloseable {
             }
         }
     }
-    @Override public void close()throws IOException {List<PluginRealm> owned;synchronized(this){if(closed)return;closed=true;owned=new ArrayList<>(realms.values());}Collections.reverse(owned);IOException aggregate=null;for(PluginRealm realm:owned)try{realm.close();}catch(IOException failure){if(aggregate==null)aggregate=new IOException("REALM_CLOSE_FAILED");aggregate.addSuppressed(failure);}if(aggregate!=null)throw aggregate;}
+    @Override public void close()throws IOException {List<PluginRealm> owned;synchronized(this){if(closed)return;closed=true;owned=new ArrayList<>(realms.values());}Collections.reverse(owned);IOException aggregate=null;for(PluginRealm realm:owned)try{realm.close();}catch(IOException failure){if(aggregate==null)aggregate=new IOException("REALM_CLOSE_FAILED");aggregate.addSuppressed(failure);}if(globals!=null)try{globals.close();}catch(IOException failure){if(aggregate==null)aggregate=new IOException("REALM_CLOSE_FAILED");aggregate.addSuppressed(failure);}if(aggregate!=null)throw aggregate;}
 }

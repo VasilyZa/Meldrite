@@ -13,6 +13,10 @@ public class PluginRealm extends OwnedRealm {
     private boolean closing;
     private int executions;
     private volatile ReloadRealmGroup reloadGroup;
+    private GlobalLibraryRegistry globals;
+    final void attachGlobals(GlobalLibraryRegistry registry) {
+        if (registry != null) { registry.retain(); globals = registry; }
+    }
     protected PluginRealm(PluginLoaderEngine engine,Path plugin,LibraryRealm libraries,ApiAuthority authority,TransformContext context,ClassTransform transform,VisibilityPolicy policy)throws IOException {super(List.of(plugin),authority,context,transform);this.engine=engine;this.libraries=libraries;this.policy=Objects.requireNonNull(policy);}
     public String pluginId(){return context.pluginId();}
     synchronized void retainExecution() {
@@ -50,7 +54,7 @@ public class PluginRealm extends OwnedRealm {
     }
     protected final Class<?> loadRoutedClass(String name,boolean resolve,boolean checkGroup,boolean checkLibraries)throws ClassNotFoundException {
         String requested = name.indexOf('/') >= 0 ? name.replace('/', '.') : name;
-        synchronized(getClassLoadingLock(requested)){if(closed)throw new ClassNotFoundException("REALM_CLOSED: "+pluginId());Class<?> loaded=engine.load(this,requested,checkGroup,checkLibraries);if(resolve && loaded.getClassLoader()==this)resolveClass(loaded);return loaded;}
+        synchronized(getClassLoadingLock(requested)){if(closed)throw new ClassNotFoundException("REALM_CLOSED: "+pluginId());Class<?> loaded=findLoadedClass(requested);if(loaded==null||loaded.getClassLoader()!=this&&!(checkGroup&&checkLibraries))loaded=engine.load(this,requested,checkGroup,checkLibraries);if(resolve && loaded.getClassLoader()==this)resolveClass(loaded);return loaded;}
     }
     Class<?> exported(String name,boolean checkLibraries)throws ClassNotFoundException {
         if(closed)throw new ClassNotFoundException("REALM_CLOSED: "+pluginId());
@@ -61,7 +65,9 @@ public class PluginRealm extends OwnedRealm {
     protected final List<URL> localResources(String name)throws IOException {
         if(closed)return List.of();
         if(name.equals("META-INF/services/org.slf4j.spi.SLF4JServiceProvider"))return authority.resources(name);
-        return exportedResources(name,true);
+        var resources = new ArrayList<>(exportedResources(name,true));
+        resources.addAll(engine.globalResources(name));
+        return List.copyOf(resources);
     }
     @Override public URL getResource(String name){try{var resources=getResources(name);return resources.hasMoreElements()?resources.nextElement():null;}catch(IOException failure){throw new UncheckedIOException(failure);}}
     @Override public Enumeration<URL> getResources(String name)throws IOException {return Collections.enumeration(closed?List.of():engine.resources(this,name));}
@@ -90,6 +96,13 @@ public class PluginRealm extends OwnedRealm {
         try { libraries.close(); } catch (IOException failure) {
             if (error == null) error = failure;
             else error.addSuppressed(failure);
+        }
+        if (globals != null) {
+            var registry = globals; globals = null;
+            try { registry.release(); } catch (IOException failure) {
+                if (error == null) error = failure;
+                else error.addSuppressed(failure);
+            }
         }
         if (error != null) throw error;
     }

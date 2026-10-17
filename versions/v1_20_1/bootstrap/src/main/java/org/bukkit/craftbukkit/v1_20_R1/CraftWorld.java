@@ -9,15 +9,30 @@ import net.minecraft.server.world.ServerWorld;
 public class CraftWorld extends dev.meldrite.paper.facade.WorldAdapter {
     private final NativeWorldPort worlds;
     private final java.util.concurrent.ConcurrentMap<Long, CraftChunk> chunks = new java.util.concurrent.ConcurrentHashMap<>();
-    private CraftWorldBorder border;
+    private volatile ServerWorld world;
+    private volatile org.bukkit.WorldBorder worldBorder;
     public CraftWorld(WorldDelegate delegate, FacadeContext context, NativeWorldPort worlds) {
         super(delegate, context);
         this.worlds = java.util.Objects.requireNonNull(worlds);
-        ((WorldBukkitAccess) this.worlds.require(delegate.reference().key())).meldrite$setBukkitWorld(this);
+        this.world = this.worlds.require(delegate.reference().key());
+        ((WorldBukkitAccess) this.world).meldrite$setBukkitWorld(this);
     }
     public ServerWorld getHandle() {
+        var reference = delegate.reference();
         if (!delegate.valid()) throw new IllegalStateException("STALE_CRAFT_WORLD");
-        return worlds.require(delegate.reference().key());
+        ServerWorld current = world;
+        if (current == null) throw new IllegalStateException("STALE_CRAFT_WORLD");
+        if (!NativeWorldPort.key(current).equals(reference.key())) {
+            throw new IllegalStateException("UNSUPPORTED_CRAFT_WORLD_REBIND");
+        }
+        ServerWorld canonical;
+        try {
+            canonical = worlds.require(reference.key());
+        } catch (IllegalStateException unloaded) {
+            throw new IllegalStateException("STALE_CRAFT_WORLD", unloaded);
+        }
+        if (canonical != current) throw new IllegalStateException("UNSUPPORTED_CRAFT_WORLD_REBIND");
+        return current;
     }
     @Override public java.io.File getWorldFolder() {
         var world = getHandle();
@@ -47,7 +62,11 @@ public class CraftWorld extends dev.meldrite.paper.facade.WorldAdapter {
         var packet = new net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket(distance);
         for (var player : world.getPlayers()) if (player.networkHandler != null) player.networkHandler.sendPacket(packet);
     }
-    @Override public CraftWorldBorder getWorldBorder() { getHandle(); if (border == null) border = new CraftWorldBorder(this); return border; }
+    @Override public org.bukkit.WorldBorder getWorldBorder() {
+        getHandle();
+        if (worldBorder == null) worldBorder = new CraftWorldBorder(this);
+        return worldBorder;
+    }
     @Override public org.bukkit.boss.DragonBattle getEnderDragonBattle() {
         var fight = getHandle().getEnderDragonFight();
         return fight == null ? null : new org.bukkit.craftbukkit.v1_20_R1.boss.CraftDragonBattle(fight);

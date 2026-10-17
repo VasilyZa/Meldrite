@@ -89,6 +89,8 @@ public final class GenerateLegacyMappings {
                 addClass(classes, source.getSrcName(), fabric.getName(targetNamespace), rejected);
             }
         }
+        Map<String, String> reflectionClasses = new TreeMap<>();
+        var reflectionMembers = new TreeMap<Symbol, String>();
         List<Member> raw = new ArrayList<>();
         List<Member> aliases = new ArrayList<>();
         int validDeclarations = 0;
@@ -126,6 +128,7 @@ public final class GenerateLegacyMappings {
             if (fabric == null || !natives.containsKey(fabric.getName(targetNamespace))) continue;
             String owner = fabric.getName(targetNamespace);
             ClassMappingView source = entry.getValue();
+            reflectionClasses.put(owner, source.getSrcName());
             for (boolean method : List.of(false, true)) {
                 var sourceMembers = method ? source.getMethods() : source.getFields();
                 for (MemberMappingView member : sourceMembers) {
@@ -137,6 +140,10 @@ public final class GenerateLegacyMappings {
                     if (!exists(natives, new Symbol(method, owner, target.name, descriptor))) continue;
                     target = withAccess(natives, target, method, descriptor);
                     aliases.add(new Member(new Symbol(method, owner, member.getSrcName(), descriptor), target));
+                    Symbol runtimeSymbol = new Symbol(method, owner, target.name, descriptor);
+                    String previous = reflectionMembers.putIfAbsent(runtimeSymbol, member.getSrcName());
+                    if (previous != null && !previous.equals(member.getSrcName()))
+                        throw new IllegalStateException("Ambiguous Mojang reflection member: " + runtimeSymbol);
                 }
             }
         }
@@ -181,6 +188,26 @@ public final class GenerateLegacyMappings {
                 stream.writeInt(entry.getValue().access);
             }
         }
+        Path reflection = output.resolve("reflection-names.tiny.gz");
+        try (var stream = new GZIPOutputStream(new BufferedOutputStream(Files.newOutputStream(reflection)))) {
+            StringBuilder tiny = new StringBuilder("tiny\t2\t0\tintermediary\tmojang\n");
+            for (var type : reflectionClasses.entrySet()) {
+                tiny.append("c\t").append(type.getKey()).append('\t').append(type.getValue()).append('\n');
+                for (var member : reflectionMembers.subMap(
+                        new Symbol(false, type.getKey(), "", ""), true,
+                        new Symbol(false, type.getKey() + "\u0000", "", ""), false).entrySet()) {
+                    Symbol key = member.getKey();
+                    tiny.append("\tf\t").append(key.descriptor).append('\t').append(key.name).append('\t').append(member.getValue()).append('\n');
+                }
+                for (var member : reflectionMembers.subMap(
+                        new Symbol(true, type.getKey(), "", ""), true,
+                        new Symbol(true, type.getKey() + "\u0000", "", ""), false).entrySet()) {
+                    Symbol key = member.getKey();
+                    tiny.append("\tm\t").append(key.descriptor).append('\t').append(key.name).append('\t').append(member.getValue()).append('\n');
+                }
+            }
+            stream.write(tiny.toString().getBytes(StandardCharsets.UTF_8));
+        }
         rejected.sort(String::compareTo);
         Files.write(output.resolve("rejected-members.tsv"), rejected, StandardCharsets.UTF_8);
         long fields = members.keySet().stream().filter(key -> !key.method).count();
@@ -203,6 +230,8 @@ public final class GenerateLegacyMappings {
                 + "native.sha256=" + sha256(nativePath) + "\n"
                 + "officialServer.sha256=" + sha256(serverPath) + "\n"
                 + "output.sha256=" + sha256(binary) + "\n"
+                + "reflection.sha256=" + sha256(reflection) + "\n"
+                + "reflectionMembers=" + reflectionMembers.size() + "\n"
                 + "classes=" + classes.size() + "\n"
                 + "nativeClasses=" + natives.size() + "\n"
                 + "verifiedDeclarations=" + validDeclarations + "\n"

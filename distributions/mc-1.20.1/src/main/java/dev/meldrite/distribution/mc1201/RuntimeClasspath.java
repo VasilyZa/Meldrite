@@ -15,7 +15,21 @@ public final class RuntimeClasspath {
     private RuntimeClasspath() { }
 
     /** The executable JAR's Launcher-Agent-Class invokes this before application main. */
-    public static void agentmain(String arguments, Instrumentation value) { instrumentation = value; }
+    public static synchronized void agentmain(String arguments, Instrumentation value) {
+        instrumentation = value;
+        try {
+            var server = java.lang.management.ManagementFactory.getPlatformMBeanServer();
+            var name = new javax.management.ObjectName("dev.meldrite:type=RuntimeAgent");
+            if (!server.isRegistered(name)) server.registerMBean(new javax.management.StandardMBean(
+                    new AgentBridge(), AgentBridgeMBean.class), name);
+        } catch (javax.management.JMException failure) {
+            throw new IllegalStateException("Cannot publish the local runtime instrumentation bridge", failure);
+        }
+    }
+    public interface AgentBridgeMBean { Instrumentation getInstrumentation(); }
+    public static final class AgentBridge implements AgentBridgeMBean {
+        @Override public Instrumentation getInstrumentation() { return instrumentation; }
+    }
 
     static void install(List<Path> paths) throws IOException {
         if (instrumentation == null)

@@ -6,10 +6,16 @@ import java.util.*;
 public final class LibraryRealm extends OwnedRealm {
     static { registerAsParallelCapable(); }
     private final java.util.List<NativeRoute> nativeRoutes;
+    private final GlobalLibraryRegistry globals;
     LibraryRealm(List<Path> jars,ApiAuthority authority,TransformContext context,ClassTransform transform,
                  java.util.List<NativeRoute> nativeRoutes)throws IOException {
+        this(jars,authority,context,transform,nativeRoutes,null);
+    }
+    LibraryRealm(List<Path> jars,ApiAuthority authority,TransformContext context,ClassTransform transform,
+                 java.util.List<NativeRoute> nativeRoutes,GlobalLibraryRegistry globals)throws IOException {
         super(jars,authority,context,transform);
         this.nativeRoutes = java.util.List.copyOf(nativeRoutes);
+        this.globals = globals;
     }
     LibraryRealm(List<Path> jars,ApiAuthority authority,TransformContext context,ClassTransform transform)throws IOException {
         this(jars, authority, context, transform, java.util.List.of());
@@ -32,6 +38,7 @@ public final class LibraryRealm extends OwnedRealm {
                     }
                 }
                 if (loaded == null) loaded=sharedIfPresent(normalized).orElse(null);
+                if (loaded == null && globals != null) loaded=globals.find(normalized,false).orElse(null);
                 if (loaded == null) loaded=own(normalized);
             }
             if(resolve && loaded.getClassLoader()==this)resolveClass(loaded);

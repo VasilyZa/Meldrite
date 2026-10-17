@@ -8,6 +8,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.chunk.WrapperProtoChunk;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import org.bukkit.craftbukkit.v1_20_R1.persistence.CraftPersistentDataContainer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +28,11 @@ public abstract class ChunkSerializerPersistentDataMixin {
     private static void meldrite$loadPersistentData(ServerWorld world, PointOfInterestStorage poi, ChunkPos position,
             NbtCompound nbt, CallbackInfoReturnable<ProtoChunk> callback) {
         if (nbt.contains("BukkitValues", NbtElement.COMPOUND_TYPE)) {
-            ((NativeChunkPersistentDataAccess) callback.getReturnValue()).meldrite$loadPersistentData(nbt.getCompound("BukkitValues"));
+            ProtoChunk loaded = callback.getReturnValue();
+            // Full chunks leave deserialization inside a temporary generation
+            // wrapper. The world later unwraps it and keeps the WorldChunk.
+            Chunk owner = loaded instanceof WrapperProtoChunk wrapper ? wrapper.getWrappedChunk() : loaded;
+            ((NativeChunkPersistentDataAccess) owner).meldrite$loadPersistentData(nbt.getCompound("BukkitValues"));
         }
     }
 }

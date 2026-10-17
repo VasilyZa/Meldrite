@@ -51,6 +51,15 @@ override the default local BuildTools/Loom artifact locations. The separate
 `NamedNativeMappingProbe` runs the same test against the development named jar
 using a Yarn mapping-io tree as the runtime namespace binding.
 
+`reflection-names.tiny.gz` retains a separate, unambiguous Mojang-to-intermediary
+view of the same server-verified declarations. `LegacyMappings.writePaperReflectionMappings`
+exports it to the active Fabric namespace. `NativeReflectionMappings` publishes this
+as Paper's standard `META-INF/mappings/reobf.tiny` resource before plugin discovery.
+The destination column is named `spigot` to follow that resource protocol; its
+values are the actual runtime symbols, including Yarn names during development.
+This lets consumers map enumerated reflection members without changing `Field.getName()`
+or `Method.getName()`. The resource has its own checksum in `provenance.properties`.
+
 ## Source Notices
 
 Fabric intermediary is distributed under CC0-1.0. The Spigot mapping chain is

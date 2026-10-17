@@ -76,16 +76,25 @@ public final class ProfileBootstrap implements AutoCloseable {
     }
     public static ProfileBootstrap create(BridgeBundle bridges, Path directory, List<NativeRoute> nativeRoutes,
             java.util.function.BiFunction<FacadeContext, ProfileBootstrap, org.bukkit.Server> serverCreator) throws Exception {
-        return new ProfileBootstrap(bridges, directory, nativeRoutes, serverCreator);
+        return new ProfileBootstrap(bridges, directory, nativeRoutes, serverCreator, null);
+    }
+    public static ProfileBootstrap create(BridgeBundle bridges, Path directory, List<NativeRoute> nativeRoutes,
+            java.util.function.BiFunction<FacadeContext, ProfileBootstrap, org.bukkit.Server> serverCreator,
+            dev.meldrite.plugin.spi.GlobalLibraryAccess globalLibraries) throws Exception {
+        return new ProfileBootstrap(bridges, directory, nativeRoutes, serverCreator, globalLibraries);
     }
     public FacadeContext facadeContext() { primary(); return facade; }
     private ProfileBootstrap(BridgeBundle bridges, Path directory, List<NativeRoute> nativeRoutes,
-            java.util.function.BiFunction<FacadeContext, ProfileBootstrap, org.bukkit.Server> serverCreator) throws Exception {
+            java.util.function.BiFunction<FacadeContext, ProfileBootstrap, org.bukkit.Server> serverCreator,
+            dev.meldrite.plugin.spi.GlobalLibraryAccess globalLibraries) throws Exception {
         execution = bridges.execution().orElseThrow(() -> new IllegalStateException("MISSING_REQUIRED_CAPABILITY: execution"));
         primary();
         pluginsDirectory = Files.createDirectories(directory.resolve("plugins"));
-        engine = own(new PluginLoaderEngine(new ApiAuthority(getClass().getClassLoader(), ApiProviderLocator.paths()),
-                new ClassTransform() {
+        var authority = new ApiAuthority(getClass().getClassLoader(), ApiProviderLocator.paths());
+        ClassTransform transformer = new ClassTransform() {
+                    @Override public void prepareLibrary(Path source, TransformContext context) throws Exception {
+                        dev.meldrite.paper.compat.InternalAccessDetector.indexLibrary(context.pluginId(), source);
+                    }
                     @Override public byte[] prepare(byte[] bytes, TransformContext context) {
                         return new WorldSpawnAbiTransform().apply(bytes, context);
                     }
@@ -93,7 +102,9 @@ public final class ProfileBootstrap implements AutoCloseable {
                         remaps.incrementAndGet();
                         return new LegacyNameTransform().apply(new EntityAbiTransform().apply(new LegacyTextConstructorTransform().apply(bytes, context), context), context);
                     }
-                }, nativeRoutes));
+                };
+        engine = own(globalLibraries == null ? new PluginLoaderEngine(authority, transformer, nativeRoutes)
+                : new PluginLoaderEngine(authority, transformer, nativeRoutes, globalLibraries, directory.resolve("cache/meldrite/global-libraries")));
         try {
             // Absent game effects reject explicitly. V1 installs only the proven lifecycle/execution bridges.
             worldPort = bridges.world().orElse(world -> { throw new UnsupportedOperationException("UNSUPPORTED_CAPABILITY: world.lifecycle"); });

@@ -69,7 +69,7 @@ public final class VersionComposition implements AutoCloseable {
             Path serverDirectory = Path.of(".").toAbsolutePath().normalize();
             ProfileBootstrap profile = ProfileBootstrap.create(bridges.bundle(), serverDirectory, List.of(nativeRoute(loader)),
                     (context, runtime) -> new org.bukkit.craftbukkit.v1_20_R1.CraftServer(context, runtime,
-                            (net.minecraft.server.dedicated.MinecraftDedicatedServer) server));
+                            (net.minecraft.server.dedicated.MinecraftDedicatedServer) server), new NativeGlobalLibraryAccess());
             dev.meldrite.v1201.compat.NativeCraftFacades.install(profile.facadeContext(), bridges.entities(), bridges.worlds());
             dev.meldrite.v1201.compat.NativePotionProjection.install();
             dev.meldrite.v1201.compat.NativeEnchantmentProjection.install();
@@ -203,7 +203,7 @@ public final class VersionComposition implements AutoCloseable {
      * game/CraftBukkit namespaces and their exported native runtime libraries;
      * Bukkit API classes remain governed by ApiAuthority.
      */
-    private static NativeRoute nativeRoute(FabricLoader loader) {
+    private static NativeRoute nativeRoute(FabricLoader loader) throws IOException {
         ClassLoader runtime = VersionComposition.class.getClassLoader();
         var mappings = loader.getMappingResolver();
         dev.meldrite.paper.compat.LegacyMappings.bindRuntime(new dev.meldrite.paper.compat.LegacyMappings.RuntimeNamespace() {
@@ -220,6 +220,7 @@ public final class VersionComposition implements AutoCloseable {
                 return mappings.mapMethodName("intermediary", owner.replace('/', '.'), name, descriptor);
             }
         });
+        NativeReflectionMappings.install(Path.of("cache/meldrite/reflection-mappings"));
         return new NativeRoute(runtime, Set.of(), Set.of(), requestedName -> {
             // Reflection callers commonly pass JVM internal names even though
             // Class.forName expects dotted names. Normalize before routing.
@@ -246,6 +247,7 @@ public final class VersionComposition implements AutoCloseable {
                     || name.equals("io.papermc.paper.chunk.system.entity.EntityLookup")
                     || name.equals("dev.meldrite.paper.compat.DedicatedServerFacade")
                     || name.equals("dev.meldrite.paper.compat.WorldSpawnAbiTransform")
+                    || name.equals("dev.meldrite.paper.MeldriteConfiguredClassLoader")
                     || name.equals("dev.meldrite.paper.facade.CraftItemStackAdapter")
                     || name.equals("dev.meldrite.paper.facade.EntityAdapter")
                     || name.equals("dev.meldrite.paper.facade.PlayerAdapter")

@@ -31,7 +31,10 @@ public final class ApiAuthority {
         @Override public URL getResource(String name){return ClassLoader.getPlatformClassLoader().getResource(name);}
         @Override public Enumeration<URL> getResources(String name)throws IOException{return ClassLoader.getPlatformClassLoader().getResources(name);}
     }
-    void validate(Path path)throws IOException {
+    void validate(Path path)throws IOException { validate(path, false); }
+    /** A host-defined global JAR cannot rely on plugin-domain API delegation. */
+    void validateGlobal(Path path)throws IOException { validate(path, true); }
+    private void validate(Path path,boolean global)throws IOException {
         try(JarFile jar=new JarFile(path.toFile(),true,JarFile.OPEN_READ,Runtime.version())){
             var manifest=jar.getManifest();
             if(manifest!=null){String classpath=manifest.getMainAttributes().getValue(java.util.jar.Attributes.Name.CLASS_PATH);if(classpath!=null&&!classpath.isBlank())throw new IllegalStateException("UNDECLARED_MANIFEST_CLASSPATH: "+path);}
@@ -44,7 +47,7 @@ public final class ApiAuthority {
                 // authority still wins for those symbols, while the Adventure API remains
                 // strict because two Component identities cannot safely coexist.
                 boolean sharedIdentity = symbol.startsWith("net.kyori.") || symbol.startsWith("dev.meldrite.");
-                if((owns(symbol)&&sharedIdentity)||symbol.startsWith("java.")||symbol.startsWith("jdk.")||symbol.startsWith("sun."))throw new IllegalStateException("DUPLICATE_API_DEFINITION: "+path+"!"+symbol);
+                if((owns(symbol)&&(global||sharedIdentity))||symbol.startsWith("java.")||symbol.startsWith("jdk.")||symbol.startsWith("sun."))throw new IllegalStateException("DUPLICATE_API_DEFINITION: "+path+"!"+symbol);
             }
         }
     }

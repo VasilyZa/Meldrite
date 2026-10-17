@@ -144,3 +144,8 @@ accessible field net/minecraft/entity/LightningEntity ambientTick I
 
 # CraftBukkit exposes the live anvil rename field to legacy plugin reflection.
 accessible field net/minecraft/screen/AnvilScreenHandler newItemName Ljava/lang/String;
+
+# Paper block-state caches retain the native shape cache as their source of truth.
+accessible class net/minecraft/block/AbstractBlock$AbstractBlockState$ShapeCache
+accessible field net/minecraft/block/AbstractBlock$AbstractBlockState$ShapeCache exceedsCube Z
+accessible field net/minecraft/block/AbstractBlock$AbstractBlockState$ShapeCache lightSubtracted I
