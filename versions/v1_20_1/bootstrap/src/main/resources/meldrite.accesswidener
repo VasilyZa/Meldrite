@@ -141,3 +141,6 @@ accessible field net/minecraft/entity/AreaEffectCloudEntity ownerUuid Ljava/util
 accessible field net/minecraft/entity/LightningEntity cosmetic Z
 accessible field net/minecraft/entity/LightningEntity remainingActions I
 accessible field net/minecraft/entity/LightningEntity ambientTick I
+
+# CraftBukkit exposes the live anvil rename field to legacy plugin reflection.
+accessible field net/minecraft/screen/AnvilScreenHandler newItemName Ljava/lang/String;

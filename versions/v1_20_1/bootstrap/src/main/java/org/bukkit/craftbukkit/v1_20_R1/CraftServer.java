@@ -418,7 +418,7 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
         java.util.Objects.requireNonNull(type, "type");
         if (!type.isCreatable()) throw new IllegalArgumentException("InventoryType cannot be used to create an inventory: " + type);
         if (type == InventoryType.ANVIL) {
-            return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCustomAnvil(holder, title);
+            return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryAnvil(holder, title);
         }
         if (type == InventoryType.WORKBENCH) {
             return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCrafting(

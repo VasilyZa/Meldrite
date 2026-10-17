@@ -24,11 +24,19 @@ public final class NativeAnvilContext {
             HANDLERS.set(handlers);
         }
         handlers.push(anvil);
+        refreshContainer(anvil);
         try {
             return action.get();
         } finally {
             handlers.pop();
             if (handlers.isEmpty()) HANDLERS.remove();
+            refreshContainer(anvil);
+        }
+    }
+
+    private static void refreshContainer(AnvilScreenHandler handler) {
+        if (handler instanceof org.bukkit.craftbukkit.v1_20_R1.inventory.CraftAnvilScreenHandler custom) {
+            custom.getCraftInventory().refreshContainer();
         }
     }
 

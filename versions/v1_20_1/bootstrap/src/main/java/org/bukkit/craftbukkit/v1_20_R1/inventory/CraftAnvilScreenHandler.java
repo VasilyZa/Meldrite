@@ -13,12 +13,12 @@ import net.minecraft.screen.slot.Slot;
 
 /** The vanilla anvil algorithm operating on a Bukkit-created inventory. */
 public final class CraftAnvilScreenHandler extends AnvilScreenHandler {
-    private final CraftInventoryCustomAnvil inventory;
+    private final CraftInventoryAnvil inventory;
     private final String title;
     private final InventoryChangedListener inputListener = this::onContentChanged;
 
     public CraftAnvilScreenHandler(int syncId, PlayerInventory playerInventory,
-            CraftInventoryCustomAnvil inventory, String title) {
+            CraftInventoryAnvil inventory, String title) {
         super(syncId, playerInventory, ScreenHandlerContext.EMPTY);
         this.inventory = java.util.Objects.requireNonNull(inventory, "inventory");
         this.title = java.util.Objects.requireNonNull(title, "title");
@@ -50,7 +50,7 @@ public final class CraftAnvilScreenHandler extends AnvilScreenHandler {
         slots.set(index, replacement);
     }
 
-    public CraftInventoryCustomAnvil getCraftInventory() { return inventory; }
+    public CraftInventoryAnvil getCraftInventory() { return inventory; }
     public String getTitle() { return title; }
 
     @Override public void onClosed(PlayerEntity player) {

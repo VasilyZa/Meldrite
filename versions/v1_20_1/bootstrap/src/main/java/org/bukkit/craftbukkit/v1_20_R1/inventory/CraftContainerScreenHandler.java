@@ -18,7 +18,7 @@ public final class CraftContainerScreenHandler extends ScreenHandler {
 
     public static ScreenHandler create(int syncId, PlayerInventory playerInventory, CraftInventory inventory,
             PlayerEntity player, String title) {
-        if (inventory instanceof CraftInventoryCustomAnvil anvil) {
+        if (inventory instanceof CraftInventoryAnvil anvil && anvil.isCustom()) {
             return new CraftAnvilScreenHandler(syncId, playerInventory, anvil, title);
         }
         return new CraftContainerScreenHandler(syncId, playerInventory, inventory, player, title);
