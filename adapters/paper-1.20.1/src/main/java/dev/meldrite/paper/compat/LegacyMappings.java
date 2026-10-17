@@ -43,7 +43,8 @@ public final class LegacyMappings {
     private final Map<String, Map<String, List<String>>> pluginParents = new ConcurrentHashMap<>();
     private final Map<String, Map<String, java.util.Set<String>>> pluginChildren = new ConcurrentHashMap<>();
     private final Map<String, java.util.Set<String>> pluginInterfaces = new ConcurrentHashMap<>();
-    private final Map<String, Map<Symbol, Integer>> pluginDeclarations = new ConcurrentHashMap<>();
+    // Group declarations by class so lazy class loads never scan every member of a plugin.
+    private final Map<String, Map<String, Map<Symbol, Integer>>> pluginDeclarations = new ConcurrentHashMap<>();
     private final Map<String, Map<Symbol, List<Target>>> pluginContracts = new ConcurrentHashMap<>();
     private final Map<String, Map<LineageKey, List<String>>> pluginLineages = new ConcurrentHashMap<>();
     /** Interfaces with at least one implementation that inherits a native class. */
@@ -83,8 +84,8 @@ public final class LegacyMappings {
     }
 
     static void replaceDeclarations(String plugin, String owner) {
-        Map<Symbol, Integer> declarations = INSTANCE.pluginDeclarations.get(plugin);
-        if (declarations != null) declarations.keySet().removeIf(symbol -> symbol.owner.equals(owner));
+        Map<String, Map<Symbol, Integer>> declarations = INSTANCE.pluginDeclarations.get(plugin);
+        if (declarations != null) declarations.remove(owner);
     }
 
     public static String className(String internalName) {
@@ -137,6 +138,7 @@ public final class LegacyMappings {
 
     static void registerDeclaration(String plugin, boolean method, String owner, String name, String descriptor, int access) {
         INSTANCE.pluginDeclarations.computeIfAbsent(plugin, ignored -> new ConcurrentHashMap<>())
+                .computeIfAbsent(owner, ignored -> new ConcurrentHashMap<>())
                 .put(new Symbol(method, owner, name, descriptor), access);
     }
 
@@ -171,8 +173,8 @@ public final class LegacyMappings {
                         String descriptor = canonicalDescriptor(org.objectweb.asm.Type.getMethodDescriptor(declaration));
                         if (parameterDescriptor != null && !descriptor.startsWith(parameterDescriptor)) continue;
                         Symbol symbol = new Symbol(true, nextName, name, descriptor);
-                        INSTANCE.pluginDeclarations.forEach((plugin, symbols) -> {
-                            if (symbols.containsKey(symbol)) {
+                        INSTANCE.pluginDeclarations.forEach((plugin, owners) -> {
+                            if (owners.getOrDefault(nextName, Map.of()).containsKey(symbol)) {
                                 String mapped = INSTANCE.memberName(plugin, true, nextName, name, descriptor);
                                 if (!mapped.equals(name) && !names.contains(mapped)) names.add(mapped);
                             }
@@ -209,10 +211,10 @@ public final class LegacyMappings {
 
     private String memberName(String plugin, boolean method, String owner, String name, String descriptor) {
         String canonicalDescriptor = canonicalDescriptor(descriptor);
-        Map<Symbol, Integer> declarations = pluginDeclarations.getOrDefault(plugin, Map.of());
+        Map<String, Map<Symbol, Integer>> declarations = pluginDeclarations.getOrDefault(plugin, Map.of());
         for (String ancestor : lineage(plugin, owner, false)) {
             Symbol symbol = new Symbol(method, ancestor, name, canonicalDescriptor);
-            Integer declaration = declarations.get(symbol);
+            Integer declaration = declarations.getOrDefault(ancestor, Map.of()).get(symbol);
             if (declaration != null) {
                 if (!method || (declaration & (Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC)) != 0) return name;
                 return overrideName(plugin, ancestor, name, canonicalDescriptor);
