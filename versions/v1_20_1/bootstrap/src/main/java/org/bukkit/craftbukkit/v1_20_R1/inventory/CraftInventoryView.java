@@ -112,7 +112,9 @@ public final class CraftInventoryView extends InventoryView {
 
     public static InventoryType inventoryType(ScreenHandler handler) {
         if (handler instanceof net.minecraft.screen.PlayerScreenHandler) return InventoryType.CRAFTING;
-        ScreenHandlerType<?> type = handler.getType();
+        // getType() throws for valid menus constructed without a registered factory type.
+        ScreenHandlerType<?> type = ((dev.meldrite.v1201.compat.ScreenHandlerBukkitViewAccess) handler)
+                .meldrite$getNullableType();
         if (type == ScreenHandlerType.CRAFTING) return InventoryType.WORKBENCH;
         if (type == ScreenHandlerType.ANVIL) return InventoryType.ANVIL;
         if (type == ScreenHandlerType.BEACON) return InventoryType.BEACON;
@@ -136,7 +138,7 @@ public final class CraftInventoryView extends InventoryView {
                 || type == ScreenHandlerType.GENERIC_9X5 || type == ScreenHandlerType.GENERIC_9X6) {
             return InventoryType.CHEST;
         }
-        return InventoryType.CRAFTING;
+        return InventoryType.CHEST;
     }
 
     private static String title(Inventory top, InventoryType fallback) {
