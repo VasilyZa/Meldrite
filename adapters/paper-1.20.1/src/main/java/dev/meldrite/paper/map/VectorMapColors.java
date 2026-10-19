@@ -14,8 +14,35 @@ public final class VectorMapColors {
         void convert(int[] pixels, Color[] palette, byte[] result, int from, int to);
     }
 
+    public interface MatchingConverter extends Converter {
+        int matchColor(int red, int green, int blue, int[] paletteRed, int[] paletteGreen, int[] paletteBlue);
+    }
+
+    /** Standard Color instances are immutable; replacements in the API array are checked on every use. */
+    static final class PaletteSnapshot {
+        final Color[] entries;
+        final int[] red, green, blue;
+
+        PaletteSnapshot(Color[] entries, boolean standard) {
+            this.entries = entries;
+            if (!standard) { red = null; green = null; blue = null; return; }
+            red = new int[entries.length]; green = new int[entries.length]; blue = new int[entries.length];
+            for (int i = 4; i < entries.length; i++) {
+                int rgb = entries[i].getRGB();
+                red[i] = (rgb >>> 16) & 255; green[i] = (rgb >>> 8) & 255; blue[i] = rgb & 255;
+            }
+        }
+
+        boolean matches(Color[] palette) {
+            if (entries.length != palette.length) return false;
+            for (int i = 4; i < entries.length; i++) if (entries[i] != palette[i]) return false;
+            return true;
+        }
+    }
+
     private static final Converter CONVERTER = load();
     private static final Converter SCALAR = new ScalarMapColorConverter();
+    private static volatile PaletteSnapshot lastPalette;
     private VectorMapColors() { }
 
     private static Converter load() {
@@ -33,6 +60,30 @@ public final class VectorMapColors {
 
     public static boolean enabled() { return CONVERTER != null; }
     public static int vectorBits() { return enabled() ? CONVERTER.vectorBits() : 0; }
+
+    static PaletteSnapshot paletteSnapshot(Color[] palette) {
+        if (palette == null) return null;
+        PaletteSnapshot previous = lastPalette;
+        if (previous != null && previous.matches(palette)) return previous.red == null ? null : previous;
+        Color[] entries = palette.clone();
+        boolean standard = true;
+        for (int i = 4; i < entries.length; i++)
+            if (entries[i] == null || entries[i].getClass() != Color.class) { standard = false; break; }
+        PaletteSnapshot snapshot = new PaletteSnapshot(entries, standard);
+        lastPalette = snapshot;
+        return standard ? snapshot : null;
+    }
+
+    /** A negative result delegates to Paper, including custom Color implementations. */
+    public static int matchColor(Color color, Color[] palette) {
+        if (!(CONVERTER instanceof MatchingConverter matching) || color.getClass() != Color.class) return -1;
+        int rgb = color.getRGB();
+        if ((rgb >>> 24) < 128) return 0;
+        PaletteSnapshot colors = paletteSnapshot(palette);
+        if (colors == null) return -1;
+        return matching.matchColor((rgb >>> 16) & 255, (rgb >>> 8) & 255, rgb & 255,
+                colors.red, colors.green, colors.blue) & 255;
+    }
 
     public static synchronized void configureWorkers(WorkerSettings settings) {
         ComputeService.configure(settings);

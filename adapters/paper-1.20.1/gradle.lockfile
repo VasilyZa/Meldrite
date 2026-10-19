@@ -18,4 +18,4 @@ org.junit.platform:junit-platform-launcher:1.11.4=testRuntimeClasspath
 org.junit:junit-bom:5.11.4=testCompileClasspath,testRuntimeClasspath
 org.opentest4j:opentest4j:1.3.0=testCompileClasspath,testRuntimeClasspath
 org.ow2.asm:asm:9.7.1=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
-empty=annotationProcessor,testAnnotationProcessor
+empty=annotationProcessor,testAnnotationProcessor,vectorAnnotationProcessor,vectorCompileClasspath

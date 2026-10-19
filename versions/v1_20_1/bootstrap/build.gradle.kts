@@ -3,6 +3,30 @@ import groovy.json.JsonSlurper
 import java.security.MessageDigest
 
 plugins { id("net.fabricmc.fabric-loom-remap") version "1.17.21"; id("meldrite.java") }
+// Keep the optional incubator module out of the ordinary native implementation.
+val vector = sourceSets.create("vector")
+val compileMain = tasks.named<JavaCompile>("compileJava")
+vector.compileClasspath += sourceSets.main.get().compileClasspath + files(compileMain.flatMap { it.destinationDirectory }).builtBy(compileMain)
+tasks.named<JavaCompile>(vector.compileJavaTaskName) {
+    options.release.unset()
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+    options.compilerArgs.add("--add-modules=jdk.incubator.vector")
+}
+tasks.jar { from(vector.output) }
+sourceSets.test { runtimeClasspath += vector.output }
+for (feature in listOf(17, 21)) {
+    tasks.register<Test>("vectorPerformanceTestJava$feature") {
+        dependsOn(tasks.named("testClasses"), tasks.named(vector.classesTaskName))
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath
+        javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(feature)) })
+        jvmArgs("--add-modules=jdk.incubator.vector", "-XX:UseAVX=2", "-XX:MaxVectorSize=32")
+        filter { includeTestsMatching("dev.meldrite.v1201.perf.*Test") }
+        reports.junitXml.outputLocation.set(rootProject.layout.buildDirectory.dir("reports/meldrite/vector-native/java$feature/xml"))
+        reports.html.outputLocation.set(rootProject.layout.buildDirectory.dir("reports/meldrite/vector-native/java$feature/html"))
+    }
+}
 tasks.processResources {
     inputs.property("meldriteVersion", project.version.toString())
     filesMatching("fabric.mod.json") { expand("version" to project.version.toString()) }

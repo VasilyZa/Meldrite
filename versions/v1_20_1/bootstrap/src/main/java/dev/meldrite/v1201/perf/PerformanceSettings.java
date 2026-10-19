@@ -7,6 +7,7 @@ public final class PerformanceSettings {
     public static final boolean TRACKING = enabled("tracking");
     public static final boolean PATH_INDEX = enabled("path-index");
     public static final boolean SNAPSHOT_COPY = enabled("snapshot-copy");
+    public static final boolean COLLISION_CACHE = enabled("collision-cache");
     private PerformanceSettings() { }
     private static boolean enabled(String operation) {
         return ENABLED && !Boolean.getBoolean("meldrite.performance." + operation + ".disabled");

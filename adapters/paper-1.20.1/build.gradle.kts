@@ -13,6 +13,19 @@ tasks.named<JavaCompile>(vector.compileJavaTaskName) {
     options.compilerArgs.add("--add-modules=jdk.incubator.vector")
 }
 tasks.jar { from(vector.output) }
+tasks.test { classpath += vector.output }
+for (feature in listOf(17, 21)) {
+    tasks.register<Test>("vectorMapTestJava$feature") {
+        dependsOn(tasks.named("testClasses"), tasks.named(vector.classesTaskName))
+        testClassesDirs = sourceSets.test.get().output.classesDirs
+        classpath = sourceSets.test.get().runtimeClasspath + vector.output
+        javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(feature)) })
+        jvmArgs("--add-modules=jdk.incubator.vector")
+        filter { includeTestsMatching("dev.meldrite.paper.map.VectorMapColorsTest") }
+        reports.junitXml.outputLocation.set(rootProject.layout.buildDirectory.dir("reports/meldrite/vector-map/java$feature/xml"))
+        reports.html.outputLocation.set(rootProject.layout.buildDirectory.dir("reports/meldrite/vector-map/java$feature/html"))
+    }
+}
 val contractIndex = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/api-index.json")) as Map<*, *>
 val contractArtifacts = (contractIndex["artifacts"] as List<*>).map { artifact -> rootProject.file((artifact as Map<*, *>)["cachePath"] as String) }
 val runtimeArtifacts = contractArtifacts.filterNot {
@@ -21,6 +34,9 @@ val runtimeArtifacts = contractArtifacts.filterNot {
             || normalized.contains("/io.papermc.paper/paper-api/")
 }
 val paperContract = contractArtifacts.single { it.path.replace('\\', '/').contains("/io.papermc.paper/paper-api/") }
+tasks.withType<Test>().configureEach {
+    systemProperty("meldrite.paperContractJar", paperContract.absolutePath)
+}
 val projectedPaperApi = layout.buildDirectory.file("api/paper-api-1.20.1-meldrite.jar")
 val projectPaperApi by tasks.registering(JavaExec::class) {
     dependsOn(tasks.named("classes"))

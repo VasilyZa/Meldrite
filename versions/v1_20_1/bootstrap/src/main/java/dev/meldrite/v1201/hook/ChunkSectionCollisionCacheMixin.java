@@ -1,6 +1,8 @@
 package dev.meldrite.v1201.hook;
 
 import dev.meldrite.v1201.compat.NativeBlockStateCacheAccess;
+import dev.meldrite.v1201.perf.PerformanceSettings;
+import dev.meldrite.v1201.perf.SectionCollisionData;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.chunk.ChunkSection;
@@ -45,6 +47,10 @@ public abstract class ChunkSectionCollisionCacheMixin {
             return;
         }
         knownBlockCollisionData = new long[128];
+        if (PerformanceSettings.COLLISION_CACHE) {
+            specialCollidingBlocks = SectionCollisionData.rebuild(blockStateContainer, knownBlockCollisionData);
+            return;
+        }
         for (int index = 0; index < 4096; ++index) {
             BlockState state = blockStateContainer.get(index & 15, index >>> 8, (index >>> 4) & 15);
             meldrite$setKnownBlockInfo(index, state);

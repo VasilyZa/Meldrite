@@ -7,7 +7,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-/** Adds an optional image conversion path without replacing plugin color caches or API methods. */
+/** Adds optional numeric matching paths while preserving plugin-owned color caches. */
 public final class MapPaletteImageTransform implements Opcodes {
     private static final String TYPE = "org/bukkit/map/MapPalette";
     private MapPaletteImageTransform() { }
@@ -19,6 +19,28 @@ public final class MapPaletteImageTransform implements Opcodes {
         reader.accept(new ClassVisitor(ASM9, writer) {
             @Override public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
                 var method = super.visitMethod(access, name, descriptor, signature, exceptions);
+                if (name.equals("matchColor") && descriptor.equals("(Ljava/awt/Color;)B")) {
+                    return new MethodVisitor(ASM9, method) {
+                        @Override public void visitCode() {
+                            super.visitCode();
+                            var scalar = new Label();
+                            var unavailable = new Label();
+                            visitFieldInsn(GETSTATIC, TYPE, "mapColorCache", "Lorg/bukkit/map/MapPalette$MapColorCache;");
+                            visitJumpInsn(IFNONNULL, scalar);
+                            visitVarInsn(ALOAD, 0);
+                            visitFieldInsn(GETSTATIC, TYPE, "colors", "[Ljava/awt/Color;");
+                            visitMethodInsn(INVOKESTATIC, "dev/meldrite/paper/map/VectorMapColors", "matchColor",
+                                    "(Ljava/awt/Color;[Ljava/awt/Color;)I", false);
+                            visitInsn(DUP);
+                            visitJumpInsn(IFLT, unavailable);
+                            visitInsn(I2B);
+                            visitInsn(IRETURN);
+                            visitLabel(unavailable);
+                            visitInsn(POP);
+                            visitLabel(scalar);
+                        }
+                    };
+                }
                 if (!name.equals("imageToBytes") || !descriptor.equals("(Ljava/awt/Image;)[B")) return method;
                 return new MethodVisitor(ASM9, method) {
                     @Override public void visitCode() {
