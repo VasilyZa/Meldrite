@@ -1,6 +1,9 @@
 package dev.meldrite.plugin.classloading;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarFile;
@@ -37,7 +40,7 @@ public final class ApiAuthority {
     private void validate(Path path,boolean global)throws IOException {
         try(JarFile jar=new JarFile(path.toFile(),true,JarFile.OPEN_READ,Runtime.version())){
             var manifest=jar.getManifest();
-            if(manifest!=null){String classpath=manifest.getMainAttributes().getValue(java.util.jar.Attributes.Name.CLASS_PATH);if(classpath!=null&&!classpath.isBlank())throw new IllegalStateException("UNDECLARED_MANIFEST_CLASSPATH: "+path);}
+            if(manifest!=null){String classpath=manifest.getMainAttributes().getValue(java.util.jar.Attributes.Name.CLASS_PATH);if(classpath!=null&&new StringTokenizer(classpath).hasMoreTokens()&&(global||!missingLocalClassPath(path,classpath)))throw new IllegalStateException("UNDECLARED_MANIFEST_CLASSPATH: "+path);}
             for(var iterator=jar.versionedStream().iterator();iterator.hasNext();){var entry=iterator.next();String name=entry.getName();if(!name.endsWith(".class")||name.equals("module-info.class"))continue;
                 String symbol=name.substring(0,name.length()-6).replace('/','.');
                 // Some Bukkit plugins bundle a few unmodified org.bukkit API classes. They must
@@ -50,5 +53,22 @@ public final class ApiAuthority {
                 if((owns(symbol)&&(global||sharedIdentity))||symbol.startsWith("java.")||symbol.startsWith("jdk.")||symbol.startsWith("sun."))throw new IllegalStateException("DUPLICATE_API_DEFINITION: "+path+"!"+symbol);
             }
         }
+    }
+    /** Missing local entries add no definitions; actual dependencies still require explicit realms. */
+    private static boolean missingLocalClassPath(Path source,String classpath) {
+        URI base=source.toAbsolutePath().toUri();
+        // Use the JDK URLClassPath delimiters, including its treatment of Unicode whitespace.
+        var entries=new StringTokenizer(classpath);
+        while(entries.hasMoreTokens()) {
+            try {
+                URI target=base.resolve(new URI(entries.nextToken()));
+                if(!"file".equalsIgnoreCase(target.getScheme())||target.getRawQuery()!=null||target.getRawFragment()!=null
+                        ||!Files.notExists(Path.of(target)))return false;
+            }catch(URISyntaxException|IllegalArgumentException|SecurityException invalid) {
+                return false;
+            }
+        }
+        // OwnedRealm also validates every returned resource's origin in case a path appears later.
+        return true;
     }
 }

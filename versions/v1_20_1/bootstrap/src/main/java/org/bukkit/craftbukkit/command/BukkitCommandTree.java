@@ -45,7 +45,7 @@ public final class BukkitCommandTree {
         }
     }
 
-    private static boolean exclusivelyBukkit(CommandNode<ServerCommandSource> node) {
+    public static boolean exclusivelyBukkit(CommandNode<ServerCommandSource> node) {
         if (!(node.getCommand() instanceof BukkitCommandWrapper wrapper) || node.getRequirement() != wrapper
                 || node.getRedirect() != null || node.getChildren().size() != 1) return false;
         CommandNode<ServerCommandSource> arguments = node.getChild("args");
@@ -63,7 +63,8 @@ public final class BukkitCommandTree {
         }
     }
 
-    private static void remove(CommandNode<?> root, String label) {
+    /** Removes a node from all Brigadier indexes of the supplied tree. */
+    public static void remove(CommandNode<?> root, String label) {
         try {
             for (Field index : CHILD_INDEXES) ((Map<?, ?>) index.get(root)).remove(label);
         } catch (IllegalAccessException failure) {

@@ -30,6 +30,12 @@ public class BukkitCommandWrapper implements com.mojang.brigadier.Command<Server
 
     boolean wraps(Command candidate) { return command == candidate; }
 
+    public boolean sameCommand(BukkitCommandWrapper other) { return command == other.command; }
+
+    public org.bukkit.plugin.Plugin owner() {
+        return command instanceof org.bukkit.command.PluginIdentifiableCommand owned ? owned.getPlugin() : null;
+    }
+
     public LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher, String label) {
         LiteralArgumentBuilder<ServerCommandSource> literal = LiteralArgumentBuilder.<ServerCommandSource>literal(label)
                 .requires(this).executes(this);

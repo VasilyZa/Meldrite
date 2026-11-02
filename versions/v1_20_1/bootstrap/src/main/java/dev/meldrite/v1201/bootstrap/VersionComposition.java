@@ -244,6 +244,9 @@ public final class VersionComposition implements AutoCloseable {
                 try { runtime.loadClass(name); return name; } catch (ClassNotFoundException ignored) { return null; }
             }
             if (name.equals("dev.meldrite.v1201.compat.NativeEntityExtensions")
+                    || name.equals("com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource")
+                    || name.equals("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent")
+                    || name.equals("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendSuggestionsEvent")
                     || name.equals("io.papermc.paper.chunk.system.entity.EntityLookup")
                     || name.equals("dev.meldrite.paper.compat.DedicatedServerFacade")
                     || name.equals("dev.meldrite.paper.compat.WorldSpawnAbiTransform")

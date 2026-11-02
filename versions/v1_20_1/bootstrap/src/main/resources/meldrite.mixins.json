@@ -5,6 +5,10 @@
   "package": "dev.meldrite.v1201.hook",
   "compatibilityLevel": "JAVA_17",
   "server": [
+    "CommandSourceBukkitMixin",
+    "CommandBlockOutputMixin",
+    "CommandTreeEventsMixin",
+    "CommandSuggestionsEventsMixin",
     "AbstractFurnaceCookSpeedMixin",
     "BrewingCustomRecipesMixin",
     "BrewingRecipeListsAccessMixin",

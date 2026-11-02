@@ -462,6 +462,17 @@ public final class ProfileBootstrap implements AutoCloseable {
         @Override public org.bukkit.plugin.PluginManager getPluginManager() { return runtime.pluginManager(); }
         @Override public org.bukkit.command.CommandMap getCommandMap() { return runtime.commandMap(); }
         @Override public org.bukkit.command.PluginCommand getPluginCommand(String name) { return runtime.pluginCommand(name); }
+        /** Runs a version-owned callback with the same ownership rules as plugin commands. */
+        public <T> T callPluginCallback(Plugin owner, java.util.concurrent.Callable<T> callback) throws Exception {
+            runtime.primary();
+            if (!owner.isEnabled() || runtime.scope(owner).isClosed()) {
+                throw new IllegalStateException("PLUGIN_CALLBACK_OWNER_CLOSED: " + owner.getName());
+            }
+            if (!(owner.getClass().getClassLoader() instanceof PluginRealm realm)) {
+                throw new IllegalArgumentException("UNSUPPORTED_PLUGIN_REALM: " + owner.getName());
+            }
+            return runtime.engine.withContext(realm, callback);
+        }
         @Override public boolean dispatchCommand(org.bukkit.command.CommandSender sender, String command) throws org.bukkit.command.CommandException {
             Objects.requireNonNull(command, "command");
             int separator = command.indexOf(' ');

@@ -12,10 +12,17 @@ import org.bukkit.craftbukkit.util.CraftChatMessage;
 public class CraftBlockCommandSender extends ServerCommandSender implements BlockCommandSender {
     private final ServerCommandSource block;
     private final BlockEntity tile;
+    private final net.minecraft.server.command.CommandOutput output;
 
     public CraftBlockCommandSender(ServerCommandSource block, BlockEntity tile) {
+        this(block, tile, null);
+    }
+
+    public CraftBlockCommandSender(ServerCommandSource block, BlockEntity tile,
+            net.minecraft.server.command.CommandOutput output) {
         this.block = java.util.Objects.requireNonNull(block, "block");
         this.tile = java.util.Objects.requireNonNull(tile, "tile");
+        this.output = output;
     }
 
     public ServerCommandSource getWrapper() { return block; }
@@ -26,7 +33,9 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
     }
 
     @Override public void sendMessage(String message) {
-        for (net.minecraft.text.Text component : CraftChatMessage.fromString(message)) block.sendMessage(component);
+        for (net.minecraft.text.Text component : CraftChatMessage.fromString(message)) {
+            if (output == null) block.sendMessage(component); else output.sendMessage(component);
+        }
     }
 
     @Override public void sendMessage(String... messages) {

@@ -503,6 +503,32 @@ private int titleFadeOut = 20;
     @Override public java.util.Set<java.lang.String> getListeningPluginChannels() {
         return playerState().channels.stream().map(channel -> channel.equals("bungeecord:main") ? "BungeeCord" : channel).collect(java.util.stream.Collectors.toUnmodifiableSet());
     }
+    private static String pluginChannelKey(String channel) {
+        String normalized = org.bukkit.plugin.messaging.StandardMessenger.validateAndCorrectChannel(channel);
+        return normalized.equals("BungeeCord") ? "bungeecord:main" : normalized;
+    }
+    private static String pluginChannelName(String channel) {
+        return channel.equals("bungeecord:main") ? "BungeeCord" : channel;
+    }
+    public void addChannel(String channel) {
+        String key = pluginChannelKey(channel);
+        if (!getHandle().server.isOnThread()) throw new IllegalStateException("ASYNC_PLAYER_PLUGIN_CHANNEL");
+        var channels = playerState().channels;
+        synchronized (channels) {
+            if (channels.contains(key)) return;
+            if (channels.size() >= 128) throw new IllegalStateException("Too many channels registered: " + channel);
+            channels.add(key);
+        }
+        getServer().getPluginManager().callEvent(new org.bukkit.event.player.PlayerRegisterChannelEvent(this, pluginChannelName(key)));
+    }
+    public void removeChannel(String channel) {
+        String key = pluginChannelKey(channel);
+        if (!getHandle().server.isOnThread()) throw new IllegalStateException("ASYNC_PLAYER_PLUGIN_CHANNEL");
+        var channels = playerState().channels;
+        boolean removed;
+        synchronized (channels) { removed = channels.remove(key); }
+        if (removed) getServer().getPluginManager().callEvent(new org.bukkit.event.player.PlayerUnregisterChannelEvent(this, pluginChannelName(key)));
+    }
     @Override public java.lang.String getLocale() { return playerState().locale; }
     @Override public int getNoTickViewDistance() { return playerApi.getNoTickViewDistance(); }
     @Override public org.bukkit.entity.Player getPlayer() { return this; }

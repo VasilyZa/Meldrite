@@ -31,6 +31,7 @@ public final class NativePlayerState {
     public boolean kickLeaveMessageSet;
     public net.kyori.adventure.text.Component kickLeaveMessage;
     public final Set<String> channels = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    NativeCommandSuggestions commandSuggestions;
     private final Map<UUID, List<WeakReference<Object>>> invertedVisibility = new HashMap<>();
 
     public long playerTime(long worldTime) {
