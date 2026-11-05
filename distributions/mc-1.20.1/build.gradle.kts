@@ -35,12 +35,14 @@ val distributionManifest by tasks.registering {
         rootProject.file("contracts/profiles/paper-1.20.1/adventure-providers.json"),
         rootProject.file("contracts/profiles/paper-1.20.1/api-index.json"),
         rootProject.file("contracts/locks/paper-1.20.1.lock.json"),
+        rootProject.file("contracts/profiles/paper-1.20.1/runtime-providers.json"),
         productionMappings,
         sqliteJdbc,
         commonsLang,
         minecraftMetadata,
         bootstrap.configurations.getByName("consoleRuntime").resolve(),
-        bootstrap.configurations.getByName("resolverRuntime").resolve()
+        bootstrap.configurations.getByName("resolverRuntime").resolve(),
+        bootstrap.configurations.getByName("paperRuntimeLibraries").resolve()
     )
     outputs.file(layout.buildDirectory.file("distribution.json"))
     doLast {
@@ -79,6 +81,8 @@ val distributionManifest by tasks.registering {
         val providers = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/adventure-providers.json")) as Map<*, *>
         val paperApiIndex = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/api-index.json")) as Map<*, *>
         val paperLock = JsonSlurper().parse(rootProject.file("contracts/locks/paper-1.20.1.lock.json")) as Map<*, *>
+        val paperRuntimeProviders = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/runtime-providers.json")) as Map<*, *>
+        val paperRuntimeArtifacts = (paperRuntimeProviders["artifacts"] as List<*>).map { it as Map<*, *> }
         val paperRoot = ((paperLock["roots"] as List<*>).single() as Map<*, *>)
         val paperApiFile = rootProject.file(paperRoot["cachePath"] as String)
         check(paperApiFile.isFile) { "Paper API contract artifact is not available: $paperApiFile" }
@@ -99,6 +103,7 @@ val distributionManifest by tasks.registering {
                 + adventureArtifacts.map { rootProject.file(it["cachePath"] as String) }
                 + bootstrap.configurations.getByName("consoleRuntime").resolve()
                 + bootstrap.configurations.getByName("resolverRuntime").resolve()
+                + bootstrap.configurations.getByName("paperRuntimeLibraries").resolve()
                 + bootstrap.configurations.getByName("loaderLibraries").resolve()
                 + bootstrap.configurations.getByName("minecraftServerRuntimeLibraries").resolve()).distinct()
         val minecraftInfo = JsonSlurper().parse(minecraftMetadata) as Map<*, *>
@@ -108,7 +113,7 @@ val distributionManifest by tasks.registering {
             val download = downloads["artifact"] as? Map<*, *> ?: return@mapNotNull null
             (download["path"] as String).substringAfterLast('/') to (download["url"] as String)
         }.toMap()
-        val lockedSources = (paperApiArtifacts + adventureArtifacts).associate { entry ->
+        val lockedSources = (paperApiArtifacts + adventureArtifacts + paperRuntimeArtifacts).associate { entry ->
             val source = rootProject.file(entry["cachePath"] as String)
             val coordinate = (entry["coordinate"] as String).split(':')
             val version = (entry["resolvedVersion"] as? String) ?: coordinate[2]

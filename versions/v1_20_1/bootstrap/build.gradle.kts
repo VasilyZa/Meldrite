@@ -57,6 +57,18 @@ val commonsLangJar = rootProject.fileTree("${System.getProperty("user.home")}/.g
     .singleFile
 
 val resolverRuntime by configurations.creating
+// Paper's server-provided libraries are shared by all plugin realms. Keep their
+// versions and download hashes separate from the public API's transitive graph.
+val paperRuntimeLibraries by configurations.creating
+val paperRuntimeContract = JsonSlurper().parse(rootProject.file("contracts/profiles/paper-1.20.1/runtime-providers.json")) as Map<*, *>
+val paperRuntimeJars = (paperRuntimeContract["artifacts"] as List<*>).map { entry ->
+    val artifact = entry as Map<*, *>
+    rootProject.file(artifact["cachePath"] as String).also { file ->
+        check(file.isFile) { "Missing Paper runtime provider; run .github/scripts/prepare-build.py: $file" }
+        val actual = MessageDigest.getInstance("SHA-256").digest(file.readBytes()).joinToString("") { "%02x".format(it.toInt() and 0xff) }
+        check(actual == artifact["sha256"]) { "Paper runtime provider checksum mismatch: $file" }
+    }
+}
 // Console libraries are also part of the locked java -jar runtime classpath.
 val consoleRuntime by configurations.creating
 val consoleLock = JsonSlurper().parse(rootProject.file("contracts/locks/console-3.25.1.lock.json")) as Map<*, *>
@@ -294,6 +306,8 @@ dependencies {
         sourceSets.main.get().compileClasspath.files.filter { it.name.contains("fabric-permissions-api") }
     }))
     implementation(files(consoleJars))
+    runtimeOnly(files(paperRuntimeJars))
+    add(paperRuntimeLibraries.name, files(paperRuntimeJars))
     add(consoleRuntime.name, files(consoleJars))
     providers.gradleProperty("meldrite.probeModJars").orNull?.let { paths ->
         modRuntimeOnly(files(paths.split(File.pathSeparator)))

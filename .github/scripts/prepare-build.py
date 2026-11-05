@@ -85,6 +85,10 @@ def dependencies():
         for root in document["roots"]:
             visit(root)
 
+    runtime = json.loads((ROOT / "contracts/profiles/paper-1.20.1/runtime-providers.json").read_text())
+    for artifact in runtime["artifacts"]:
+        add(project_cache_path(artifact["cachePath"]), artifact["sha256"], artifact["sourceUrl"])
+
     extra = json.loads((ROOT / ".github/build-dependencies.lock.json").read_text())["artifacts"]
     console = json.loads((ROOT / "contracts/locks/console-3.25.1.lock.json").read_text())
     for artifact in console["artifacts"]:

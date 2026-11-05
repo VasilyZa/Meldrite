@@ -728,7 +728,8 @@
         ".gradle/caches/fabric-loom/1.20.1/net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2/mappings.jar": "cba44a40bb16403e0eebe63757f8ad7f0e37c547c5946c7c7c11572f8e568341"
       },
       "fileDependencyContract": "contracts/profiles/paper-1.20.1/api-index.json",
-      "fileDependencyPurpose": "Use the exact locked Paper API and public provider artifacts to build the shared API authority; no mutable file dependency is accepted.",
+      "additionalFileDependencyContracts": ["contracts/profiles/paper-1.20.1/runtime-providers.json"],
+      "fileDependencyPurpose": "Use the exact locked Paper API, public providers and pinned server-provided runtime libraries to build the shared API authority; no mutable file dependency is accepted.",
       "allowedResourcePaths": ["meldrite/api-providers.properties"],
       "forbiddenPrefixes": [
         "org.spongepowered.", "org/spongepowered/", "org.bukkit.", "org/bukkit/",
