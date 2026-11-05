@@ -82,33 +82,15 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
     }
 
     private void refresh() {
-        Plugin[] current;
-        try {
-            current = delegate.getPlugins();
-        } catch (RuntimeException unsupported) {
-            current = new Plugin[0];
-        }
-        instanceManager.plugins.clear();
-        instanceManager.lookupNames.clear();
-        for (Plugin plugin : current) {
-            if (plugin == null) continue;
-            instanceManager.plugins.add(plugin);
-            instanceManager.lookupNames.put(normalize(plugin.getName()), plugin);
-            if (plugin.getDescription() != null && plugin.getDescription().getProvides() != null) {
-                for (String provided : plugin.getDescription().getProvides()) {
-                    instanceManager.lookupNames.putIfAbsent(normalize(provided), plugin);
-                }
-            }
-        }
-        instanceManager.rebuildGraph();
+        instanceManager.refresh();
     }
 
     private static String normalize(String value) {
         return value == null ? "" : value.replace(' ', '_').toLowerCase(Locale.ENGLISH);
     }
 
-    @Override public Plugin getPlugin(String name) { refresh(); return name == null ? null : instanceManager.lookupNames.get(normalize(name)); }
-    @Override public Plugin[] getPlugins() { refresh(); return instanceManager.plugins.toArray(Plugin[]::new); }
+    @Override public Plugin getPlugin(String name) { return instanceManager.getPlugin(name); }
+    @Override public Plugin[] getPlugins() { return instanceManager.getPlugins(); }
     @Override public boolean isPluginEnabled(String name) { Plugin plugin = getPlugin(name); return plugin != null && isPluginEnabled(plugin); }
     @Override public boolean isPluginEnabled(Plugin plugin) {
         return plugin != null && plugin.isEnabled();
@@ -185,12 +167,31 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
         public final List<Plugin> plugins = new ArrayList<>();
         public volatile MutableGraph<String> dependencyGraph = GraphBuilder.directed().allowsSelfLoops(false).build();
 
+        /** Serializes publication and reads, including callers of the reflective manager API. */
+        private synchronized void refresh() {
+            Plugin[] current = java.util.Objects.requireNonNull(delegate.getPlugins(), "Plugin manager returned null plugins");
+            int index = 0;
+            boolean unchanged = true;
+            var next = new ArrayList<Plugin>(current.length);
+            for (Plugin plugin : current) {
+                if (plugin == null) continue;
+                if (index >= plugins.size() || plugins.get(index) != plugin) unchanged = false;
+                index++;
+                next.add(plugin);
+            }
+            // A status query must not clear the registry or rebuild its dependency graph.
+            // Compare identities so a reload replacing same-named plugins is still published.
+            if (unchanged && index == plugins.size()) return;
+            replacePlugins(next);
+        }
+
         /** Paper's reflective manager contract. */
-        public Plugin getPlugin(String name) {
+        public synchronized Plugin getPlugin(String name) {
+            refresh();
             return name == null ? null : lookupNames.get(normalize(name));
         }
 
-        public Plugin[] getPlugins() { return plugins.toArray(Plugin[]::new); }
+        public synchronized Plugin[] getPlugins() { refresh(); return plugins.toArray(Plugin[]::new); }
 
         public boolean isPluginEnabled(String name) {
             return isPluginEnabled(getPlugin(name));
@@ -202,12 +203,9 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
 
         public synchronized void loadPlugin(Plugin plugin) {
             if (plugin == null || plugins.contains(plugin)) return;
-            plugins.add(plugin);
-            lookupNames.put(normalize(plugin.getName()), plugin);
-            if (plugin.getDescription() != null && plugin.getDescription().getProvides() != null) {
-                for (String provided : plugin.getDescription().getProvides()) lookupNames.putIfAbsent(normalize(provided), plugin);
-            }
-            rebuildGraph();
+            var next = new ArrayList<>(plugins);
+            next.add(plugin);
+            replacePlugins(next);
         }
 
         public Plugin loadPlugin(Path path) throws InvalidPluginException, UnknownDependencyException {
@@ -224,7 +222,9 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
 
         public void disablePlugins() { PaperPluginManagerImpl.this.disablePlugins(); }
 
-        public synchronized void clearPlugins() { PaperPluginManagerImpl.this.clearPlugins(); }
+        // Lifecycle callbacks may wait for other threads which query this manager.
+        // Do not retain the registry lock while delegating to the lifecycle owner.
+        public void clearPlugins() { PaperPluginManagerImpl.this.clearPlugins(); }
 
         public void enablePlugin(Plugin plugin) { PaperPluginManagerImpl.this.enablePlugin(plugin); }
 
@@ -240,15 +240,26 @@ public final class PaperPluginManagerImpl implements PluginManager, io.papermc.p
 
         public MutableGraph<String> getDependencyGraph() { refresh(); return dependencyGraph; }
 
-        private void rebuildGraph() {
+        /** Called under this manager's lock; failed metadata reads leave the old state intact. */
+        private void replacePlugins(List<Plugin> current) {
+            var names = new LinkedHashMap<String, Plugin>();
             MutableGraph<String> graph = GraphBuilder.directed().allowsSelfLoops(false).build();
-            for (Plugin plugin : plugins) {
+            for (Plugin plugin : current) {
+                names.put(normalize(plugin.getName()), plugin);
                 String name = plugin.getName(); graph.addNode(name);
-                if (plugin.getDescription() == null) continue;
-                for (String dependency : plugin.getDescription().getDepend()) {
+                var description = plugin.getDescription();
+                if (description == null) continue;
+                if (description.getProvides() != null) for (String provided : description.getProvides()) {
+                    names.putIfAbsent(normalize(provided), plugin);
+                }
+                for (String dependency : description.getDepend()) {
                     graph.putEdge(dependency, name);
                 }
             }
+            plugins.clear();
+            plugins.addAll(current);
+            lookupNames.clear();
+            lookupNames.putAll(names);
             dependencyGraph = graph;
         }
     }
