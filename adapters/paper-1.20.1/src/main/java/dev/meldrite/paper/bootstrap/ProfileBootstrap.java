@@ -217,26 +217,32 @@ public final class ProfileBootstrap implements AutoCloseable {
         var manager = facade.server().getPluginManager();
         reloading = true;
         boolean pluginsChanged = false;
+        long reloadStarted = System.nanoTime();
         try {
             var configuration = dev.meldrite.paper.configuration.ServerConfiguration.current();
-            configuration.reload();
-            org.spigotmc.SpigotConfig.init(configuration.directory().resolve("spigot.yml").toFile());
+            reloadStage("configuration", () -> {
+                configuration.reload();
+                org.spigotmc.SpigotConfig.init(configuration.directory().resolve("spigot.yml").toFile());
+            });
             pluginsChanged = true;
-            engine.prepareReload();
-            manager.clearPlugins();
-            commandMap.clearCommands();
-            clearPluginState.run();
-            reloadResources.run();
+            reloadStage("retire class loaders", engine::prepareReload);
+            reloadStage("disable and clear plugins", manager::clearPlugins);
+            reloadStage("clear commands and plugin state", () -> {
+                commandMap.clearCommands();
+                clearPluginState.run();
+            });
+            reloadStage("server resources", reloadResources::run);
             if (manager instanceof io.papermc.paper.plugin.manager.PaperPluginManagerImpl) {
                 org.bukkit.util.permissions.DefaultPermissions.registerCorePermissions();
             }
-            discover();
-            bootstrapPlugins();
-            loadPlugins();
-            enable(PluginDescriptor.EnablePhase.STARTUP);
-            enable(PluginDescriptor.EnablePhase.POSTWORLD);
-            publishCommands.run();
-            events.callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.RELOAD));
+            reloadStage("discover and prepare plugins", this::discover);
+            reloadStage("bootstrap plugins", this::bootstrapPlugins);
+            reloadStage("load plugins", this::loadPlugins);
+            reloadStage("enable STARTUP plugins", () -> enable(PluginDescriptor.EnablePhase.STARTUP));
+            reloadStage("enable POSTWORLD plugins", () -> enable(PluginDescriptor.EnablePhase.POSTWORLD));
+            reloadStage("publish commands and permissions", publishCommands::run);
+            reloadStage("ServerLoadEvent", () -> events.callEvent(new org.bukkit.event.server.ServerLoadEvent(org.bukkit.event.server.ServerLoadEvent.LoadType.RELOAD)));
+            Logger.getLogger("Meldrite.Reload").info("Plugin reload completed in " + elapsedMillis(reloadStarted) + " ms");
         } catch (Exception | Error failure) {
             if (pluginsChanged) {
                 cleanupAfterReloadFailure(failure, manager::clearPlugins);
@@ -248,6 +254,23 @@ public final class ProfileBootstrap implements AutoCloseable {
             if (failure instanceof Error error) throw error;
             throw new IllegalStateException("PLUGIN_RELOAD_FAILED", failure);
         } finally { reloading = false; }
+    }
+    @FunctionalInterface private interface ReloadStep { void run() throws Exception; }
+    private static void reloadStage(String name, ReloadStep step) throws Exception {
+        var logger = Logger.getLogger("Meldrite.Reload");
+        logger.info("Reload stage started: " + name);
+        long started = System.nanoTime();
+        try { step.run(); }
+        catch (Exception | Error failure) {
+            logger.warning("Reload stage failed: " + name + " after " + elapsedMillis(started) + " ms");
+            throw failure;
+        }
+        long elapsed = elapsedMillis(started);
+        logger.log(elapsed >= 1000 ? Level.WARNING : Level.INFO,
+                "Reload stage completed: " + name + " in " + elapsed + " ms");
+    }
+    private static long elapsedMillis(long started) {
+        return java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
     }
     private static void cleanupAfterReloadFailure(Throwable original, Runnable operation) {
         try { operation.run(); }
