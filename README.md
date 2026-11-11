@@ -1,8 +1,24 @@
-# Meldrite
+<div align="center">
+  <h1>Meldrite</h1>
+  <p><strong>让 Fabric Mod 与 Bukkit/Paper 插件在同一个 Minecraft 服务端协作运行</strong></p>
+  <p>
+    <a href="https://github.com/shenui6/Meldrite/actions/workflows/runtime.yml"><img src="https://img.shields.io/github/actions/workflow/status/shenui6/Meldrite/runtime.yml?branch=1.20.1&label=CI&logo=github" alt="CI status"></a>
+    <img src="https://img.shields.io/badge/Minecraft-1.20.1-62a65a?logo=minecraft&logoColor=white" alt="Minecraft 1.20.1">
+    <img src="https://img.shields.io/badge/Java-21-f89820?logo=openjdk&logoColor=white" alt="Java 21">
+    <img src="https://img.shields.io/badge/Loader-Fabric-dbd0b4?logo=fabric&logoColor=black" alt="Fabric Loader">
+    <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg" alt="GPL-3.0 license"></a>
+  </p>
+  <p>
+    <a href="#快速启动">快速启动</a> ·
+    <a href="#资源调优">资源调优</a> ·
+    <a href="#插件扫描与重载">插件运维</a> ·
+    <a href="#开发与构建">开发构建</a>
+  </p>
+</div>
 
-> 基于 Fabric 的 Bukkit/Paper 兼容 Minecraft 服务端
+---
 
-Meldrite 让 Mod 与 Bukkit/Paper 插件运行在同一个服务端进程中。当前主要开发和验证目标是 **Minecraft 1.20.1**；1.21.1 目录是独立适配，支持范围以实际发行说明为准。
+当前主要开发和验证目标是 **Minecraft 1.20.1**；1.21.1 使用独立适配，支持范围以实际发行说明为准。
 
 ## 目录
 
