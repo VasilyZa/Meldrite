@@ -20,11 +20,12 @@ public record WorkerSettings(int processors, int asyncThreads, int asyncQueueCap
         Objects.requireNonNull(properties);
         if (processors < 1) throw new IllegalArgumentException("No available processors");
         int async = limit(properties, "meldrite.async.threads", 0, 0, 64);
-        if (async == 0) async = Math.min(8, Math.max(2, processors / 2));
+        if (async == 0) async = Math.min(8, Math.max(1, processors / 2));
         int compute = limit(properties, "meldrite.compute.threads", 0, 0, 64);
         if (compute == 0) compute = Math.min(4, Math.max(1, processors / 4));
-        return new WorkerSettings(processors, async,
-                limit(properties, "meldrite.async.queue-capacity", Math.max(128, async * 32), 1, 65536),
+        int queue = limit(properties, "meldrite.async.queue-capacity", 0, 0, 65536);
+        if (queue == 0) queue = Math.max(32, async * 8);
+        return new WorkerSettings(processors, async, queue,
                 compute, limit(properties, "meldrite.compute.minimum-batch", 4096, 1, Integer.MAX_VALUE));
     }
 

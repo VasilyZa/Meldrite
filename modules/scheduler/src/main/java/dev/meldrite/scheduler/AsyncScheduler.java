@@ -12,15 +12,23 @@ public final class AsyncScheduler implements AutoCloseable {
     private final ThreadPoolExecutor executor;private final ConcurrentMap<Long,Worker> workers=new ConcurrentHashMap<>();private final AtomicLong sequence=new AtomicLong();private final Duration shutdownTimeout;
     public AsyncScheduler(int threads,int capacity,Duration shutdownTimeout){if(threads<1||capacity<1||shutdownTimeout.isNegative())throw new IllegalArgumentException("Invalid async limits");this.capacity=capacity;this.shutdownTimeout=shutdownTimeout;var ids=new AtomicLong();executor=new ThreadPoolExecutor(threads,threads,30,TimeUnit.SECONDS,new ArrayBlockingQueue<>(capacity),runnable->{Thread thread=new Thread(runnable,"Meldrite async worker #"+ids.incrementAndGet());thread.setDaemon(true);thread.setContextClassLoader(AsyncScheduler.class.getClassLoader());return thread;},new ThreadPoolExecutor.AbortPolicy());executor.allowCoreThreadTimeOut(true);}
     public static AsyncScheduler configured(Duration timeout){var settings=WorkerSettings.system();return new AsyncScheduler(settings.asyncThreads(),settings.asyncQueueCapacity(),timeout);}
-    void execute(TaskHandle handle,Runnable operation){try{executor.execute(()->{
+    void execute(TaskHandle handle,Runnable operation){
+        var submitted=new java.util.concurrent.atomic.AtomicReference<Runnable>();
+        Runnable removal=()->{var command=submitted.get();if(command!=null)executor.remove(command);};
+        Runnable command=()->{
         long id=sequence.incrementAndGet();
         // A task can be cancelled after submission but before a worker dequeues
         // it.  ThreadPoolExecutor still runs queued Runnables during shutdown,
         // so the cancellation check must guard the callback itself.
         if(handle.cancelled()||!handle.owner().active())return;
         workers.put(id,new Worker(handle,Thread.currentThread()));
-        try{operation.run();}finally{workers.remove(id);}
-    });}catch(RejectedExecutionException failure){rejected.increment();throw failure;}}
+        try{operation.run();}finally{workers.remove(id);handle.removeCancellationListener(removal);}
+        };
+        submitted.set(command);
+        handle.onCancel(removal);
+        try{executor.execute(command);if(handle.cancelled())executor.remove(command);}
+        catch(RejectedExecutionException failure){handle.removeCancellationListener(removal);rejected.increment();throw failure;}
+    }
     public Statistics statistics(){return new Statistics(executor.getMaximumPoolSize(),executor.getPoolSize(),executor.getActiveCount(),executor.getQueue().size(),capacity,executor.getCompletedTaskCount(),rejected.sum());}
     public List<Worker> workers(){return List.copyOf(workers.values());}
     public Shutdown shutdown(Duration timeout)throws InterruptedException{executor.shutdown();boolean terminated=executor.awaitTermination(timeout.toNanos(),TimeUnit.NANOSECONDS);return new Shutdown(terminated,executor.getQueue().size(),workers());}
