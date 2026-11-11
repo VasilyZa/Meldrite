@@ -13,16 +13,26 @@ public record WorkerSettings(int processors, int asyncThreads, int asyncQueueCap
     }
 
     public static WorkerSettings system() {
-        return resolve(Runtime.getRuntime().availableProcessors(), System.getProperties());
+        return resolve(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().maxMemory(), System.getProperties());
     }
 
     public static WorkerSettings resolve(int processors, Properties properties) {
+        return resolve(processors, Runtime.getRuntime().maxMemory(), properties);
+    }
+
+    public static WorkerSettings resolve(int processors, long maximumHeap, Properties properties) {
         Objects.requireNonNull(properties);
         if (processors < 1) throw new IllegalArgumentException("No available processors");
+        if (maximumHeap < 1) throw new IllegalArgumentException("No available heap");
+        // This is a concurrency budget, not a per-task allocation reservation.
+        // Respect the JVM's container-aware heap limit on small servers.
+        int memoryLanes = (int) Math.max(1, Math.min(64, maximumHeap / (256L * 1024 * 1024)));
         int async = limit(properties, "meldrite.async.threads", 0, 0, 64);
-        if (async == 0) async = Math.min(8, Math.max(1, processors / 2));
+        if (async == 0) async = Math.min(memoryLanes, Math.min(8, Math.max(1, processors / 2)));
         int compute = limit(properties, "meldrite.compute.threads", 0, 0, 64);
-        if (compute == 0) compute = Math.min(4, Math.max(1, processors / 4));
+        // Keep room for the game thread and independent Mod pools. The executor
+        // can still use all configured lanes for a single admitted pure batch.
+        if (compute == 0) compute = Math.min(memoryLanes, Math.min(8, Math.max(1, processors / 4)));
         int queue = limit(properties, "meldrite.async.queue-capacity", 0, 0, 65536);
         if (queue == 0) queue = Math.max(32, async * 8);
         return new WorkerSettings(processors, async, queue,

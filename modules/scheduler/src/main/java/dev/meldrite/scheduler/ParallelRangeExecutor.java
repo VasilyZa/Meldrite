@@ -12,7 +12,10 @@ public final class ParallelRangeExecutor implements AutoCloseable {
                              long completed, long callerFallbacks) { }
     private final int parallelism, queueCapacity;
     private final ThreadPoolExecutor executor;
-    private final ThreadLocal<Boolean> inBatch = new ThreadLocal<>();
+    // A nested batch can use another executor (including one replaced during reload).
+    // Never make a compute worker wait for a second pool's workers.
+    private static final ThreadLocal<Boolean> IN_BATCH = new ThreadLocal<>();
+    private final Semaphore batch = new Semaphore(1);
     private final LongAdder callerFallbacks = new LongAdder();
 
     public ParallelRangeExecutor(int parallelism) {
@@ -36,16 +39,38 @@ public final class ParallelRangeExecutor implements AutoCloseable {
         java.util.Objects.requireNonNull(operation);
         if (length < 0 || minimumBatch < 1) throw new IllegalArgumentException("Invalid range limits");
         if (length == 0) return;
-        int parts = Math.min(parallelism, Math.max(1, length / minimumBatch));
-        if (parts == 1 || Boolean.TRUE.equals(inBatch.get()) || executor.isShutdown()) {
+        int parts = Math.min(parallelism * 4, Math.max(1, length / minimumBatch));
+        int lanes = Math.min(parallelism, parts);
+        if (lanes == 1 || Boolean.TRUE.equals(IN_BATCH.get()) || executor.isShutdown()) {
             range(operation, 0, length);
             return;
         }
-        var pending = new ArrayList<FutureTask<Void>>(parts - 1);
-        for (int part = 1; part < parts; part++) {
-            int from = (int) ((long) length * part / parts);
-            int to = (int) ((long) length * (part + 1) / parts);
-            var task = new FutureTask<Void>(() -> { range(operation, from, to); return null; });
+        // Concurrent plugin callers already provide parallelism. Admit only one
+        // fan-out batch per pool; never block a caller waiting for this permit.
+        if (!batch.tryAcquire()) {
+            callerFallbacks.increment();
+            range(operation, 0, length);
+            return;
+        }
+        try { parallel(length, parts, lanes, operation); }
+        finally { batch.release(); }
+    }
+
+    private void parallel(int length, int parts, int lanes, BiConsumer<Integer, Integer> operation) {
+        // Keep at most one queued command per lane. Faster lanes claim more ranges,
+        // so skewed spatial queries do not leave all other cores waiting for one range.
+        var next = new AtomicInteger();
+        Runnable drain = () -> range((ignoredFrom, ignoredTo) -> {
+            int part;
+            while ((part = next.getAndIncrement()) < parts) {
+                int from = (int) ((long) length * part / parts);
+                int to = (int) ((long) length * (part + 1) / parts);
+                operation.accept(from, to);
+            }
+        }, 0, length);
+        var pending = new ArrayList<FutureTask<Void>>(lanes - 1);
+        for (int lane = 1; lane < lanes; lane++) {
+            var task = new FutureTask<Void>(drain, null);
             pending.add(task);
             try { executor.execute(task); }
             catch (RejectedExecutionException saturated) {
@@ -55,11 +80,17 @@ public final class ParallelRangeExecutor implements AutoCloseable {
             }
         }
         Throwable failure = null;
-        try { range(operation, 0, length / parts); }
+        try { drain.run(); }
         catch (Throwable caught) { failure = caught; }
         boolean interrupted = false;
         // Even after failure/interrupt, every writer must finish before this call returns.
         for (var task : pending) {
+            // Reclaim any command not picked up yet instead of leaving the caller
+            // idle; FutureTask still publishes each lane exactly once.
+            if (executor.remove(task)) {
+                callerFallbacks.increment();
+                task.run();
+            }
             boolean done = false;
             while (!done) try { task.get(); done = true; }
             catch (InterruptedException caught) { interrupted = true; }
@@ -76,10 +107,10 @@ public final class ParallelRangeExecutor implements AutoCloseable {
     }
 
     private void range(BiConsumer<Integer, Integer> operation, int from, int to) {
-        Boolean previous = inBatch.get();
-        inBatch.set(true);
+        Boolean previous = IN_BATCH.get();
+        IN_BATCH.set(true);
         try { operation.accept(from, to); }
-        finally { if (previous == null) inBatch.remove(); else inBatch.set(previous); }
+        finally { if (previous == null) IN_BATCH.remove(); else IN_BATCH.set(previous); }
     }
 
     public Statistics statistics() {

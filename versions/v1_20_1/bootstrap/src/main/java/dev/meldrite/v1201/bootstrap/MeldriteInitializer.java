@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 public final class MeldriteInitializer implements ModInitializer {
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("Meldrite");
     private volatile VersionComposition composition;
+    private volatile dev.meldrite.bootstrap.StartupWatchdog startupWatchdog;
     private volatile dev.meldrite.v1201.compat.NativeAbiAuditExecutor abiAudits;
 
     @Override
@@ -35,9 +36,12 @@ public final class MeldriteInitializer implements ModInitializer {
 
     private void starting(MinecraftServer server) {
         try {
+            startupWatchdog = new dev.meldrite.bootstrap.StartupWatchdog(Thread.currentThread(), LOGGER::warn);
             abiAudits = new dev.meldrite.v1201.compat.NativeAbiAuditExecutor();
             composition = VersionComposition.start(server);
+            startupWatchdog.stage("world and spawn preparation");
         } catch (Throwable failure) {
+            closeStartupWatchdog();
             String code = failure instanceof dev.meldrite.bootstrap.DistributionVerifier.Rejected rejected
                     ? rejected.code() : "BOOTSTRAP_FAILURE";
             VersionComposition.emit("status", code);
@@ -51,16 +55,25 @@ public final class MeldriteInitializer implements ModInitializer {
         VersionComposition current = composition;
         if (current == null) return;
         try {
+            var watchdog = startupWatchdog;
+            if (watchdog != null) watchdog.stage("POSTWORLD plugins and world publication");
             current.worldsReady();
         } catch (Throwable failure) {
             VersionComposition.emit("status", "STARTUP_FAILURE");
             VersionComposition.emit("error", failure.toString());
             LOGGER.error("Meldrite world startup failed", failure);
             server.stop(false);
-        }
+        } finally { closeStartupWatchdog(); }
+    }
+
+    private void closeStartupWatchdog() {
+        var watchdog = startupWatchdog;
+        startupWatchdog = null;
+        if (watchdog != null) watchdog.close();
     }
 
     private void stopping(MinecraftServer server) {
+        closeStartupWatchdog();
         var audits = abiAudits;
         abiAudits = null;
         if (audits != null) audits.close();
