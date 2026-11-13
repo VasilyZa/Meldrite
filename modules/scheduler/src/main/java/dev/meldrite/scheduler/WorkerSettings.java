@@ -30,9 +30,9 @@ public record WorkerSettings(int processors, int asyncThreads, int asyncQueueCap
         int async = limit(properties, "meldrite.async.threads", 0, 0, 64);
         if (async == 0) async = Math.min(memoryLanes, Math.min(8, Math.max(1, processors / 2)));
         int compute = limit(properties, "meldrite.compute.threads", 0, 0, 64);
-        // Keep room for the game thread and independent Mod pools. The executor
-        // can still use all configured lanes for a single admitted pure batch.
-        if (compute == 0) compute = Math.min(memoryLanes, Math.min(8, Math.max(1, processors / 4)));
+        // Keep room for the game thread and independent Mod pools while allowing
+        // larger pure batches to use more cores. The caller is one of these lanes.
+        if (compute == 0) compute = Math.min(memoryLanes, Math.min(16, Math.max(1, processors / 2)));
         int queue = limit(properties, "meldrite.async.queue-capacity", 0, 0, 65536);
         if (queue == 0) queue = Math.max(32, async * 8);
         return new WorkerSettings(processors, async, queue,

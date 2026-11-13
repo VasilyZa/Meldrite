@@ -15,7 +15,6 @@ public final class ParallelRangeExecutor implements AutoCloseable {
     // A nested batch can use another executor (including one replaced during reload).
     // Never make a compute worker wait for a second pool's workers.
     private static final ThreadLocal<Boolean> IN_BATCH = new ThreadLocal<>();
-    private final Semaphore batch = new Semaphore(1);
     private final LongAdder callerFallbacks = new LongAdder();
 
     public ParallelRangeExecutor(int parallelism) {
@@ -45,15 +44,7 @@ public final class ParallelRangeExecutor implements AutoCloseable {
             range(operation, 0, length);
             return;
         }
-        // Concurrent plugin callers already provide parallelism. Admit only one
-        // fan-out batch per pool; never block a caller waiting for this permit.
-        if (!batch.tryAcquire()) {
-            callerFallbacks.increment();
-            range(operation, 0, length);
-            return;
-        }
-        try { parallel(length, parts, lanes, operation); }
-        finally { batch.release(); }
+        parallel(length, parts, lanes, operation);
     }
 
     private void parallel(int length, int parts, int lanes, BiConsumer<Integer, Integer> operation) {

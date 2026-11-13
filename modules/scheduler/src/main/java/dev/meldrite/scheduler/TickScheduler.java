@@ -59,7 +59,7 @@ public final class TickScheduler implements AutoCloseable {
         }}finally{synchronized(this){draining=false;}}
     }
     private void run(Entry entry,Consumer<TaskHandle> action){
-        synchronized(this){if(entry.handle.cancelled()||!entry.handle.owner().active()){finish(entry,false,null);return;}running.merge(entry.handle.id(),1,Integer::sum);entry.handle.state.set(TaskHandle.State.RUNNING);}
+        synchronized(this){if(entry.handle.cancelled()||!entry.handle.owner().active()){finish(entry,false,null);return;}if(updateState(entry.handle,TaskHandle.State.RUNNING)==TaskHandle.State.CANCELLED){finish(entry,false,null);return;}running.merge(entry.handle.id(),1,Integer::sum);}
         Throwable failure=null;
         try{action.accept(entry.handle);}catch(Throwable caught){failure=caught instanceof CompletionException completion&&completion.getCause()!=null?completion.getCause():caught;if(failure instanceof InterruptedException)Thread.currentThread().interrupt();}
         finally{finish(entry,true,failure);}
@@ -69,9 +69,10 @@ public final class TickScheduler implements AutoCloseable {
         if(started){int count=running.getOrDefault(entry.handle.id(),0);if(count<=1)running.remove(entry.handle.id());else running.put(entry.handle.id(),count-1);}
         entry.inFlight--;
         if(entry.handle.cancelled()||!entry.handle.owner().active()){entry.handle.cancel();}
-        else if(!entry.queued&&entry.inFlight==0){entry.handle.state.set(failure==null?TaskHandle.State.COMPLETED:TaskHandle.State.FAILED);remove(entry);entry.handle.owner().detach(entry.handle);}
-        else entry.handle.state.set(running.containsKey(entry.handle.id())?TaskHandle.State.RUNNING:TaskHandle.State.PENDING);
+        else if(!entry.queued&&entry.inFlight==0){updateState(entry.handle,failure==null?TaskHandle.State.COMPLETED:TaskHandle.State.FAILED);remove(entry);entry.handle.owner().detach(entry.handle);}
+        else updateState(entry.handle,running.containsKey(entry.handle.id())?TaskHandle.State.RUNNING:TaskHandle.State.PENDING);
     }
+    private static TaskHandle.State updateState(TaskHandle handle,TaskHandle.State next){return handle.state.updateAndGet(current->current==TaskHandle.State.CANCELLED?current:next);}
     public synchronized int pending(){return queue.size();}
     public synchronized boolean queued(int id){Entry entry=tasks.get(id);return entry!=null&&queue.contains(entry)&&!entry.handle.cancelled();}
     public synchronized boolean running(int id){return running.containsKey(id);}

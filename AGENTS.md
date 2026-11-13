@@ -138,7 +138,7 @@
 
 | 要修改的功能 | 先读的文件及后续位置 |
 | --- | --- |
-| 独立服务端启动、依赖安装 | [ServerLauncher.java](distributions/mc-1.20.1/src/main/java/dev/meldrite/distribution/mc1201/ServerLauncher.java)，同目录的 `DependencyInstaller`、`RuntimeClasspath` |
+| 独立服务端启动、依赖安装 | [ServerLauncher.java](distributions/mc-1.20.1/src/main/java/dev/meldrite/distribution/mc1201/ServerLauncher.java)，同目录的 `DependencyInstaller`、`RuntimeClasspath`；Windows 原生类路径不支持的中文或长路径 JAR 按 SHA-256 缓存到 Java 临时目录，Fabric 类路径与真实加载位置保持一致 |
 | Fabric 回调、启动阶段和服务装配 | [MeldriteInitializer.java](versions/v1_20_1/bootstrap/src/main/java/dev/meldrite/v1201/bootstrap/MeldriteInitializer.java) → [VersionComposition.java](versions/v1_20_1/bootstrap/src/main/java/dev/meldrite/v1201/bootstrap/VersionComposition.java) |
 | 服务端关闭状态与兜底清理 | [ServerLifecycleMixin.java](versions/v1_20_1/bootstrap/src/main/java/dev/meldrite/v1201/hook/ServerLifecycleMixin.java) 在原生关闭开始时发布 Paper `hasStopped()` 状态，在关闭完成后执行现有网关清理；该状态与原版运行循环结束后的 `isStopped()` 不同 |
 | 插件发现、加载和启停 | [ProfileBootstrap.java](adapters/paper-1.20.1/src/main/java/dev/meldrite/paper/bootstrap/ProfileBootstrap.java) → [PluginController.java](modules/plugin-runtime/src/main/java/dev/meldrite/plugin/runtime/PluginController.java)，再查 `plugin-spi` 和 `plugin-classloading` |
