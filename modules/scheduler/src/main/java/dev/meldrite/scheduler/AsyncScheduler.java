@@ -10,28 +10,67 @@ public final class AsyncScheduler implements AutoCloseable {
     public record Statistics(int threads,int poolSize,int active,int queued,int queueCapacity,long completed,long rejected){}
     private final int capacity;private final LongAdder rejected=new LongAdder();
     private final ThreadPoolExecutor executor;private final ConcurrentMap<Long,Worker> workers=new ConcurrentHashMap<>();private final AtomicLong sequence=new AtomicLong();private final Duration shutdownTimeout;
+    private final ConcurrentMap<TaskHandle, SubmissionGroup> submissions = new ConcurrentHashMap<>();
     public AsyncScheduler(int threads,int capacity,Duration shutdownTimeout){if(threads<1||capacity<1||shutdownTimeout.isNegative())throw new IllegalArgumentException("Invalid async limits");this.capacity=capacity;this.shutdownTimeout=shutdownTimeout;var ids=new AtomicLong();executor=new ThreadPoolExecutor(threads,threads,30,TimeUnit.SECONDS,new ArrayBlockingQueue<>(capacity),runnable->{Thread thread=new Thread(runnable,"Meldrite async worker #"+ids.incrementAndGet());thread.setDaemon(true);thread.setContextClassLoader(AsyncScheduler.class.getClassLoader());return thread;},new ThreadPoolExecutor.AbortPolicy());executor.allowCoreThreadTimeOut(true);}
     public static AsyncScheduler configured(Duration timeout){var settings=WorkerSettings.system();return new AsyncScheduler(settings.asyncThreads(),settings.asyncQueueCapacity(),timeout);}
-    private final class Submission implements Runnable {
+    private final class SubmissionGroup {
         private final TaskHandle handle;
+        private final Runnable removal = this::cancel;
+        // Accessed only inside submissions.compute operations.
+        private int references;
+
+        SubmissionGroup(TaskHandle handle) { this.handle = handle; }
+
+        private void cancel() {
+            executor.getQueue().removeIf(command -> ((Submission) command).group == this);
+            submissions.remove(handle, this);
+        }
+
+        private void release() {
+            SubmissionGroup remaining = submissions.computeIfPresent(handle, (task, current) -> {
+                if (current != this) return current;
+                return --references == 0 ? null : this;
+            });
+            if (remaining != this) handle.removeCancellationListener(removal);
+        }
+    }
+
+    private final class Submission implements Runnable {
+        private final SubmissionGroup group;
         private final Runnable operation;
-        private final Runnable removal = this::remove;
-        Submission(TaskHandle handle, Runnable operation) { this.handle=handle; this.operation=operation; }
-        private void remove() { executor.remove(this); handle.removeCancellationListener(removal); }
+
+        Submission(SubmissionGroup group, Runnable operation) { this.group = group; this.operation = operation; }
+
         @Override public void run() {
             long id=sequence.incrementAndGet();
+            TaskHandle handle = group.handle;
             try {
                 if(handle.cancelled()||!handle.owner().active()){handle.cancel();return;}
                 workers.put(id,new Worker(handle,Thread.currentThread()));
                 operation.run();
-            } finally { workers.remove(id); handle.removeCancellationListener(removal); }
+            } finally { workers.remove(id); group.release(); }
         }
     }
-    void execute(TaskHandle handle,Runnable operation){
-        var command=new Submission(Objects.requireNonNull(handle),Objects.requireNonNull(operation));
-        handle.onCancel(command.removal);
-        try{executor.execute(command);if(handle.cancelled())command.remove();}
-        catch(RejectedExecutionException failure){handle.removeCancellationListener(command.removal);rejected.increment();throw failure;}
+    void execute(TaskHandle handle, Runnable operation) {
+        Objects.requireNonNull(handle);
+        Objects.requireNonNull(operation);
+        SubmissionGroup group = submissions.compute(handle, (task, current) -> {
+            if (current == null) current = new SubmissionGroup(task);
+            current.references++;
+            return current;
+        });
+        try {
+            handle.onCancel(group.removal);
+            executor.execute(new Submission(group, operation));
+        } catch (RejectedExecutionException failure) {
+            group.release();
+            rejected.increment();
+            throw failure;
+        } catch (RuntimeException | Error failure) {
+            group.release();
+            throw failure;
+        }
+        if (handle.cancelled()) group.cancel();
     }
     public Statistics statistics(){return new Statistics(executor.getMaximumPoolSize(),executor.getPoolSize(),executor.getActiveCount(),executor.getQueue().size(),capacity,executor.getCompletedTaskCount(),rejected.sum());}
     public List<Worker> workers(){return List.copyOf(workers.values());}
@@ -49,5 +88,5 @@ public final class AsyncScheduler implements AutoCloseable {
             if(!terminated)throw new IllegalStateException("ASYNC_SHUTDOWN_TIMEOUT: "+workers.size()+" running, "+executor.getQueue().size()+" queued");
         }catch(InterruptedException failure){try{cancelDiscarded();}finally{Thread.currentThread().interrupt();}throw new IllegalStateException("Async shutdown interrupted",failure);}
     }
-    private void cancelDiscarded(){for(Runnable discarded:executor.shutdownNow())((Submission)discarded).handle.cancel();}
+    private void cancelDiscarded(){for(Runnable discarded:executor.shutdownNow())((Submission)discarded).group.handle.cancel();}
 }

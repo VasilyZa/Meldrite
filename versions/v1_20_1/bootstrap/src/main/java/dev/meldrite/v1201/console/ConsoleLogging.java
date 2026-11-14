@@ -177,7 +177,8 @@ public final class ConsoleLogging {
         TerminalAppender(Configuration configuration) {
             super(APPENDER, null, PatternLayout.newBuilder().withConfiguration(configuration)
                     .withPattern("%msg%n%xEx").build(), true, Property.EMPTY_ARRAY);
-            timestamp = PatternLayout.newBuilder().withConfiguration(configuration).withPattern("%d{HH:mm:ss}").build();
+            timestamp = PatternLayout.newBuilder().withConfiguration(configuration).withPattern("%d{HH:mm:ss}")
+                    .withAlwaysWriteExceptions(false).build();
         }
         @Override public void append(LogEvent event) {
             var currentTerminal = terminal;
@@ -189,7 +190,7 @@ public final class ConsoleLogging {
                 time = "\u001b[2;37m" + time + RESET;
                 if (levelColor != null) level = levelColor + level + RESET;
             }
-            String body = ConsoleText.format(getLayout().toSerializable(event).toString(), false);
+            String body = ConsoleText.format(getLayout().toSerializable(event).toString(), ansi);
             String text = time + " [" + event.getThreadName() + "/" + level + "]: " + body;
             var currentReader = reader;
             if (currentReader != null) currentReader.printAbove(text);

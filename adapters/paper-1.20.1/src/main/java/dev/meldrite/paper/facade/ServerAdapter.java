@@ -166,6 +166,7 @@ public class ServerAdapter implements org.bukkit.Server {
     var handler = (java.lang.reflect.InvocationHandler) (proxy, method, args) -> {
       String name = method.getName();
       Object[] actual = args == null ? new Object[0] : args;
+      if (method.isDefault()) return java.lang.reflect.InvocationHandler.invokeDefault(proxy, method, actual);
       switch (name) {
         case "getServer" -> { return this; }
         case "getName" -> { return "CONSOLE"; }
@@ -180,7 +181,7 @@ public class ServerAdapter implements org.bukkit.Server {
               if (message != null) context.info().logger().info(message.toLegacyText());
             }
             @Override public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... messages) {
-              if (messages != null) for (var message : messages) sendMessage(message);
+              if (messages != null) context.info().logger().info(net.md_5.bungee.api.chat.BaseComponent.toLegacyText(messages));
             }
             @Override public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent message) { sendMessage(message); }
             @Override public void sendMessage(UUID sender, net.md_5.bungee.api.chat.BaseComponent... messages) { sendMessage(messages); }
@@ -216,7 +217,6 @@ public class ServerAdapter implements org.bukkit.Server {
     Object message = args[args.length - 1];
     if (message instanceof String text) context.info().logger().info(text);
     else if (message instanceof String[] texts) for (var text : texts) context.info().logger().info(text);
-    else if (message instanceof net.kyori.adventure.text.Component component) context.info().logger().info(component.toString());
   }
 
   private static Object defaultValue(Class<?> type) {
