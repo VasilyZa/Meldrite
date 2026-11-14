@@ -171,9 +171,13 @@ public final class ConsoleLogging {
     }
 
     private static final class TerminalAppender extends AbstractAppender {
+        private final PatternLayout timestamp;
+
         TerminalAppender(Configuration configuration) {
             super(APPENDER, null, PatternLayout.newBuilder().withConfiguration(configuration)
-                    .withPattern("[%d{HH:mm:ss}] [%t/%level]: %msg%n%xEx").build(), true, Property.EMPTY_ARRAY);
+                    .withPattern(" [%t/%level]: %msg%n%xEx").build(), true, Property.EMPTY_ARRAY);
+            timestamp = PatternLayout.newBuilder().withConfiguration(configuration).withPattern("[%d{HH:mm:ss}]")
+                    .withAlwaysWriteExceptions(false).build();
         }
         @Override public void append(LogEvent event) {
             var currentTerminal = terminal;
@@ -181,6 +185,8 @@ public final class ConsoleLogging {
             String text = getLayout().toSerializable(event).toString();
             if (ansi && event.getLevel().isMoreSpecificThan(org.apache.logging.log4j.Level.WARN))
                 text = (event.getLevel().isMoreSpecificThan(org.apache.logging.log4j.Level.ERROR) ? "§c" : "§e") + text;
+            String time = timestamp.toSerializable(event);
+            text = (ansi ? "§7" + time + "§r" : time) + text;
             text = ConsoleText.format(text, ansi);
             var currentReader = reader;
             if (currentReader != null) currentReader.printAbove(text);
