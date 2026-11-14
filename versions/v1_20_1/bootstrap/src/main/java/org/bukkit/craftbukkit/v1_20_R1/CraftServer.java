@@ -35,6 +35,7 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
         this.paperPluginManager = new io.papermc.paper.plugin.manager.PaperPluginManagerImpl(
                 this, commandMap, super.getPluginManager());
         this.helpMap = new SimpleHelpMap(this);
+        commandMap.synchronizeNativeCommands(console.getCommandManager(), bukkitCommandTree::isBukkitOrigin);
     }
     public MinecraftDedicatedServer getServer() { return console; }
     @Override public HelpMap getHelpMap() { return helpMap; }
@@ -399,7 +400,10 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     }
     @Override public SimpleCommandMap getCommandMap() { return commandMap; }
     @Override public PluginManager getPluginManager() { return paperPluginManager; }
-    @Override protected void clearPluginState() { helpMap.resetForReload(); }
+    @Override protected void clearPluginState() {
+        helpMap.resetForReload();
+        commandMap.synchronizeNativeCommands(console.getCommandManager(), bukkitCommandTree::isBukkitOrigin);
+    }
     @Override protected void reloadServerResources() {
         dev.meldrite.v1201.compat.NativeServerProperties.reload(console);
         reloadWhitelist();
@@ -414,7 +418,8 @@ public class CraftServer extends org.bukkit.craftbukkit.CraftServerBase {
     @Override public void syncCommands() {
         requireServerThread();
         var commands = console.getCommandManager();
-        bukkitCommandTree.synchronize(this, commands.getDispatcher(), getCommandMap().getKnownCommands());
+        bukkitCommandTree.synchronize(this, commands.getDispatcher(), commandMap.getBukkitCommands());
+        commandMap.synchronizeNativeCommands(commands, bukkitCommandTree::isBukkitOrigin);
         var players = console.getPlayerManager();
         if (players != null) for (var player : players.getPlayerList()) commands.sendCommandTree(player);
     }

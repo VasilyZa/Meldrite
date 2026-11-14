@@ -307,16 +307,19 @@ public class CraftEntity extends dev.meldrite.paper.facade.EntityAdapter impleme
     @Override public boolean isInsideVehicle() { return getHandle().hasVehicle(); }
     @Override public boolean isEmpty() { return !getHandle().hasPassengers(); }
     @Override public boolean leaveVehicle() {
-        delegate.requireWritable();
-        Entity entity = getHandle();
+        Entity entity = nativeEntity;
+        dev.meldrite.v1201.compat.NativeEntityExtensions.requireThread(entity);
+        // Native removal already detaches destroyed entities; repeated cleanup has no relationship to change.
         if (!entity.hasVehicle()) return false;
+        delegate.requireWritable();
         dev.meldrite.v1201.compat.NativeEntityExtensions.dismount(entity, false);
         return !entity.hasVehicle();
     }
     @Override public boolean eject() {
-        delegate.requireWritable();
-        Entity entity = getHandle();
+        Entity entity = nativeEntity;
+        dev.meldrite.v1201.compat.NativeEntityExtensions.requireThread(entity);
         if (!entity.hasPassengers()) return false;
+        delegate.requireWritable();
         for (Entity passenger : java.util.List.copyOf(entity.getPassengerList())) {
             dev.meldrite.v1201.compat.NativeEntityExtensions.dismount(passenger, false);
         }
@@ -333,8 +336,10 @@ public class CraftEntity extends dev.meldrite.paper.facade.EntityAdapter impleme
         return addPassenger(passenger);
     }
     @Override public boolean removePassenger(org.bukkit.entity.Entity passenger) {
+        Entity entity = nativeEntity;
+        dev.meldrite.v1201.compat.NativeEntityExtensions.requireThread(entity);
+        if (!(passenger instanceof CraftEntity craft) || craft.nativeEntity.getVehicle() != entity) return false;
         delegate.requireWritable();
-        if (!(passenger instanceof CraftEntity craft) || craft.getHandle().getVehicle() != getHandle()) return false;
         return craft.leaveVehicle();
     }
     @Override public boolean teleport(org.bukkit.Location location) {

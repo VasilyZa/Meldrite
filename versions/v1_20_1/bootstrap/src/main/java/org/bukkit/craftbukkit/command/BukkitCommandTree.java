@@ -30,7 +30,8 @@ public final class BukkitCommandTree {
         published.entrySet().removeIf(entry -> {
             // Brigadier merges a late registration into the existing literal.
             // Once another executor or child owns it, leave that node intact.
-            if (root.getChild(entry.getKey()) != entry.getValue() || !exclusivelyBukkit(entry.getValue())) return true;
+            if (root.getChild(entry.getKey()) != entry.getValue()) return true;
+            if (!exclusivelyBukkit(entry.getValue())) return false;
             Command desired = commands.get(entry.getKey());
             if (desired != null && ((BukkitCommandWrapper) entry.getValue().getCommand()).wraps(desired)) return false;
             remove(root, entry.getKey());
@@ -43,6 +44,11 @@ public final class BukkitCommandTree {
             if (root.getChild(label) != null) continue;
             published.put(label, new BukkitCommandWrapper(server, entry.getValue()).register(dispatcher, label));
         }
+    }
+
+    /** Identifies roots originally published from the Bukkit map, including merged nodes. */
+    public boolean isBukkitOrigin(CommandNode<ServerCommandSource> node) {
+        return published.get(node.getName()) == node;
     }
 
     public static boolean exclusivelyBukkit(CommandNode<ServerCommandSource> node) {

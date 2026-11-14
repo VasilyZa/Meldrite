@@ -30,10 +30,15 @@ public final class VanillaCommandWrapper extends BukkitCommand {
     }
 
     @Override public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (!testPermission(sender)) return true;
         ServerCommandSource source = getListener(sender);
-        dispatcher.executeWithPrefix(source, toDispatcher(args, commandLabel));
+        if (!source.getServer().isOnThread()) throw new IllegalStateException("ASYNC_COMMAND_DISPATCH");
+        if (!testPermission(sender)) return true;
+        dispatcher.executeWithPrefix(source, toDispatcher(args, vanillaCommand.getName()));
         return true;
+    }
+
+    @Override public boolean testPermissionSilent(CommandSender sender) {
+        return vanillaCommand.canUse(getListener(sender));
     }
 
     @Override public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) {
@@ -49,6 +54,7 @@ public final class VanillaCommandWrapper extends BukkitCommand {
     public static ServerCommandSource getListener(CommandSender sender) {
         if (sender instanceof ProxiedNativeCommandSender proxied) return proxied.getHandle();
         if (sender instanceof CraftEntityCommandSender entity) return entity.getHandle();
+        if (sender instanceof org.bukkit.craftbukkit.v1_20_R1.entity.CraftEntity entity) return entity.getHandle().getCommandSource();
         if (sender instanceof BlockCommandSender block && block instanceof CraftBlockCommandSender craft) return craft.getWrapper();
         if (sender instanceof RemoteConsoleCommandSender remote && remote instanceof CraftRemoteConsoleCommandSender craft) return craft.getListener();
         if (sender instanceof ConsoleCommandSender && sender.getServer() instanceof org.bukkit.craftbukkit.v1_20_R1.CraftServer craft) {
