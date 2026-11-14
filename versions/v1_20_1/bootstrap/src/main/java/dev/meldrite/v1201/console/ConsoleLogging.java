@@ -171,42 +171,21 @@ public final class ConsoleLogging {
     }
 
     private static final class TerminalAppender extends AbstractAppender {
-        private static final String RESET = "\u001b[0m";
-        private final PatternLayout timestamp;
-
         TerminalAppender(Configuration configuration) {
             super(APPENDER, null, PatternLayout.newBuilder().withConfiguration(configuration)
-                    .withPattern("%msg%n%xEx").build(), true, Property.EMPTY_ARRAY);
-            timestamp = PatternLayout.newBuilder().withConfiguration(configuration).withPattern("%d{HH:mm:ss}")
-                    .withAlwaysWriteExceptions(false).build();
+                    .withPattern("[%d{HH:mm:ss}] [%t/%level]: %msg%n%xEx").build(), true, Property.EMPTY_ARRAY);
         }
         @Override public void append(LogEvent event) {
             var currentTerminal = terminal;
             boolean ansi = currentTerminal != null && !"false".equalsIgnoreCase(System.getProperty("terminal.ansi"));
-            String time = "[" + timestamp.toSerializable(event) + "]";
-            String level = event.getLevel().name();
-            String levelColor = levelColor(level);
-            if (ansi) {
-                time = "\u001b[2;37m" + time + RESET;
-                if (levelColor != null) level = levelColor + level + RESET;
-            }
-            String body = ConsoleText.format(getLayout().toSerializable(event).toString(), ansi);
-            String text = time + " [" + event.getThreadName() + "/" + level + "]: " + body;
+            String text = getLayout().toSerializable(event).toString();
+            if (ansi && event.getLevel().isMoreSpecificThan(org.apache.logging.log4j.Level.WARN))
+                text = (event.getLevel().isMoreSpecificThan(org.apache.logging.log4j.Level.ERROR) ? "§c" : "§e") + text;
+            text = ConsoleText.format(text, ansi);
             var currentReader = reader;
             if (currentReader != null) currentReader.printAbove(text);
             else if (currentTerminal != null) { currentTerminal.writer().print(text); currentTerminal.flush(); }
             else OUTPUT.print(text);
-        }
-
-        private static String levelColor(String level) {
-            return switch (level) {
-                case "INFO" -> "\u001b[32m";
-                case "WARN" -> "\u001b[33m";
-                case "ERROR" -> "\u001b[31m";
-                case "DEBUG" -> "\u001b[36m";
-                case "FATAL" -> "\u001b[1;41;37m";
-                default -> null;
-            };
         }
     }
 
