@@ -12,15 +12,27 @@ public final class AsyncScheduler implements AutoCloseable {
     private final ThreadPoolExecutor executor;private final ConcurrentMap<Long,Worker> workers=new ConcurrentHashMap<>();private final AtomicLong sequence=new AtomicLong();private final Duration shutdownTimeout;
     public AsyncScheduler(int threads,int capacity,Duration shutdownTimeout){if(threads<1||capacity<1||shutdownTimeout.isNegative())throw new IllegalArgumentException("Invalid async limits");this.capacity=capacity;this.shutdownTimeout=shutdownTimeout;var ids=new AtomicLong();executor=new ThreadPoolExecutor(threads,threads,30,TimeUnit.SECONDS,new ArrayBlockingQueue<>(capacity),runnable->{Thread thread=new Thread(runnable,"Meldrite async worker #"+ids.incrementAndGet());thread.setDaemon(true);thread.setContextClassLoader(AsyncScheduler.class.getClassLoader());return thread;},new ThreadPoolExecutor.AbortPolicy());executor.allowCoreThreadTimeOut(true);}
     public static AsyncScheduler configured(Duration timeout){var settings=WorkerSettings.system();return new AsyncScheduler(settings.asyncThreads(),settings.asyncQueueCapacity(),timeout);}
-    void execute(TaskHandle handle,Runnable operation){try{executor.execute(()->{
-        long id=sequence.incrementAndGet();
-        // A task can be cancelled after submission but before a worker dequeues
-        // it.  ThreadPoolExecutor still runs queued Runnables during shutdown,
-        // so the cancellation check must guard the callback itself.
-        if(handle.cancelled()||!handle.owner().active())return;
-        workers.put(id,new Worker(handle,Thread.currentThread()));
-        try{operation.run();}finally{workers.remove(id);}
-    });}catch(RejectedExecutionException failure){rejected.increment();throw failure;}}
+    private final class Submission implements Runnable {
+        private final TaskHandle handle;
+        private final Runnable operation;
+        private final Runnable removal = this::remove;
+        Submission(TaskHandle handle, Runnable operation) { this.handle=handle; this.operation=operation; }
+        private void remove() { executor.remove(this); handle.removeCancellationListener(removal); }
+        @Override public void run() {
+            long id=sequence.incrementAndGet();
+            try {
+                if(handle.cancelled()||!handle.owner().active()){handle.cancel();return;}
+                workers.put(id,new Worker(handle,Thread.currentThread()));
+                operation.run();
+            } finally { workers.remove(id); handle.removeCancellationListener(removal); }
+        }
+    }
+    void execute(TaskHandle handle,Runnable operation){
+        var command=new Submission(Objects.requireNonNull(handle),Objects.requireNonNull(operation));
+        handle.onCancel(command.removal);
+        try{executor.execute(command);if(handle.cancelled())command.remove();}
+        catch(RejectedExecutionException failure){handle.removeCancellationListener(command.removal);rejected.increment();throw failure;}
+    }
     public Statistics statistics(){return new Statistics(executor.getMaximumPoolSize(),executor.getPoolSize(),executor.getActiveCount(),executor.getQueue().size(),capacity,executor.getCompletedTaskCount(),rejected.sum());}
     public List<Worker> workers(){return List.copyOf(workers.values());}
     public Shutdown shutdown(Duration timeout)throws InterruptedException{executor.shutdown();boolean terminated=executor.awaitTermination(timeout.toNanos(),TimeUnit.NANOSECONDS);return new Shutdown(terminated,executor.getQueue().size(),workers());}
@@ -32,9 +44,10 @@ public final class AsyncScheduler implements AutoCloseable {
             // callback that ignores cancellation must not hold the whole
             // server lifecycle open indefinitely, so interrupt only after
             // the normal cooperative grace period has elapsed.
-            executor.shutdownNow();
+            cancelDiscarded();
             boolean terminated=executor.awaitTermination(Math.min(2,Math.max(1,shutdownTimeout.toSeconds())),TimeUnit.SECONDS);
             if(!terminated)throw new IllegalStateException("ASYNC_SHUTDOWN_TIMEOUT: "+workers.size()+" running, "+executor.getQueue().size()+" queued");
-        }catch(InterruptedException failure){Thread.currentThread().interrupt();throw new IllegalStateException("Async shutdown interrupted",failure);}
+        }catch(InterruptedException failure){try{cancelDiscarded();}finally{Thread.currentThread().interrupt();}throw new IllegalStateException("Async shutdown interrupted",failure);}
     }
+    private void cancelDiscarded(){for(Runnable discarded:executor.shutdownNow())((Submission)discarded).handle.cancel();}
 }

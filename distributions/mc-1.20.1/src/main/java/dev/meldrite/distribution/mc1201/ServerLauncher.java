@@ -36,7 +36,7 @@ public final class ServerLauncher {
         if (!additionalMods.isBlank()) mods += File.pathSeparator + additionalMods;
         System.setProperty("fabric.addMods", mods);
         var classpath = select(bundle, "classpath", artifacts);
-        RuntimeClasspath.install(classpath);
+        classpath = RuntimeClasspath.install(classpath);
         // Fabric's discovery reads this property as well as the actual class loader.
         System.setProperty("java.class.path", joinPaths(classpath));
         Thread.currentThread().setContextClassLoader(ClassLoader.getSystemClassLoader());
