@@ -6,10 +6,13 @@ import dev.meldrite.foundation.ResourceKey;
 import dev.meldrite.foundation.WorldKey;
 import net.minecraft.block.Block;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -18,7 +21,11 @@ import java.util.UUID;
 
 /** Native 1.20.1 world identity and live block projection. */
 public final class NativeWorldPort implements WorldPort {
+    private record LookupKey(WorldKey key, RegistryKey<World> nativeKey) { }
+
     private final MinecraftServer server;
+    // Bulk queries usually stay in one dimension. Cache its converted key, never the loaded world.
+    private volatile LookupKey recentKey;
 
     public NativeWorldPort(MinecraftServer server) { this.server = Objects.requireNonNull(server); }
 
@@ -58,11 +65,15 @@ public final class NativeWorldPort implements WorldPort {
         return new WorldKey(new ResourceKey("minecraft", "dimension", id.getNamespace(), id.getPath()));
     }
 
-    private ServerWorld find(WorldKey key) {
+    ServerWorld find(WorldKey key) {
+        var recent = recentKey;
+        if (recent != null && recent.key().equals(key)) return server.getWorld(recent.nativeKey());
         var id = key.key();
         if (!id.registryNamespace().equals("minecraft") || !id.registryPath().equals("dimension")) return null;
-        return server.getWorld(net.minecraft.registry.RegistryKey.of(net.minecraft.registry.RegistryKeys.WORLD,
-                new Identifier(id.entryNamespace(), id.entryPath())));
+        var nativeKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(id.entryNamespace(), id.entryPath()));
+        var world = server.getWorld(nativeKey);
+        if (world != null) recentKey = new LookupKey(key, nativeKey);
+        return world;
     }
 
     private static UUID uid(ServerWorld world) {

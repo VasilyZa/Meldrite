@@ -1,5 +1,6 @@
 package dev.meldrite.paper.registry;
 
+import dev.meldrite.paper.compat.PackedRgb;
 import java.util.*;
 import java.util.function.IntFunction;
 import org.bukkit.Color;
@@ -21,8 +22,8 @@ public final class PotionEffectProjection {
         public Definition {
             Objects.requireNonNull(namespace); Objects.requireNonNull(key); Objects.requireNonNull(legacyName); Objects.requireNonNull(category); Objects.requireNonNull(translationKey);
             modifiers = List.copyOf(modifiers);
-            if (id <= 0) throw new IllegalArgumentException("Effect id must be positive");
-            Color.fromRGB(color);
+            if (id < 0) throw new IllegalArgumentException("Negative native effect id " + id + " for " + namespace + ":" + key);
+            color = PackedRgb.normalize(color);
         }
     }
     @FunctionalInterface public interface ModifierAmount {

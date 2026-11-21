@@ -8,6 +8,10 @@ public final class WrapperCache {
     private final Map<Object,Entry> entries=new HashMap<>();private final ReferenceQueue<Object> queue=new ReferenceQueue<>();
     private void drain(){Entry entry;while((entry=(Entry)queue.poll())!=null)entries.remove(entry.key,entry);}
     @SuppressWarnings("unchecked") public synchronized <T>T get(Object key,Supplier<T> factory){Objects.requireNonNull(key);drain();Entry existing=entries.get(key);Object value=existing==null?null:existing.get();if(value==null){value=Objects.requireNonNull(factory.get(),"Facade creator returned null");entries.put(key,new Entry(key,value,queue));}return (T)value;}
+    public synchronized void remove(Object key) {
+        drain();
+        entries.remove(key);
+    }
     public synchronized void evict(Predicate<Object> predicate){drain();entries.keySet().removeIf(predicate);}
     public synchronized void rebind(Object previous,Object replacement,Object facade){
         Objects.requireNonNull(previous);Objects.requireNonNull(replacement);Objects.requireNonNull(facade);drain();

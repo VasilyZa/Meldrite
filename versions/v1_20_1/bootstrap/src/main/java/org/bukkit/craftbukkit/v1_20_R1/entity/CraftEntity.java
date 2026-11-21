@@ -294,7 +294,13 @@ public class CraftEntity extends dev.meldrite.paper.facade.EntityAdapter impleme
         delegate.requireWritable();
         dev.meldrite.v1201.compat.NativeEntityExtensions.state(getHandle()).meldrite$setPersistent(persistent);
     }
-    @Override public void remove() { context.remove(delegate); }
+    protected final boolean isRemovedOnServerThread() {
+        // Only skip removal once this native instance is gone on the server thread.
+        return context.primaryThread() && nativeEntity.isRemoved();
+    }
+    @Override public void remove() {
+        if (!isRemovedOnServerThread()) context.remove(delegate);
+    }
     @Override public org.bukkit.entity.Entity getVehicle() {
         Entity vehicle = getHandle().getVehicle();
         return vehicle == null ? null : dev.meldrite.v1201.compat.NativeEntityExtensions.bukkit(vehicle);

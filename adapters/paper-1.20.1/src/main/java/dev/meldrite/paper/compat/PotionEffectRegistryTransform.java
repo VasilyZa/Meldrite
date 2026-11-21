@@ -139,7 +139,14 @@ public final class PotionEffectRegistryTransform implements Opcodes {
 
     private static void values(MethodVisitor method) {
         method.visitCode();
-        method.visitFieldInsn(GETSTATIC, TYPE, "byId", ARRAY); method.visitInsn(ICONST_1);
+        // Vanilla reserves slot zero. Include it when the native registry supplies an effect there.
+        Label startAtOne = new Label(), copy = new Label();
+        method.visitFieldInsn(GETSTATIC, TYPE, "byId", ARRAY);
+        method.visitInsn(DUP); method.visitInsn(ICONST_0); method.visitInsn(AALOAD);
+        method.visitJumpInsn(IFNULL, startAtOne);
+        method.visitInsn(ICONST_0); method.visitJumpInsn(GOTO, copy);
+        method.visitLabel(startAtOne); method.visitInsn(ICONST_1);
+        method.visitLabel(copy);
         method.visitFieldInsn(GETSTATIC, TYPE, "byId", ARRAY); method.visitInsn(ARRAYLENGTH);
         method.visitMethodInsn(INVOKESTATIC, "java/util/Arrays", "copyOfRange", "([Ljava/lang/Object;II)[Ljava/lang/Object;", false);
         method.visitTypeInsn(CHECKCAST, ARRAY); method.visitVarInsn(ASTORE, 0);

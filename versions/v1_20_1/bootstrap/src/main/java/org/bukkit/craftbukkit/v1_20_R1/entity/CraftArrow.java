@@ -1,6 +1,7 @@
 package org.bukkit.craftbukkit.v1_20_R1.entity;
 
 import dev.meldrite.craft.EntityDelegate;
+import dev.meldrite.paper.compat.PackedRgb;
 import dev.meldrite.paper.facade.FacadeContext;
 import dev.meldrite.v1201.bridge.NativeEntityPort;
 import dev.meldrite.v1201.hook.ArrowEntityAccess;
@@ -55,7 +56,10 @@ public class CraftArrow extends CraftProjectile implements org.bukkit.entity.Arr
     private static org.bukkit.potion.PotionType potionType(String path) { for (var entry : POTION_NAMES.entrySet()) if (entry.getValue().equals(path)) return entry.getKey(); return org.bukkit.potion.PotionType.UNCRAFTABLE; }
     @Override public void setBasePotionData(org.bukkit.potion.PotionData data) { delegate.requireWritable(); String path = potionPath(data); String base = path.startsWith("strong_") ? path.substring(7) : path.startsWith("long_") ? path.substring(5) : path; arrowState().meldrite$setPotion(Registries.POTION.get(new Identifier("minecraft", path))); arrowState().meldrite$initColor(); }
     @Override public org.bukkit.potion.PotionData getBasePotionData() { String path = Registries.POTION.getId(arrowState().meldrite$getPotion()).getPath(); boolean upgraded = path.startsWith("strong_"); boolean extended = path.startsWith("long_"); String base = upgraded ? path.substring(7) : extended ? path.substring(5) : path; return new org.bukkit.potion.PotionData(potionType(base), extended, upgraded); }
-    @Override public org.bukkit.Color getColor() { int color = getHandle().getColor(); return color < 0 ? null : org.bukkit.Color.fromRGB(color); }
+    @Override public org.bukkit.Color getColor() {
+        int color = getHandle().getColor();
+        return color == -1 ? null : PackedRgb.toBukkit(color);
+    }
     @Override public void setColor(org.bukkit.Color color) { delegate.requireWritable(); arrowState().meldrite$setNativeColor(color == null ? -1 : color.asRGB()); }
     private static org.bukkit.potion.PotionEffect bukkitEffect(StatusEffectInstance effect) { var id = Registries.STATUS_EFFECT.getId(effect.getEffectType()); var type = org.bukkit.potion.PotionEffectType.getByKey(new org.bukkit.NamespacedKey(id.getNamespace(), id.getPath())); if (type == null) throw new UnsupportedOperationException("UNREPRESENTABLE_NATIVE_EFFECT: " + id); return new org.bukkit.potion.PotionEffect(type, effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.shouldShowParticles(), effect.shouldShowIcon()); }
     private static StatusEffectInstance nativeEffect(org.bukkit.potion.PotionEffect effect) { var key = effect.getType().getKey(); var nativeType = Registries.STATUS_EFFECT.get(new Identifier(key.getNamespace(), key.getKey())); return new StatusEffectInstance(nativeType, effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.hasParticles(), effect.hasIcon()); }

@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
@@ -38,14 +39,12 @@ public final class NativeEntityPort implements EntityPort {
     }
 
     @Override public boolean isValid(EntityHandle handle) {
-        Entity entity = resolve(handle);
-        return entity != null && !entity.isRemoved() && matchesGeneration(handle, entity);
+        return resolve(handle) != null;
     }
 
     @Override public Optional<EntityInfo> describe(EntityHandle handle) {
-        if (!worlds.isLoaded(handle.world())) return Optional.empty();
         Entity entity = resolve(handle);
-        if (entity == null || entity.isRemoved() || !matchesGeneration(handle, entity)) return Optional.empty();
+        if (entity == null) return Optional.empty();
         EntityPosition position = new EntityPosition(handle.world(), entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
         Identifier typeId = Registries.ENTITY_TYPE.getId(entity.getType());
         ResourceKey type = new ResourceKey("minecraft", "entity_type", typeId.getNamespace(), typeId.getPath());
@@ -61,16 +60,15 @@ public final class NativeEntityPort implements EntityPort {
     }
     public Entity require(EntityHandle handle) {
         Entity entity = resolve(handle);
-        if (entity == null || entity.isRemoved() || !matchesGeneration(handle, entity)) throw new IllegalStateException("ENTITY_NOT_PRESENT: " + handle.uuid());
+        if (entity == null) throw new IllegalStateException("ENTITY_NOT_PRESENT: " + handle.uuid());
         return entity;
     }
 
     /** Retains native identity without inserting a detached entity into its world. */
     public EntityHandle project(Entity entity) {
         requirePrimary();
-        if (!(entity.getWorld() instanceof net.minecraft.server.world.ServerWorld world)
-                || !worlds.isLoaded(NativeWorldPort.key(world))
-                || worlds.require(NativeWorldPort.key(world)) != world || entity.isRemoved()) {
+        if (!(entity.getWorld() instanceof ServerWorld world) || entity.isRemoved()
+                || server.getWorld(world.getRegistryKey()) != world) {
             throw new IllegalStateException("ENTITY_NOT_IN_LIVE_SERVER_WORLD");
         }
         var handle = new EntityHandle(NativeWorldPort.key(world), entity.getUuid(), (long) entity.getId() + 1);
@@ -81,8 +79,8 @@ public final class NativeEntityPort implements EntityPort {
     }
 
     private Entity resolve(EntityHandle handle) {
-        if (!worlds.isLoaded(handle.world())) return null;
-        var world = worlds.require(handle.world());
+        var world = worlds.find(handle.world());
+        if (world == null) return null;
         WeakReference<Entity> reference = projected.get(handle);
         Entity entity = reference == null ? null : reference.get();
         if (entity != null && !entity.isRemoved() && entity.getWorld() == world && matchesGeneration(handle, entity)) return entity;

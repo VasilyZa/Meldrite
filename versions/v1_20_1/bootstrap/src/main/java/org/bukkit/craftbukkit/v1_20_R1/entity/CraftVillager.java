@@ -24,7 +24,12 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
     public CraftVillager(EntityDelegate delegate, FacadeContext context, NativeEntityPort entities) { super(delegate, context, entities); }
     @Override public VillagerEntity getHandle() { return (VillagerEntity) super.getHandle(); }
     private VillagerEntityPaperAccessMixin access() { return (VillagerEntityPaperAccessMixin) getHandle(); }
-    @Override public void remove() { requireWritable(); access().meldrite$releaseAllTickets(); super.remove(); }
+    @Override public void remove() {
+        if (isRemovedOnServerThread()) return;
+        requireWritable();
+        access().meldrite$releaseAllTickets();
+        super.remove();
+    }
     public static Profession nmsToBukkitProfession(VillagerProfession profession) { return Profession.valueOf(Registries.VILLAGER_PROFESSION.getId(profession).getPath().toUpperCase(Locale.ROOT)); }
     public static VillagerProfession bukkitToNmsProfession(Profession profession) { var key = java.util.Objects.requireNonNull(profession, "profession").getKey(); return Registries.VILLAGER_PROFESSION.get(new Identifier(key.getNamespace(), key.getKey())); }
     @Override public Profession getProfession() { return nmsToBukkitProfession(getHandle().getVillagerData().getProfession()); }

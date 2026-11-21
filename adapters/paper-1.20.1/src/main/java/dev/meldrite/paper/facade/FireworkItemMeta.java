@@ -1,5 +1,6 @@
 package dev.meldrite.paper.facade;
 
+import dev.meldrite.paper.compat.PackedRgb;
 import java.util.*;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -43,8 +44,8 @@ public class FireworkItemMeta extends org.bukkit.craftbukkit.inventory.CraftMeta
     private static List<Color> colors(Map<String, Object> tag, String key) {
         Object value = tag.get(key);
         List<Color> result = new ArrayList<>();
-        if (value instanceof int[] values) for (int color : values) result.add(Color.fromRGB(color));
-        else if (value instanceof List<?> values) for (Object color : values) if (color instanceof Number number) result.add(Color.fromRGB(number.intValue()));
+        if (value instanceof int[] values) for (int color : values) result.add(PackedRgb.toBukkit(color));
+        else if (value instanceof List<?> values) for (Object color : values) if (color instanceof Number number) result.add(PackedRgb.toBukkit(number.intValue()));
         return List.copyOf(result);
     }
     private static int[] colorValues(Collection<Color> colors) { return colors.stream().mapToInt(Color::asRGB).toArray(); }

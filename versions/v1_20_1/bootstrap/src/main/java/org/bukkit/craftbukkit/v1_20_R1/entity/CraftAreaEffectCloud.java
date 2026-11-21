@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_20_R1.entity;
 import dev.meldrite.craft.EntityDelegate;
+import dev.meldrite.paper.compat.PackedRgb;
 import dev.meldrite.paper.facade.FacadeContext;
 import dev.meldrite.v1201.bridge.NativeEntityPort;
 import dev.meldrite.v1201.hook.AreaEffectCloudEntityPaperAccessMixin;
@@ -25,7 +26,7 @@ public class CraftAreaEffectCloud extends CraftEntity implements org.bukkit.enti
     @Override public org.bukkit.Particle getParticle() { return org.bukkit.craftbukkit.v1_20_R1.CraftParticle.toBukkit(getHandle().getParticleType()); }
     @Override public void setParticle(org.bukkit.Particle value) { setParticle(value, null); }
     @Override public <T> void setParticle(org.bukkit.Particle value, T data) { delegate.requireWritable(); getHandle().setParticleType(org.bukkit.craftbukkit.v1_20_R1.CraftParticle.toNMS(value, data)); }
-    @Override public org.bukkit.Color getColor() { return org.bukkit.Color.fromRGB(getHandle().getColor()); }
+    @Override public org.bukkit.Color getColor() { return PackedRgb.toBukkit(getHandle().getColor()); }
     @Override public void setColor(org.bukkit.Color value) { java.util.Objects.requireNonNull(value, "color"); delegate.requireWritable(); getHandle().setColor(value.asRGB()); }
     @Override public void setBasePotionData(org.bukkit.potion.PotionData value) { var potion = net.minecraft.registry.Registries.POTION.get(new net.minecraft.util.Identifier(CraftPotionUtil.fromBukkit(value))); delegate.requireWritable(); getHandle().setPotion(potion); }
     @Override public org.bukkit.potion.PotionData getBasePotionData() { return CraftPotionUtil.toBukkit(net.minecraft.registry.Registries.POTION.getId(access().meldrite$getPotion()).toString()); }

@@ -851,16 +851,10 @@ public class CraftWorld extends dev.meldrite.paper.facade.WorldAdapter {
                 getBlockAt(pos.getX(), pos.getY(), pos.getZ()), org.bukkit.block.BlockFace.valueOf(hit.getSide().name()));
     }
     @Override public java.util.List<org.bukkit.entity.Entity> getEntities() {
-        var result = new java.util.ArrayList<org.bukkit.entity.Entity>();
-        for (var nativeEntity : getNMSEntities()) {
-            var entity = dev.meldrite.v1201.compat.NativeEntityExtensions.bukkit(nativeEntity);
-            if (entity.isValid()) result.add(entity);
-        }
-        return result;
+        return collectEntities(org.bukkit.entity.Entity.class);
     }
     @Override public java.util.List<org.bukkit.entity.LivingEntity> getLivingEntities() {
-        return getEntities().stream().filter(org.bukkit.entity.LivingEntity.class::isInstance)
-                .map(org.bukkit.entity.LivingEntity.class::cast).collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+        return collectEntities(org.bukkit.entity.LivingEntity.class);
     }
     @Override public org.bukkit.entity.Entity getEntity(java.util.UUID uuid) {
         java.util.Objects.requireNonNull(uuid, "uuid");
@@ -873,22 +867,59 @@ public class CraftWorld extends dev.meldrite.paper.facade.WorldAdapter {
         return count;
     }
     @Override public <T extends org.bukkit.entity.Entity> java.util.Collection<T> getEntitiesByClass(Class<T> type) {
-        java.util.Objects.requireNonNull(type, "type");
-        return getEntities().stream().filter(type::isInstance).map(type::cast).collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+        return collectEntities(java.util.Objects.requireNonNull(type, "type"));
     }
     @Override public <T extends org.bukkit.entity.Entity> java.util.Collection<T> getEntitiesByClass(Class<T>... types) {
-        java.util.Objects.requireNonNull(types, "types");
+        return collectEntities(types, entity -> {
+            for (Class<T> type : types) {
+                if (type.isInstance(entity)) return type.cast(entity);
+            }
+            return null;
+        });
+    }
+    @Override public java.util.Collection<org.bukkit.entity.Entity> getEntitiesByClasses(Class<?>... types) {
+        return collectEntities(types, entity -> matchesAny(entity, types) ? entity : null);
+    }
+    private <T extends org.bukkit.entity.Entity> java.util.List<T> collectEntities(Class<T> type) {
+        Class<?> nativeType = nativeQueryType(type);
         var result = new java.util.ArrayList<T>();
-        for (var entity : getEntities()) {
-            for (var type : types) if (java.util.Objects.requireNonNull(type).isInstance(entity)) { result.add(type.cast(entity)); break; }
+        for (var nativeEntity : getNMSEntities()) {
+            if (nativeType != null && !nativeType.isInstance(nativeEntity)) continue;
+            var entity = dev.meldrite.v1201.compat.NativeEntityExtensions.bukkit(nativeEntity);
+            if (type.isInstance(entity) && entity.isValid()) result.add(type.cast(entity));
         }
         return result;
     }
-    @Override public java.util.Collection<org.bukkit.entity.Entity> getEntitiesByClasses(Class<?>... types) {
+    private <T extends org.bukkit.entity.Entity> java.util.List<T> collectEntities(Class<?>[] types,
+            java.util.function.Function<org.bukkit.entity.Entity, T> match) {
         java.util.Objects.requireNonNull(types, "types");
-        for (var type : types) java.util.Objects.requireNonNull(type, "type");
-        return getEntities().stream().filter(entity -> java.util.Arrays.stream(types).anyMatch(type -> type.isInstance(entity)))
-                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+        var nativeTypes = new Class<?>[types.length];
+        boolean filterNative = true;
+        for (int i = 0; i < types.length; i++) {
+            nativeTypes[i] = nativeQueryType(java.util.Objects.requireNonNull(types[i], "type"));
+            filterNative &= nativeTypes[i] != null;
+        }
+        var nativeEntities = getNMSEntities();
+        var result = new java.util.ArrayList<T>();
+        if (types.length == 0) return result;
+        for (var nativeEntity : nativeEntities) {
+            if (filterNative && !matchesAny(nativeEntity, nativeTypes)) continue;
+            var entity = dev.meldrite.v1201.compat.NativeEntityExtensions.bukkit(nativeEntity);
+            T matched = match.apply(entity);
+            if (matched != null && entity.isValid()) result.add(matched);
+        }
+        return result;
+    }
+    private static boolean matchesAny(Object entity, Class<?>[] types) {
+        for (Class<?> type : types) if (type.isInstance(entity)) return true;
+        return false;
+    }
+    private static Class<?> nativeQueryType(Class<?> type) {
+        // These Bukkit families can only be backed by the corresponding native hierarchy.
+        if (org.bukkit.entity.Item.class.isAssignableFrom(type)) return net.minecraft.entity.ItemEntity.class;
+        if (org.bukkit.entity.Player.class.isAssignableFrom(type)) return net.minecraft.server.network.ServerPlayerEntity.class;
+        if (org.bukkit.entity.LivingEntity.class.isAssignableFrom(type)) return net.minecraft.entity.LivingEntity.class;
+        return null;
     }
     @Override public java.util.Collection<org.bukkit.entity.Entity> getNearbyEntities(org.bukkit.Location location, double x, double y, double z) {
         return getNearbyEntities(location, x, y, z, null);

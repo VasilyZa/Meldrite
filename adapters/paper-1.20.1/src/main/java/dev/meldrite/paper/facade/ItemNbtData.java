@@ -36,6 +36,12 @@ public final class ItemNbtData {
         return value instanceof Map<?, ?> ? (Map<String, Object>) value : Map.of();
     }
 
+    public static int potionEffectId(Object value) {
+        // Earlier writers stored effect IDs as unsigned bytes. Modern NBT uses an integer.
+        if (value instanceof Byte legacy) return Byte.toUnsignedInt(legacy);
+        return value instanceof Number id ? id.intValue() : -1;
+    }
+
     public static String snbt(Object value) {
         if (value instanceof Map<?, ?> map) {
             StringJoiner result = new StringJoiner(",", "{", "}");

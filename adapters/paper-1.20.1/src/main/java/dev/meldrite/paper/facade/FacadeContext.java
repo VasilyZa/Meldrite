@@ -39,10 +39,12 @@ public final class FacadeContext implements AutoCloseable {
     public synchronized Entity entity(EntityService.Identity identity){requireOpen();identities.put(identity.handle(),identity);factoryUsed=true;return factory.entity(identity);}
     public synchronized Entity projectEntity(EntityHandle handle,int nativeId,boolean player,String name){
         available();worlds.requirePrimary();
-        var existing=identities.values().stream().filter(identity->identity.handle().world().equals(handle.world())
-                &&identity.handle().uuid().equals(handle.uuid())&&identity.nativeId()==nativeId&&identity.player()==player).findFirst();
-        if(existing.isPresent())return entity(existing.get());
-        var projected=new EntityHandle(handle.world(),handle.uuid(),(long)nativeId+1);
+        long generation = (long) nativeId + 1;
+        var projected = handle.generation() == generation ? handle : new EntityHandle(handle.world(), handle.uuid(), generation);
+        var existing = identities.get(projected);
+        if (existing != null && existing.nativeId() == nativeId && existing.player() == player) {
+            return factory.entity(existing);
+        }
         return entity(new EntityService.Identity(projected,worlds.reference(handle.world()),nativeId,player,name));
     }
     public synchronized void rebindEntity(EntityDelegate delegate,EntityHandle handle,int nativeId,String name,Entity facade){
@@ -73,7 +75,15 @@ public final class FacadeContext implements AutoCloseable {
     public Player playerByUuid(UUID uuid){var matches=matching(uuid,true);if(matches.size()>1)throw new IllegalStateException("AMBIGUOUS_PLAYER_IDENTITY: "+uuid);return matches.isEmpty()?null:(Player)entity(matches.get(0));}
     public Player playerExact(String name){available();var matches=identities.values().stream().filter(identity->identity.player()&&identity.name().equalsIgnoreCase(name)&&entities.valid(identity)&&entity(identity).isValid()).toList();if(matches.size()>1)throw new IllegalStateException("AMBIGUOUS_PLAYER_NAME: "+name);return matches.isEmpty()?null:(Player)entity(matches.get(0));}
     public Collection<? extends Player> players(){available();return identities.values().stream().filter(identity->identity.player()&&entities.valid(identity)).sorted(Comparator.comparing(i->i.handle().uuid())).map(identity->(Player)entity(identity)).filter(Entity::isValid).toList();}
-    public void remove(EntityDelegate delegate){delegate.remove();identities.remove(delegate.identity().handle());factory.invalidateEntity(delegate.identity().handle());}
+    public void remove(EntityDelegate delegate) {
+        var identity = delegate.identity();
+        delegate.remove();
+        // Native removal can run lifecycle callbacks that rebind this facade.
+        if (delegate.identity() == identity) {
+            identities.remove(identity.handle());
+            factory.invalidateEntity(identity);
+        }
+    }
     public synchronized void unload(WorldService.Reference reference){worlds.requirePrimary();liveWorlds.remove(reference);identities.entrySet().removeIf(entry->entry.getValue().world().equals(reference));factory.unload(reference);}
     @Override public synchronized void close(){worlds.requirePrimary();if(closed)return;closed=true;try{for(var reference:worlds.worlds())unload(reference);}finally{liveWorlds.clear();identities.clear();}}
 }

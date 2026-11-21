@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_20_R1.potion;
 
+import dev.meldrite.paper.compat.PackedRgb;
 import java.util.Map;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -22,7 +23,7 @@ public class CraftPotionEffectType extends PotionEffectType {
     }
     @Override public double getDurationModifier() { return 1; }
     @Override public boolean isInstant() { return handle.isInstant(); }
-    @Override public Color getColor() { return Color.fromRGB(handle.getColor()); }
+    @Override public Color getColor() { return PackedRgb.toBukkit(handle.getColor()); }
     @Override public String translationKey() { return handle.getTranslationKey(); }
     @Override public Category getEffectCategory() { return fromNMS(handle.getCategory()); }
     public static Category fromNMS(StatusEffectCategory category) { return Category.valueOf(java.util.Objects.requireNonNull(category).name()); }

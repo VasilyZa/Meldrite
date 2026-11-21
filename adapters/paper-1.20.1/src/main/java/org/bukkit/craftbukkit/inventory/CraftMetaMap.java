@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.inventory;
 
+import dev.meldrite.paper.compat.PackedRgb;
 import dev.meldrite.paper.facade.ItemNbtData;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -25,7 +26,7 @@ public final class CraftMetaMap extends CraftMetaItem implements MapMeta {
     @Override public String getLocationName() { return hasLocationName() ? (String) display().get("LocName") : null; }
     @Override public void setLocationName(String name) { display("LocName", name); }
     @Override public boolean hasColor() { return display().get("MapColor") instanceof Number; }
-    @Override public Color getColor() { return hasColor() ? Color.fromRGB(((Number) display().get("MapColor")).intValue()) : null; }
+    @Override public Color getColor() { return hasColor() ? PackedRgb.toBukkit(((Number) display().get("MapColor")).intValue()) : null; }
     @Override public void setColor(Color color) { display("MapColor", color == null ? null : color.asRGB()); }
     @Override public CraftMetaMap clone() { return new CraftMetaMap(this); }
     @Override public Map<String, Object> serialize() { Map<String, Object> result = serialized("MAP"); if (hasMapId()) result.put("map-id", getMapId()); if (mutableTag().containsKey("map_is_scaling")) result.put("scaling", isScaling()); if (hasLocationName()) result.put("loc-name", getLocationName()); if (hasColor()) result.put("color", getColor()); return result; }
