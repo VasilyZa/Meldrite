@@ -1,4 +1,4 @@
-# Meldrite
+<h1 align="center">Meldrite</h1>
 
 <p align="center">
   <a href="https://github.com/VasilyZa/Meldrite/actions/workflows/runtime.yml"><img src="https://github.com/VasilyZa/Meldrite/actions/workflows/runtime.yml/badge.svg?branch=1.20.1" alt="CI"></a>
